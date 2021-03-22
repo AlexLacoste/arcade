@@ -8,15 +8,17 @@
 #ifndef DLLOADER_HPP_
 #define DLLOADER_HPP_
 
-template <typename T>
-class DLLoader {
-  public:
-    DLLoader(const char *path);
-    ~DLLoader();
-    T *getInstance();
+namespace arcade {
+  template <typename T>
+  class DLLoader {
+    public:
+      DLLoader(const char *path);
+      ~DLLoader();
+      T *getInstance();
 
-  private:
-    void *handle;
-};
+    private:
+      void *handle;
+  };
+}
 
 #endif /* !DLLOADER_HPP_ */

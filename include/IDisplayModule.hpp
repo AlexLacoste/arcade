@@ -10,15 +10,17 @@
 
 #include <string>
 
-class IDisplayModule {
-  public:
-    virtual ~IDisplayModule() = default;
-    virtual bool isOpen() const = 0;
-    virtual bool pollEvent() = 0;
-    virtual void display() = 0;
-    virtual void openRenderWindow(const std::string &title) = 0;
-    virtual void closeRenderWindow() = 0;
-    virtual void clearRenderWindow() = 0;
-};
+namespace arcade {
+  class IDisplayModule {
+    public:
+      virtual ~IDisplayModule() = default;
+      virtual bool isOpen() const = 0;
+      virtual bool pollEvent() = 0;
+      virtual void display() = 0;
+      virtual void openRenderWindow(const std::string &title) = 0;
+      virtual void closeRenderWindow() = 0;
+      virtual void clearRenderWindow() = 0;
+  };
+}
 
 #endif /* !IDISPLAYMODULE_HPP_ */

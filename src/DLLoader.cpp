@@ -9,20 +9,20 @@
 #include "../include/DLLoader.hpp"
 
 template <typename T>
-DLLoader<T>::DLLoader(const char *path) : handle(dlopen(path, RTLD_LAZY))
+arcade::DLLoader<T>::DLLoader(const char *path) : handle(dlopen(path, RTLD_LAZY))
 {
     if (!this->handle || dlerror())
         throw exception; // create exception
 }
 
 template <typename T>
-DLLoader<T>::~DLLoader()
+arcade::DLLoader<T>::~DLLoader()
 {
     dlclose(this->handle);
 }
 
 template <typename T>
-T *DLLoader<T>::getInstance()
+T *arcade::DLLoader<T>::getInstance()
 {
     T *(*start)() = reinterpret_cast<T*(*)()>(dlsym(this->handle, "start"));
 

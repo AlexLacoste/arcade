@@ -9,18 +9,19 @@
 #define IGAME_HPP_
 
 #include "IDisplayModule.hpp"
+#include "Keys.hpp"
 
 class IGame {
-    public:
-        IGame();
-        ~IGame();
-        void init();
-        void stop();
-        void update();
-        void changeLib(IDisplayModule &displayModule);
+  public:
+    virtual ~IGame() = 0;
+    virtual void init() = 0;
+    virtual void stop() = 0;
+    virtual void update() = 0;
+    virtual void changeLib(IDisplayModule &displayModule) = 0;
+    virtual Keys getLastKey() = 0;
 
-    protected:
-    private:
+  protected:
+  private:
 };
 
 #endif /* !IGAME_HPP_ */

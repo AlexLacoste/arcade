@@ -6,7 +6,7 @@
 */
 
 #include <dlfcn.h>
-#include "../include/DLLoader.hpp"
+#include "DLLoader.hpp"
 
 arcade::DLLoader::DLLoader(const char *path) : handle(dlopen(path, RTLD_LAZY))
 {

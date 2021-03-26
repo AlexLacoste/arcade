@@ -8,23 +8,21 @@
 #include <dlfcn.h>
 #include "../include/DLLoader.hpp"
 
-template <typename T>
-arcade::DLLoader<T>::DLLoader(const char *path) : handle(dlopen(path, RTLD_LAZY))
+arcade::DLLoader::DLLoader(const char *path) : handle(dlopen(path, RTLD_LAZY))
 {
-    if (!this->handle || dlerror())
-        throw exception; // create exception
 }
 
-template <typename T>
-arcade::DLLoader<T>::~DLLoader()
+arcade::DLLoader::~DLLoader()
 {
     dlclose(this->handle);
 }
 
-template <typename T>
-T *arcade::DLLoader<T>::getInstance()
+template <typename T> T *arcade::DLLoader::getInstance()
 {
-    T *(*start)() = reinterpret_cast<T*(*)()>(dlsym(this->handle, "start"));
+    if (!this->handle || dlerror())
+        throw exception; // create exception
+
+    T *(*start)() = reinterpret_cast<T *(*)()>(dlsym(this->handle, "start"));
 
     if (!start)
         throw exception; // create exception

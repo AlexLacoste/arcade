@@ -8,7 +8,8 @@
 #ifndef KEYS_HPP_
 #define KEYS_HPP_
 
-namespace arcade {
+namespace arcade
+{
     enum Keys { ESC, LEFT, RIGHT, UP, DOWN, ENTER, SPACE, MOUSE_CLICK };
 }
 

@@ -1,0 +1,11 @@
+{
+  "graphics": [
+    "ncurse",
+    "sdl2",
+    "sfml"
+  ],
+  "games": [
+    "nibler",
+    "pacman"
+  ]
+}

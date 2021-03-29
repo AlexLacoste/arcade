@@ -5,51 +5,51 @@
 ## Makefile
 ##
 
-CFLAGS	=	-Wall -Wextra -Werror -W -g3
+CFLAGS		=	-Wall -Wextra -Werror -W -g3
 
-CXXFLAGS += "-std=c++17"
+CXXFLAGS 	+= "-std=c++17"
 
-CPPFLAGS	=	-I./include/
+CPPFLAGS	=	-I./
 
-LDLIBS	=	-lgtest -lgtest_main -lpthread --coverage
+LDLIBS		=	-lgtest -lgtest_main -lpthread --coverage
 
-LD		=	g++
+LD			=	g++
 
-NAME	=	nanotekspice
+NAME		=	arcade
 
-MAIN	=	src/main.cpp
+MAIN		=	src/main.cpp
 
-SRC		=	
+SRC			=
 
-TESTSRC	=	
+TESTSRC		=	
 
-OBJ		=	$(SRC:.cpp=.o) $(MAIN:.cpp=.o)
+OBJ			=	$(SRC:.cpp=.o) $(MAIN:.cpp=.o)
 
-all:	$(NAME)
+all:		$(NAME)
 
 $(NAME):	$(OBJ)
-	$(LD) -o $(NAME) $(OBJ) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+			$(LD) -o $(NAME) $(OBJ) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 
 clean:
-	rm -f $(OBJ)
-	rm -f *.o
-	rm -f *.gcda
-	rm -f *.gcno
-	rm -f vgcore.*
-	rm -f *.report
+			rm -f $(OBJ)
+			rm -f *.o
+			rm -f *.gcda
+			rm -f *.gcno
+			rm -f vgcore.*
+			rm -f *.report
 
 fclean:		clean
-	rm -f $(NAME)
-	rm -f unit_test
+			rm -f $(NAME)
+			rm -f unit_test
 
-re:	fclean all
+re:			fclean all
 
 tests_run:
-	rm -f *.gc*
-	$(LD) -o unit_test $(SRC) $(TESTSRC) $(CFLAGS) $(LDFLAGS) $(LDLIBS)
-	./unit_test
+			rm -f *.gc*
+			$(LD) -o unit_test $(SRC) $(TESTSRC) $(CFLAGS) $(LDFLAGS) $(LDLIBS)
+			./unit_test
 
 debug:
-	$(LD) -g -o $(NAME) $(MAIN) $(SRC) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)
+			$(LD) -g -o $(NAME) $(MAIN) $(SRC) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)
 
-.PHONY: all clean fclean re tests_run
+.PHONY: 	all $(NAME) clean fclean re tests_run

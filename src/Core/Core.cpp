@@ -5,7 +5,9 @@
 ** Core
 */
 
-#include "Core/Core.hpp"
+#include "DLLoader.hpp"
+
+#include "Core.hpp"
 
 arcade::Core::Core(std::string libpath)
 {

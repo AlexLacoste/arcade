@@ -14,6 +14,7 @@ namespace arcade
       public:
         DLLoader(const char *path);
         ~DLLoader();
+
         template <typename T>
         T *getInstance();
 

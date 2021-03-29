@@ -11,9 +11,8 @@
 #include <iostream>
 #include <string>
 
-#include "DLLoader.hpp"
-
-namespace arcade {
+namespace arcade
+{
     class Core {
         public:
             Core(std::string libpath);

@@ -5,11 +5,11 @@
 ## Makefile
 ##
 
-CFLAGS		=	-Wall -Wextra -Werror -W -g3
+CFLAGS		=	-Wall -Wextra -Werror -W -g3 -ldl
 
 CXXFLAGS 	+= "-std=c++17"
 
-CPPFLAGS	=	-I./
+CPPFLAGS	=	-I./include -I./src
 
 LDLIBS		=	-lgtest -lgtest_main -lpthread --coverage
 
@@ -19,7 +19,8 @@ NAME		=	arcade
 
 MAIN		=	src/main.cpp
 
-SRC			=
+SRC			=	src/Core/Core.cpp			\
+				src/DLLoader/DLLoader.cpp
 
 TESTSRC		=	
 

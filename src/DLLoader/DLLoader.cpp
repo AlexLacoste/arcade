@@ -8,8 +8,12 @@
 #include <dlfcn.h>
 #include "DLLoader.hpp"
 
-arcade::DLLoader::DLLoader(const char *path) : handle(dlopen(path, RTLD_LAZY))
+arcade::DLLoader::DLLoader(std::string path)
 {
+    this->handle = dlopen(path.c_str(), RTLD_LAZY);
+    if (!this->handle || dlerror()) {
+       throw ExceptionDLLoader{"Cannot open the library."}; 
+    }
 }
 
 arcade::DLLoader::~DLLoader()
@@ -19,12 +23,13 @@ arcade::DLLoader::~DLLoader()
 
 template <typename T> T *arcade::DLLoader::getInstance()
 {
-    if (!this->handle || dlerror())
-        throw exception; // create exception
+    if (!this->handle || dlerror()) {
+        throw ExceptionDLLoader{"Cannot open the library."}; // create exception
+    }
 
     T *(*start)() = reinterpret_cast<T *(*)()>(dlsym(this->handle, "start"));
 
-    if (!start)
-        throw exception; // create exception
+    //if (!start)
+        //throw exception; // create exception
     return (*start)();
 }

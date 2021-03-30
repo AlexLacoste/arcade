@@ -11,6 +11,9 @@
 #include <iostream>
 #include <string>
 
+#include "DLLoader/DLLoader.hpp"
+#include "Exceptions/ExceptionDLLoader.hpp"
+
 namespace arcade
 {
     class Core {

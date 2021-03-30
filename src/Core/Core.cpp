@@ -5,8 +5,6 @@
 ** Core
 */
 
-#include "DLLoader.hpp"
-
 #include "Core.hpp"
 
 arcade::Core::Core(std::string libpath)
@@ -16,7 +14,6 @@ arcade::Core::Core(std::string libpath)
     } catch (arcade::ExceptionDLLoader &e) {
         std::cout << e.what() << std::endl;
     }
-
     std::cout << "Core was created" << std::endl;
 }
 

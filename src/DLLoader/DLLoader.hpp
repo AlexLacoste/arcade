@@ -8,11 +8,15 @@
 #ifndef DLLOADER_HPP_
 #define DLLOADER_HPP_
 
+#include <iostream>
+
+#include "Exceptions/ExceptionDLLoader.hpp"
+
 namespace arcade
 {
     class DLLoader {
       public:
-        DLLoader(const char *path);
+        DLLoader(std::string path);
         ~DLLoader();
 
         template <typename T>

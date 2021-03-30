@@ -33,8 +33,9 @@ void arcade::Core::getLibraries()
         std::string filename{file.path()};
 
         if (std::regex_match(filename, reg) == false) {
-            throw arcade::ExceptionCore{"Not valid library " + filename + " in " + libpath + " directory"};
+            std::cout << "Not valid library " + filename + " in " + libpath + " directory" << std::endl;
+        } else {
+            this->librairies.push_back(filename);
         }
-        this->librairies.push_back(filename);
     }
 }

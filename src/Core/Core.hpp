@@ -10,9 +10,11 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "DLLoader/DLLoader.hpp"
 #include "Exceptions/ExceptionDLLoader.hpp"
+#include "Exceptions/ExceptionCore.hpp"
 
 namespace arcade
 {
@@ -21,8 +23,11 @@ namespace arcade
             Core(std::string libpath);
             ~Core();
 
+            void getLibraries();
+
         protected:
         private:
+            std::vector<std::string> librairies;
     };
 }
 

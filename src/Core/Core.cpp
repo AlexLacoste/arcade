@@ -5,6 +5,9 @@
 ** Core
 */
 
+#include <filesystem>
+#include <regex>
+
 #include "Core.hpp"
 
 arcade::Core::Core(std::string libpath)
@@ -19,4 +22,19 @@ arcade::Core::Core(std::string libpath)
 
 arcade::Core::~Core()
 {
+}
+
+void arcade::Core::getLibraries()
+{
+    std::string libpath{"./lib/"};
+    std::regex reg{"./lib/arcade_[a-z]+.so"};
+
+    for (const auto &file : std::filesystem::directory_iterator(libpath)) {
+        std::string filename{file.path()};
+
+        if (std::regex_match(filename, reg) == false) {
+            throw arcade::ExceptionCore{"Not valid library " + filename + " in " + libpath + " directory"};
+        }
+        this->librairies.push_back(filename);
+    }
 }

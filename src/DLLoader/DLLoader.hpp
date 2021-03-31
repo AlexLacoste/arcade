@@ -15,8 +15,9 @@ namespace arcade
 {
     class DLLoader {
       public:
-        DLLoader(const char *path);
+        DLLoader(std::string path);
         ~DLLoader();
+
         template <typename T>
         std::unique_ptr<T> getInstance(const std::string &ptr);
 

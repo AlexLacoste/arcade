@@ -17,14 +17,15 @@ arcade::DLLoader::~DLLoader()
     dlclose(this->handle);
 }
 
-template <typename T> T *arcade::DLLoader::getInstance()
+template <typename T>
+std::unique_ptr<T> arcade::DLLoader::getInstance(const std::string &ptr)
 {
     if (!this->handle || dlerror())
         throw exception; // create exception
 
-    T *(*start)() = reinterpret_cast<T *(*)()>(dlsym(this->handle, "start"));
+    std::unique_ptr<T> (*start)()(reinterpret_cast<T *(*)()>(dlsym(this->handle, ptr.c_str())));
 
     if (!start)
         throw exception; // create exception
-    return (*start)();
+    return (start)();
 }

@@ -9,8 +9,7 @@
 #define IGAME_HPP_
 
 #include <vector>
-#include "IDisplayModule.hpp"
-#include "Keys.hpp"
+#include "../../include/Keys.hpp"
 
 namespace arcade
 {
@@ -23,6 +22,7 @@ namespace arcade
         virtual void resume() = 0;
         virtual void update() = 0;
         virtual void handleEvent(const std::vector<Keys> &keys) = 0;
+        virtual void changeHighScore() = 0;
 
       protected:
       private:

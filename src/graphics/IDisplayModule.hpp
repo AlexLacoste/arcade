@@ -9,7 +9,8 @@
 #define IDISPLAYMODULE_HPP_
 
 #include <string>
-#include "Keys.hpp"
+#include <vector>
+#include "../../include/Keys.hpp"
 
 namespace arcade
 {
@@ -17,13 +18,12 @@ namespace arcade
       public:
         virtual ~IDisplayModule() = default;
         virtual bool isOpen() const = 0;
-        virtual bool pollEvent() = 0;
+        virtual std::vector<struct> getEvent() = 0;
         virtual void display() = 0;
-        virtual void openWindow(const std::string &title) = 0;
-        virtual void closeWindow() = 0;
+        virtual void init(const std::string &title) = 0;
+        virtual void stop() = 0;
         virtual void clearWindow() = 0;
         virtual Keys getLastKey() = 0;
-
     };
 } // namespace arcade
 

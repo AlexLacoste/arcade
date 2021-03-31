@@ -8,6 +8,9 @@
 #ifndef DLLOADER_HPP_
 #define DLLOADER_HPP_
 
+#include <memory>
+#include <string>
+
 namespace arcade
 {
     class DLLoader {
@@ -15,7 +18,7 @@ namespace arcade
         DLLoader(const char *path);
         ~DLLoader();
         template <typename T>
-        T *getInstance();
+        std::unique_ptr<T> getInstance(const std::string &ptr);
 
       private:
         void *handle;

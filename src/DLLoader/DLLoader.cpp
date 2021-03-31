@@ -11,9 +11,6 @@
 arcade::DLLoader::DLLoader(std::string path)
 {
     this->handle = dlopen(path.c_str(), RTLD_LAZY);
-    if (!this->handle || dlerror()) {
-       throw ExceptionDLLoader{"Cannot open the library."}; 
-    }
 }
 
 arcade::DLLoader::~DLLoader()
@@ -22,13 +19,13 @@ arcade::DLLoader::~DLLoader()
 }
 
 template <typename T>
-std::unique_ptr<T> arcade::DLLoader::getInstance(const std::string &ptr)
+std::unique_ptr<T> arcade::DLLoader::getInstance()
 {
     if (!this->handle || dlerror()) {
         throw ExceptionDLLoader{"Cannot open the library."}; // create exception
     }
 
-    std::unique_ptr<T> (*start)()(reinterpret_cast<T *(*)()>(dlsym(this->handle, ptr.c_str())));
+    std::unique_ptr<T> (*start)()(reinterpret_cast<T *(*)()>(dlsym(this->handle, "entry_point")));
 
     if (!start)
         throw exception; // create exception

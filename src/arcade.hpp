@@ -28,7 +28,7 @@ namespace arcade
         void graphicLibLoader(const std::string &path);
         void gameLibLoader(const std::string &path);
         void switchGraphicLib(const std::string &path);
-        std::vector<std::string> getLib();
+        void getLib();
         std::vector<std::string> libs;
 
         std::size_t &getHighScore() const;
@@ -47,7 +47,7 @@ namespace arcade
         std::vector<std::string> getGameTitle();
         std::vector<std::string> gameTitle;
 
-        std::unordered_map<std::string, std::size_t> getGameHighScore(std::string username, std::string game);
+        std::unordered_map<std::string, std::size_t> getGameHighScore();
         std::unordered_map<std::string, std::size_t> gameHighScore;
     };
 } // namespace arcade

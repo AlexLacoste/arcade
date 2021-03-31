@@ -5,7 +5,8 @@
 ** Arcade
 */
 
-#include <dirent.h>
+// #include <dirent.h>
+#include <filesystem>
 #include <string>
 #include <vector>
 #include "DLLoader/DLLoader.hpp"
@@ -14,7 +15,7 @@
 arcade::Arcade::Arcade(const std::string &libGraphic)
 {
     this->highScore = 0;
-    this->libs = this->getLib();
+    this->getLib();
     for (std::size_t i; i < this->libs.size() && this->libs.at(i).compare(libGraphic) != 0; i++)
         this->libPositionVector = i;
     this->gameLib = nullptr;
@@ -32,8 +33,8 @@ arcade::Arcade::~Arcade()
 
 void arcade::Arcade::run()
 {
-    const std::array<function> fptr = [];
-    std::size_t state = 0;
+    const std::array<function> fptr = []; // faire unurder_map
+    std::size_t state = 0; // enum
 
     while (this->graphicLib->isOpen()) {
         this->(*fptr.at(state))();
@@ -43,26 +44,14 @@ void arcade::Arcade::run()
 
 void arcade::Arcade::graphicLibLoader(const std::string &path)
 {
-    this->graphicLib = this->dlLoaderGraphic->getInstance<IDisplayModule>("IDisplayModule");
+    this->graphicLib = this->dlLoaderGraphic->getInstance<IDisplayModule>();
 }
 
-std::vector<std::string> arcade::Arcade::getLib()
+void arcade::Arcade::getLib()
 {
-    std::vector<std::string> libs;
-    struct dirent *read_dir = nullptr;
-    DIR *dir = opendir("lib");
-    std::string lib;
-
-    if (!dir)
-        throw exception;
-    read_dir = readdir(dir);
-    for (; read_dir; read_dir = readdir(dir)) {
-        lib = read_dir->d_name;
-        if (lib[0] != '.' && lib.length() > 3 && lib[lib.length() - 3] == '.'
-            && lib[lib.length() - 2] == 's' && lib[lib.length() - 1] == 'o') {
-            libs.push_back(lib);
-        }
+    for (const auto &file : std::filesystem::directory_iterator("lib")) {
+        std::string tmp = file.path();
+        if (tmp.find_last_of(".so"))
+            this->libs.push_back(tmp);
     }
-    closedir(dir);
-    return libs;
 }

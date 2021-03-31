@@ -19,7 +19,7 @@ namespace arcade
         ~DLLoader();
 
         template <typename T>
-        std::unique_ptr<T> getInstance(const std::string &ptr);
+        std::unique_ptr<T> getInstance();
 
       private:
         void *handle;

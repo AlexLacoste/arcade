@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <string>
 #include <iostream>
+#include <cstring>
 #include "Arcade.hpp"
 
 std::vector<std::string> getLib();
@@ -40,10 +41,12 @@ int main(int ac, char **av, char **env)
     //     std::cerr << "Cannot use " << av[0] << std::endl;
     //     return (84);
     // }
-    if (badEnv(env)) {
-        std::cerr << "Cannot launch " << av[0] << ", env is not ready." << std::endl;
-        return 84;
-    }
+
+    // if (badEnv(env)) {
+    //     std::cerr << "Cannot launch " << av[0] << ", env is not ready." << std::endl;
+    //     return 84;
+    // }
+
     std::unique_ptr<arcade::Arcade> core = std::make_unique<arcade::Arcade>(av[1]);
     try {
         core->run();

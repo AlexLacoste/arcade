@@ -8,19 +8,16 @@
 CFLAGS = make -C
 
 all:
-	$(CFLAGS) src/shared
-	$(CFLAGS) src/graphics
-	$(CFLAGS) src/arcade
+	$(CFLAGS) ncurses
+	$(CFLAGS) sfml
 
 # tests_run:
 # 	$(CFLAGS) solver tests_run
 # 	$(CFLAGS) generator tests_run
 
 fclean:
-	$(CFLAGS) src/shared fclean
-	$(CFLAGS) src/graphics fclean
-	$(CFLAGS) src/arcade fclean
-	rm -f lib/*.so
+	$(CFLAGS) ncurses fclean
+	$(CFLAGS) sfml fclean
 
 re:	fclean all
 

@@ -5,11 +5,10 @@
 ** Arcade
 */
 
-// #include <dirent.h>
 #include <filesystem>
 #include <string>
 #include <vector>
-#include "DLLoader/DLLoader.hpp"
+#include <iostream>
 #include "Arcade.hpp"
 
 arcade::Arcade::Arcade(const std::string &libGraphic)
@@ -22,9 +21,10 @@ arcade::Arcade::Arcade(const std::string &libGraphic)
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
     this->dlLoaderGraphic = std::make_unique<DLLoader>(libGraphic.c_str());
-    this->graphicLibLoader(libGraphic);
+    this->graphicLibLoader();
     this->username = "";
-    this->gameTitle = getGameTitle();
+    // this->gameTitle = getGameTitle();
+    this->state = USERNAME;
 }
 
 arcade::Arcade::~Arcade()
@@ -33,19 +33,29 @@ arcade::Arcade::~Arcade()
 
 void arcade::Arcade::run()
 {
-    const std::array<function> fptr = []; // faire unurder_map
-    std::size_t state = 0; // enum
+    // const std::unordered_map<function> fptr = [];
+    std::unique_ptr<displayer::IText> textLib;
 
+    this->graphicLib->init();
+    textLib = this->graphicLib->createText("Merci Jacquie et Honoré");
     while (this->graphicLib->isOpen()) {
-        this->(*fptr.at(state))();
+        // this->(*fptr.at(state))();
+        this->graphicLib->clearWindow();
+        this->graphicLib->draw(textLib);
         this->graphicLib->display();
     }
 }
 
-void arcade::Arcade::graphicLibLoader(const std::string &path)
+void arcade::Arcade::graphicLibLoader()
 {
-    this->graphicLib = this->dlLoaderGraphic->getInstance<IDisplayModule>();
+    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplayModule>();
 }
+
+void arcade::Arcade::gameLibLoader(const std::string &path)
+{}
+
+void arcade::Arcade::switchGraphicLib(const std::string &path)
+{}
 
 void arcade::Arcade::getLib()
 {

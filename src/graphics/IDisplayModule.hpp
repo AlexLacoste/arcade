@@ -8,9 +8,9 @@
 #ifndef IDISPLAYMODULE_HPP_
 #define IDISPLAYMODULE_HPP_
 
+#include <memory>
 #include <string>
 #include <vector>
-#include "../../include/Keys.hpp"
 #include "../shared/Data.hpp"
 
 namespace arcade
@@ -19,6 +19,7 @@ namespace arcade
     {
         class IText {
           public:
+            virtual ~IText() = default;
             virtual void setText(const std::string &text) = 0;
             virtual std::string getText() const = 0;
             virtual void setPosition(arcade::data::Vector2f pos) = 0;
@@ -35,12 +36,20 @@ namespace arcade
         class IDisplayModule {
           public:
             virtual ~IDisplayModule() = default;
-            virtual bool isOpen() const = 0;
-            virtual void display() = 0;
-            virtual void init(const std::string &title) = 0;
-            virtual void stop() = 0;
+//             enum AvailableOptions {
+//                 NO_OPTIONS = 0,
+//                 SET_CHARACTER_SIZE = 1 << 0,
+//                 MOUSE_MOVE = 1 << 1,
+//             };
+// #define isOptions(disp, opt) ((disp)->availableOptions() & arcade::displayer::IDisplay::AvailableOptions::opt)
+
+            // virtual int availableOptions() const = 0;
+            virtual void init(
+                const std::string &title = "Arcade", const unsigned int limit = 60) = 0;
             virtual void clearWindow() = 0;
-            virtual arcade::data::KeyCode getLastKey() = 0;
+            virtual void display() = 0;
+            virtual void stop() = 0;
+            virtual bool isOpen() const = 0;
             virtual void restartClock() = 0;
             virtual double getDeltaTime() = 0;
             virtual arcade::data::Vector2u getWindowSize() = 0;
@@ -48,6 +57,8 @@ namespace arcade
             virtual void draw(std::unique_ptr<IText> &text) = 0;
             virtual std::unique_ptr<IText> createText(const std::string &text) = 0;
             virtual std::unique_ptr<IText> createText() = 0;
+            
+            // virtual arcade::data::KeyCode getLastKey() = 0;
         };
     } // namespace displayer
 } // namespace arcade

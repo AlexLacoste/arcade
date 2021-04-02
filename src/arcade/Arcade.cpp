@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include "Arcade.hpp"
+#include "../shared/Color.cpp"
 
 arcade::Arcade::Arcade(const std::string &libGraphic)
 {
@@ -37,12 +38,17 @@ void arcade::Arcade::run()
     std::unique_ptr<displayer::IText> textLib;
 
     this->graphicLib->init();
-    textLib = this->graphicLib->createText("Merci Jacquie et Honoré");
+    textLib = this->graphicLib->createText("c'est un test");
+    textLib->setFont("ressources/font.ttf");
+    textLib->setColor(arcade::data::Color::Red);
+    textLib->setCharacterSize(40);
+    textLib->setPosition(arcade::data::Vector2f{10, 10});
     while (this->graphicLib->isOpen()) {
         // this->(*fptr.at(state))();
         this->graphicLib->clearWindow();
         this->graphicLib->draw(textLib);
         this->graphicLib->display();
+        std::cout << this->graphicLib->getWindowSize().x << "   " << this->graphicLib->getWindowSize().y << std::endl;
     }
 }
 

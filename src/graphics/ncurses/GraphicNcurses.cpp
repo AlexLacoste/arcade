@@ -34,8 +34,9 @@ void ncurses::GraphicNcurses::init(const std::string &title, const unsigned int 
     (void)title;
     (void)limit;
     initscr();
-    keypad(stdscr, TRUE);
+    keypad(stdscr, true);
     noecho();
+    curs_set(0);
     this->windowIsOpen = true;
 }
 

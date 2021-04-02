@@ -30,7 +30,7 @@ namespace sfml
         arcade::data::FloatRect getLocalBounds() override;
         void setOrigin(arcade::data::Vector2f origin) override;
         arcade::data::Vector2f getOrigin() override;
-        sf::Text getSfText() const;
+        sf::Text &getSfText();
       private:
         sf::Text text;
         sf::Font font;
@@ -54,7 +54,7 @@ namespace sfml
         
         // arcade::data::KeyCode getLastKey() override;
     private:
-        std::unique_ptr<sf::RenderWindow> window;
+        sf::RenderWindow window;
         sf::Event event;
         sf::Clock clock;
         sf::Time time;

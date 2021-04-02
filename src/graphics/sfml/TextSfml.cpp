@@ -43,7 +43,10 @@ arcade::data::Vector2f sfml::TextSfml::getPosition() const
 
 void sfml::TextSfml::setFont(const std::string &font)
 {
-    this->font.loadFromFile(font);
+    if (!this->font.loadFromFile(font)) {
+        // throw error
+    }
+    this->text.setFont(this->font);
 }
 
 void sfml::TextSfml::setColor(arcade::data::Color color)
@@ -81,7 +84,7 @@ arcade::data::Vector2f sfml::TextSfml::getOrigin()
     return arcade::data::Vector2f{sfOrigin.x, sfOrigin.y};
 }
 
-sf::Text sfml::TextSfml::getSfText() const
+sf::Text &sfml::TextSfml::getSfText()
 {
     return this->text;
 }

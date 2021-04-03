@@ -12,9 +12,16 @@ all:
 	$(CFLAGS) src/graphics
 	$(CFLAGS) src/arcade
 
-# tests_run:
-# 	$(CFLAGS) solver tests_run
-# 	$(CFLAGS) generator tests_run
+games:
+	$(CFLAGS) src/shared
+	$(CFLAGS) src/games
+
+graphicals:
+	$(CFLAGS) src/shared
+	$(CFLAGS) src/graphics
+
+core:
+	$(CFLAGS) src/arcade
 
 fclean:
 	$(CFLAGS) src/shared fclean

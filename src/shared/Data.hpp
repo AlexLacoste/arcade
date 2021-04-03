@@ -15,12 +15,13 @@ namespace arcade
     namespace data
     {
         enum EventType {
+            WNIDOW_CLOSED,
             KEY_PRESSED,
             MOUSE_MOVED,
             MOUSE_PRESSED,
             MOUSE_RELEASED,
-            // MOUSE_DOUBLE_CLICKED,
-            // MOUSE_TRIPLE_CLICKED,
+            MOUSE_DOUBLE_CLICKED,
+            MOUSE_TRIPLE_CLICKED,
         };
         enum KeyCode {
             ESCAPE = 27,
@@ -35,12 +36,13 @@ namespace arcade
         enum MouseBtn {
             BTN_1,
             BTN_2,
-            // BTN_3,
-            // BTN_4,
+            BTN_3,
+            BTN_4,
         };
 
         struct Event {
-            Event(){};
+            Event() : type(static_cast<EventType>(0)), x(0), y(0){};
+            Event(EventType type) : type(type), x(0), y(0){};
             Event(EventType type, MouseBtn btn, int x, int y) : type(type), btn(btn), x(x), y(y){};
             Event(EventType type, int x, int y) : type(type), x(x), y(y){};
             Event(EventType type, KeyCode keyCode) : type(type), keyCode(keyCode), x(0), y(0){};
@@ -58,10 +60,9 @@ namespace arcade
             };
         };
 
-        template <typename T>
-        struct Vector2 {
-            Vector2(){};
-            Vector2(T x) : x(x){};
+        template <typename T> struct Vector2 {
+            Vector2() : x(0), y(0){};
+            Vector2(T x) : x(x), y(0){};
             Vector2(T x, T y) : x(x), y(y){};
             template <typename U>
             Vector2(const Vector2<U> &vect)
@@ -72,6 +73,23 @@ namespace arcade
                 x = static_cast<T>(other.x);
                 y = static_cast<T>(other.y);
                 return *this;
+            };
+
+            template <typename U> Vector2<T> &operator+=(const Vector2<U> &other)
+            {
+                x = static_cast<T>(other.x);
+                y = static_cast<T>(other.y);
+                return *this;
+            };
+
+            Vector2<T> operator+(const Vector2<T> &other) const
+            {
+                return arcade::data::Vector2<T>{x + other.x, y + other.y};
+            };
+
+            template <typename U> bool operator==(const Vector2<U> &other) const
+            {
+                return x == static_cast<T>(other.x) && y == static_cast<T>(other.y);
             };
 
             Vector2<T> &move(T x)
@@ -94,10 +112,9 @@ namespace arcade
         typedef Vector2<unsigned int> Vector2u;
         typedef Vector2<float> Vector2f;
 
-        template <typename T>
-        struct Rect {
-            Rect(){};
-            Rect(T width, T height) : width(width), height(height){};
+        template <typename T> struct Rect {
+            Rect() : top(0), left(0), width(0), height(0){};
+            Rect(T width, T height) : top(0), left(0), width(width), height(height){};
             Rect(T top, T left, T width, T height)
                 : top(top), left(left), width(width), height(height){};
             template <typename U>
@@ -119,8 +136,6 @@ namespace arcade
         typedef Rect<float> FloatRect;
 
         struct Color {
-            // Color();
-            // Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255);
             Color() : r(255), g(255), b(255), a(255){};
             Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255)
                 : r(red), g(green), b(blue), a(alpha){};
@@ -142,4 +157,5 @@ namespace arcade
         };
     } // namespace data
 } // namespace arcade
+
 #endif /* !DATA_HPP_ */

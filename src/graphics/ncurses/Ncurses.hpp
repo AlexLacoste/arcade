@@ -57,6 +57,9 @@ namespace ncurses
         // arcade::data::KeyCode getLastKey() override;
       private:
         bool windowIsOpen;
+        bool hasColors;
+        bool eventFrame;
+        std::vector<arcade::data::Event> events;
     };
 } // namespace ncurses
 

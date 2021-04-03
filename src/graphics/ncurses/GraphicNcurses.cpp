@@ -34,19 +34,26 @@ void ncurses::GraphicNcurses::init(const std::string &title, const unsigned int 
     (void)title;
     (void)limit;
     initscr();
+    cbreak();
     keypad(stdscr, true);
     noecho();
     curs_set(0);
+    nodelay(stdscr, true);
+    this->hasColors = has_colors();
     this->windowIsOpen = true;
+    // if (this->hasColors)
+    //     start_color();
 }
 
 void ncurses::GraphicNcurses::display()
 {
+    this->eventFrame = false;
     refresh();
 }
 
 void ncurses::GraphicNcurses::stop()
 {
+    echo();
     endwin();
     this->windowIsOpen = false;
 }
@@ -71,7 +78,13 @@ arcade::data::Vector2u ncurses::GraphicNcurses::getWindowSize()
 
 std::vector<arcade::data::Event> ncurses::GraphicNcurses::getEvents()
 {
-    return std::vector<arcade::data::Event>{};
+    if (this->eventFrame)
+        return this->events;
+    int key = getch();
+    this->events.clear();
+    this->eventFrame = true;
+    this->events.emplace_back(arcade::data::EventType::KEY_PRESSED, static_cast<arcade::data::KeyCode>(key));
+    return this->events;
 }
 
 void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::IText> &text)

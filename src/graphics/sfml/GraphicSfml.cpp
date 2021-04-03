@@ -5,6 +5,8 @@
 ** Sfml
 */
 
+#include <SFML/Window/Keyboard.hpp>
+#include <iostream>
 #include <memory>
 #include "Sfml.hpp"
 
@@ -38,6 +40,7 @@ void sfml::GraphicSfml::init(const std::string &title, const unsigned int limit)
 void sfml::GraphicSfml::display()
 {
     this->window.display();
+    this->events.clear();
 }
 
 void sfml::GraphicSfml::stop()
@@ -51,7 +54,8 @@ void sfml::GraphicSfml::clearWindow()
 }
 
 void sfml::GraphicSfml::restartClock()
-{}
+{
+}
 
 double sfml::GraphicSfml::getDeltaTime()
 {
@@ -65,12 +69,15 @@ arcade::data::Vector2u sfml::GraphicSfml::getWindowSize()
 
 std::vector<arcade::data::Event> sfml::GraphicSfml::getEvents()
 {
-    return std::vector<arcade::data::Event>{};
+    while (this->window.pollEvent(this->event)) {
+        this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
+            static_cast<arcade::data::KeyCode>(this->event.key.code));
+    }
+    return this->events;
 }
 
 void sfml::GraphicSfml::draw(std::unique_ptr<arcade::displayer::IText> &text)
 {
-
     this->window.draw(reinterpret_cast<std::unique_ptr<TextSfml> &>(text)->getSfText());
 }
 

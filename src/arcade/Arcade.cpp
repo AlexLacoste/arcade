@@ -6,6 +6,7 @@
 */
 
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -26,6 +27,7 @@ arcade::Arcade::Arcade(const std::string &libGraphic)
     this->username = "";
     // this->gameTitle = getGameTitle();
     this->state = USERNAME;
+    this->isClosed = false;
 }
 
 arcade::Arcade::~Arcade()
@@ -45,11 +47,14 @@ void arcade::Arcade::run()
     textLib->setPosition(arcade::data::Vector2f{10, 10});
     while (this->graphicLib->isOpen()) {
         // this->(*fptr.at(state))();
+        this->handleEvent();
         this->graphicLib->clearWindow();
         this->graphicLib->draw(textLib);
         this->graphicLib->display();
-        std::cout << this->graphicLib->getWindowSize().x << "   " << this->graphicLib->getWindowSize().y << std::endl;
+        if (this->isClosed)
+            break;
     }
+    this->graphicLib->stop();
 }
 
 void arcade::Arcade::graphicLibLoader()
@@ -69,5 +74,18 @@ void arcade::Arcade::getLib()
         std::string tmp = file.path();
         if (tmp.find_last_of(".so"))
             this->libs.push_back(tmp);
+    }
+}
+
+
+void arcade::Arcade::handleEvent()
+{
+    std::vector<arcade::data::Event> events = this->graphicLib->getEvents();
+    for (auto event : events) {
+        switch (event.key) {
+            case (36):
+                this->isClosed = true;
+                break;
+        }
     }
 }

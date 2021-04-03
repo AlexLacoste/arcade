@@ -10,7 +10,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/Window/Event.hpp>
 #include "../IDisplayModule.hpp"
+#include <unordered_map>
 
 namespace sfml
 {
@@ -54,10 +56,12 @@ namespace sfml
         
         // arcade::data::KeyCode getLastKey() override;
     private:
+        static const std::unordered_map<sf::Event::MouseButtonEvent, arcade::data::MouseBtn> mapMouseToData;
         sf::RenderWindow window;
         sf::Event event;
         sf::Clock clock;
         sf::Time time;
+        std::vector<arcade::data::Event> events;
     };
 } // namespace sfml
 

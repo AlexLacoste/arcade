@@ -56,6 +56,10 @@ namespace arcade
         // std::unordered_map<std::string, std::size_t> getGameHighScore();
         std::unordered_map<std::string, std::size_t> gameHighScore;
 
+        void handleEvent();
+
+        bool isClosed;
+
         State state;
     };
 } // namespace arcade

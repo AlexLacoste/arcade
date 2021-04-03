@@ -16,13 +16,18 @@ namespace arcade
 {
     class DLLoader {
       public:
-        DLLoader(std::string path) : dlopen(path.c_str(), RTLD_LAZY){}
+        DLLoader(std::string path)
+        {
+            this->handle = dlopen(path.c_str(), RTLD_LAZY);
+        }
+
         ~DLLoader()
         {
             dlclose(this->handle);
         }
 
-        template <typename T> std::unique_ptr<T> getInstance()
+        template <typename T>
+        std::unique_ptr<T> getInstance()
         {
             if (!this->handle || dlerror()) {
                 // throw ExceptionDLLoader{"Cannot open the library."}; // create exception

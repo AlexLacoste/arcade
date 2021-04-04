@@ -15,7 +15,7 @@ namespace arcade
     namespace data
     {
         enum EventType {
-            WNIDOW_CLOSED,
+            WINDOW_CLOSED,
             KEY_PRESSED,
             MOUSE_MOVED,
             MOUSE_PRESSED,
@@ -26,6 +26,7 @@ namespace arcade
         enum KeyCode {
             ESCAPE = 27,
             SPACE = 32,
+            BACKSPACE = 59,
             SPECIAL_KEYS_START = 257,
             DOWN = 258,
             UP = 259,

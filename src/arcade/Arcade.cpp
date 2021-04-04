@@ -5,12 +5,12 @@
 ** Arcade
 */
 
+#include "Arcade.hpp"
 #include <filesystem>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
-#include "Arcade.hpp"
 #include "../shared/Color.cpp"
 
 arcade::Arcade::Arcade(const std::string &libGraphic)
@@ -39,34 +39,38 @@ void arcade::Arcade::run()
     // const std::unordered_map<function> fptr = [];
     std::unique_ptr<displayer::IText> textLib;
 
-    this->graphicLib->init();
+    this->graphicLib->init("Arcade");
     textLib = this->graphicLib->createText("c'est un test");
     textLib->setFont("ressources/font.ttf");
     textLib->setColor(arcade::data::Color::Red);
     textLib->setCharacterSize(40);
-    textLib->setPosition(arcade::data::Vector2f{10, 10});
+    textLib->setPosition(
+        arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
+            static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
     while (this->graphicLib->isOpen()) {
         // this->(*fptr.at(state))();
         this->handleEvent();
+        if (this->isClosed)
+            break;
         this->graphicLib->clearWindow();
         this->graphicLib->draw(textLib);
         this->graphicLib->display();
-        if (this->isClosed)
-            break;
     }
     this->graphicLib->stop();
 }
 
 void arcade::Arcade::graphicLibLoader()
 {
-    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplayModule>();
+    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>();
 }
 
 void arcade::Arcade::gameLibLoader(const std::string &path)
-{}
+{
+}
 
 void arcade::Arcade::switchGraphicLib(const std::string &path)
-{}
+{
+}
 
 void arcade::Arcade::getLib()
 {
@@ -77,15 +81,22 @@ void arcade::Arcade::getLib()
     }
 }
 
-
 void arcade::Arcade::handleEvent()
 {
     std::vector<arcade::data::Event> events = this->graphicLib->getEvents();
     for (auto event : events) {
-        switch (event.key) {
-            case (36):
-                this->isClosed = true;
-                break;
+        if (event.type == arcade::data::WINDOW_CLOSED) {
+            this->isClosed = true;
+            return;
+        }
+        if (event.type == arcade::data::KEY_PRESSED) {
+            switch (event.key) {
+                case (arcade::data::ESCAPE):
+                    this->isClosed = true;
+                    return;
+                case ('q'):
+                    std::cout << "q touch" << std::endl;
+            }
         }
     }
 }

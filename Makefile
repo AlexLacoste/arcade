@@ -23,6 +23,11 @@ graphicals:
 core:
 	$(CFLAGS) src/arcade
 
+clean:
+	$(CFLAGS) src/shared clean
+	$(CFLAGS) src/graphics clean
+	$(CFLAGS) src/arcade clean
+
 fclean:
 	$(CFLAGS) src/shared fclean
 	$(CFLAGS) src/graphics fclean

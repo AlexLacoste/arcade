@@ -19,7 +19,7 @@ namespace ncurses
       public:
         TextNcurses();
         TextNcurses(const std::string &text);
-        ~TextNcurses() override;
+        ~TextNcurses();
         void setText(const std::string &text) override;
         std::string getText() const override;
         void setPosition(arcade::data::Vector2f pos) override;
@@ -36,11 +36,36 @@ namespace ncurses
         arcade::data::Vector2f pos;
         arcade::data::Color color;
     };
-    class GraphicNcurses : public arcade::displayer::IDisplayModule {
+
+    // class ISprite {
+    //   public:
+    //     ISprite();
+    //     ISprite(const std::string &text);
+    //     ~ISprite();
+    //     void setSprite(const std::string &spritePath, const std::vector<std::string> &asciiSprite);
+    //     void setPosition(arcade::data::Vector2f pos);
+    //     arcade::data::Vector2f getPosition() const;
+    //     void move(arcade::data::Vector2f pos);
+    //     void move(float x, float y);
+    //     void setOrigin(arcade::data::Vector2f origin);
+    //     arcade::data::Vector2f getOrigin();
+    //     arcade::data::FloatRect getLocalBounds();
+    //     void setScale(arcade::data::Vector2f scale);
+    //     arcade::data::Vector2f getScale();
+    //     float getRotation();
+    //     void setRotation(float angle);
+    //     void rotate(float anle);
+    //     void setTextureRect(const arcade::data::IntRect &rect);
+    //     arcade::data::IntRect getTextureRect() const;
+    //     void setColor(arcade::data::Color color,
+    //         const std::vector<std::vector<arcade::data::Color>> &asciiColors);
+    // };
+
+    class GraphicNcurses : public arcade::displayer::IDisplay {
       public:
         GraphicNcurses();
-        ~GraphicNcurses() override;
-        bool isOpen() const override;
+        ~GraphicNcurses();
+        bool isOpen() override;
         void display() override;
         void init(
             const std::string &title = "Arcade", const unsigned int limit = 60) override;
@@ -53,6 +78,9 @@ namespace ncurses
         void draw(std::unique_ptr<arcade::displayer::IText> &text) override;
         std::unique_ptr<arcade::displayer::IText> createText(const std::string &text) override;
         std::unique_ptr<arcade::displayer::IText> createText() override;
+
+        double scaleMoveX(double time) override;
+        double scaleMoveY(double time) override;
 
         // arcade::data::KeyCode getLastKey() override;
       private:

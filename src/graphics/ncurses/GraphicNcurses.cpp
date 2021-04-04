@@ -24,7 +24,7 @@ ncurses::GraphicNcurses::~GraphicNcurses()
         endwin();
 }
 
-bool ncurses::GraphicNcurses::isOpen() const
+bool ncurses::GraphicNcurses::isOpen()
 {
     return this->windowIsOpen;
 }
@@ -73,7 +73,7 @@ double ncurses::GraphicNcurses::getDeltaTime()
 
 arcade::data::Vector2u ncurses::GraphicNcurses::getWindowSize()
 {
-    return arcade::data::Vector2u{static_cast<unsigned int>(LINES) , static_cast<unsigned int>(COLS)};
+    return arcade::data::Vector2u{static_cast<unsigned int>(COLS) , static_cast<unsigned int>(LINES)};
 }
 
 std::vector<arcade::data::Event> ncurses::GraphicNcurses::getEvents()
@@ -101,4 +101,20 @@ std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText(co
 std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText()
 {
     return std::make_unique<TextNcurses>();
+}
+
+double ncurses::GraphicNcurses::scaleMoveX(double time)
+{
+    if (!time) {
+        return 0;
+    }
+    return (getWindowSize().x / time) / (1.0f / getDeltaTime());
+}
+
+double ncurses::GraphicNcurses::scaleMoveY(double time)
+{
+    if (!time) {
+        return 0;
+    }
+    return (getWindowSize().y / time) / (1.0f / getDeltaTime());
 }

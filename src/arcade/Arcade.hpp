@@ -42,7 +42,7 @@ namespace arcade
 
         std::size_t libPositionVector;
         std::unique_ptr<IGame> gameLib;
-        std::unique_ptr<displayer::IDisplayModule> graphicLib;
+        std::unique_ptr<displayer::IDisplay> graphicLib;
 
         std::unique_ptr<DLLoader> dlLoaderGraphic;
         std::unique_ptr<DLLoader> dlLoaderGame;

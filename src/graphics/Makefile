@@ -15,6 +15,10 @@ all:
 # 	$(CFLAGS) solver tests_run
 # 	$(CFLAGS) generator tests_run
 
+clean:
+	$(CFLAGS) ncurses clean
+	$(CFLAGS) sfml clean
+
 fclean:
 	$(CFLAGS) ncurses fclean
 	$(CFLAGS) sfml fclean

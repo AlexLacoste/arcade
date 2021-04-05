@@ -7,6 +7,7 @@
 
 #include "Arcade.hpp"
 #include <filesystem>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -36,7 +37,9 @@ arcade::Arcade::~Arcade()
 
 void arcade::Arcade::run()
 {
-    // const std::unordered_map<function> fptr = [];
+    const std::unordered_map<State, void (arcade::Arcade::*)()> mapFptr{
+        {USERNAME, &arcade::Arcade::handleUser}, {MENU, &arcade::Arcade::handleMenu},
+        {GAME, &arcade::Arcade::handleGame}};
     std::unique_ptr<displayer::IText> textLib;
 
     this->graphicLib->init("Arcade");
@@ -47,14 +50,14 @@ void arcade::Arcade::run()
     textLib->setPosition(
         arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
             static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
+    this->vectorText.emplace_back(std::move(textLib));
     while (this->graphicLib->isOpen()) {
-        // this->(*fptr.at(state))();
-        this->handleEvent();
-        if (this->isClosed)
+        if (this->state != CLOSED) {
+            (this->*mapFptr.at(this->state))();
+        }
+        if (this->isClosed) {
             break;
-        this->graphicLib->clearWindow();
-        this->graphicLib->draw(textLib);
-        this->graphicLib->display();
+        }
     }
     this->graphicLib->stop();
 }
@@ -64,12 +67,19 @@ void arcade::Arcade::graphicLibLoader()
     this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>();
 }
 
-void arcade::Arcade::gameLibLoader(const std::string &path)
+void arcade::Arcade::gameLibLoader()
 {
 }
 
-void arcade::Arcade::switchGraphicLib(const std::string &path)
+void arcade::Arcade::switchGraphicLib()
 {
+    this->graphicLib->stop();
+    this->libPositionVector =
+        (this->libs.size() - 1 >= this->libPositionVector) ? this->libPositionVector + 1 : 0;
+    std::unique_ptr<DLLoader> loader =
+        std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
+    this->graphicLib = loader->getInstance<displayer::IDisplay>();
+    this->graphicLib->init("Arcade");
 }
 
 void arcade::Arcade::getLib()
@@ -81,7 +91,19 @@ void arcade::Arcade::getLib()
     }
 }
 
-void arcade::Arcade::handleEvent()
+void arcade::Arcade::handleUser()
+{
+    this->handleUserEvent();
+    if (this->isClosed)
+        return;
+    this->graphicLib->clearWindow();
+    for (auto &text : this->vectorText) {
+        this->graphicLib->draw(text);
+    }
+    this->graphicLib->display();
+}
+
+void arcade::Arcade::handleUserEvent()
 {
     std::vector<arcade::data::Event> events = this->graphicLib->getEvents();
     for (auto event : events) {
@@ -95,8 +117,25 @@ void arcade::Arcade::handleEvent()
                     this->isClosed = true;
                     return;
                 case ('q'):
-                    std::cout << "q touch" << std::endl;
+                    this->switchGraphicLib();
+                    return;
             }
         }
     }
+}
+
+void arcade::Arcade::handleMenu()
+{
+}
+
+void arcade::Arcade::handleMenuEvent()
+{
+}
+
+void arcade::Arcade::handleGame()
+{
+}
+
+void arcade::Arcade::handleGameEvent()
+{
 }

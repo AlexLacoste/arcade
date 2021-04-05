@@ -23,7 +23,8 @@ namespace arcade
         enum State {
           USERNAME,
           MENU,
-          GAME
+          GAME,
+          CLOSED,
         };
 
         Arcade(const std::string &libGraphic);
@@ -32,15 +33,15 @@ namespace arcade
         void run();
       private:
         void graphicLibLoader();
-        void gameLibLoader(const std::string &path);
-        void switchGraphicLib(const std::string &path);
+        void gameLibLoader();
+        void switchGraphicLib();
         void getLib();
         std::vector<std::string> libs;
+        std::size_t libPositionVector;
 
         // std::size_t &getHighScore() const;
         std::size_t highScore;
 
-        std::size_t libPositionVector;
         std::unique_ptr<IGame> gameLib;
         std::unique_ptr<displayer::IDisplay> graphicLib;
 
@@ -56,11 +57,20 @@ namespace arcade
         // std::unordered_map<std::string, std::size_t> getGameHighScore();
         std::unordered_map<std::string, std::size_t> gameHighScore;
 
-        void handleEvent();
-
         bool isClosed;
 
         State state;
+
+        void handleUser();
+        void handleUserEvent();
+
+        void handleMenu();
+        void handleMenuEvent();
+
+        void handleGame();
+        void handleGameEvent();
+
+        std::vector<std::unique_ptr<arcade::displayer::IText>> vectorText;
     };
 } // namespace arcade
 

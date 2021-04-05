@@ -28,7 +28,7 @@ all:	$(NAME)
 
 $(NAME):	$(OBJ)
 	$(LD) -o $(NAME) $(OBJ) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(LDLIBS)
-	mv $(NAME) ../../../lib
+	mv $(NAME) ../../../lib/.
 
 clean:
 	rm -f $(OBJ)

@@ -196,3 +196,6 @@ IncludeCategories:
 
 # Sort 'using' declarations
 SortUsingDeclarations: true
+
+IndentCaseLabels: true
+AllowShortCaseLabelsOnASingleLine: false

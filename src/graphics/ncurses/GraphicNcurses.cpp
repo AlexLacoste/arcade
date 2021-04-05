@@ -60,7 +60,7 @@ void ncurses::GraphicNcurses::stop()
 
 void ncurses::GraphicNcurses::clearWindow()
 {
-    clear();
+    erase();
 }
 
 void ncurses::GraphicNcurses::restartClock()

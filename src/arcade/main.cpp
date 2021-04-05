@@ -48,16 +48,16 @@ int main(int ac, char **av, char **env)
     // }
 
     std::unique_ptr<arcade::Arcade> core = std::make_unique<arcade::Arcade>(av[1]);
-    try {
+    // try {
         core->run();
-    }
+    // }
     // catch (Errors &e) { 
     //     std::cerr << e.what() << std::endl; 
     //     return (84);
     // }
-    catch (...) {
-        std::cerr << "An error has occured." << std::endl;
-        return (84);
-    }
+    // catch (...) {
+    //     std::cerr << "An error has occured." << std::endl;
+    //     return (84);
+    // }
     return 0;
 }

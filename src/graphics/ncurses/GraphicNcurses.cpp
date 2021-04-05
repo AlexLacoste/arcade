@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <ncurses.h>
+#include <iostream>
 #include "Ncurses.hpp"
 
 extern "C" std::unique_ptr<ncurses::GraphicNcurses> entry_point()
@@ -20,6 +21,7 @@ ncurses::GraphicNcurses::GraphicNcurses()
 
 ncurses::GraphicNcurses::~GraphicNcurses()
 {
+    std::cout << "Is close lib" << std::endl;
     if (this->windowIsOpen)
         endwin();
 }

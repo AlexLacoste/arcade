@@ -6,20 +6,24 @@
 */
 
 #include "Arcade.hpp"
+#include <SFML/System/Sleep.hpp>
 #include <filesystem>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
+#include <unistd.h>
 #include "../shared/Color.cpp"
 
 arcade::Arcade::Arcade(const std::string &libGraphic)
 {
+    std::size_t i = 0;
+
     this->highScore = 0;
     this->getLib();
-    for (std::size_t i; i < this->libs.size() && this->libs.at(i).compare(libGraphic) != 0; i++)
-        this->libPositionVector = i;
+    for (i = 0; i < this->libs.size() && this->libs.at(i).compare(libGraphic) != 0; i++);
+    this->libPositionVector = i;
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
@@ -74,18 +78,29 @@ void arcade::Arcade::gameLibLoader()
 void arcade::Arcade::switchGraphicLib()
 {
     this->graphicLib->stop();
+    std::unique_ptr<displayer::IText> textLib;
+
     this->libPositionVector =
-        (this->libs.size() - 1 >= this->libPositionVector) ? this->libPositionVector + 1 : 0;
-    std::unique_ptr<DLLoader> loader =
-        std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
-    this->graphicLib = loader->getInstance<displayer::IDisplay>();
+        (this->libPositionVector + 1 < this->libs.size()) ? this->libPositionVector + 1 : 0;
+    this->vectorText.clear();
+    this->dlLoaderGraphic = std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
+    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>(); 
     this->graphicLib->init("Arcade");
+    textLib = this->graphicLib->createText("c'est un test");
+    textLib->setFont("ressources/font.ttf");
+    textLib->setColor(arcade::data::Color::Red);
+    textLib->setCharacterSize(40);
+    textLib->setPosition(
+        arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
+            static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
+    this->vectorText.emplace_back(std::move(textLib));
 }
 
 void arcade::Arcade::getLib()
 {
     for (const auto &file : std::filesystem::directory_iterator("lib")) {
         std::string tmp = file.path();
+        std::cout << tmp << std::endl;
         if (tmp.find_last_of(".so"))
             this->libs.push_back(tmp);
     }

@@ -5,11 +5,11 @@
 ## Makefile
 ##
 
-CFLAGS		=	-Wall -Wextra -Werror -W -g3
+CFLAGS		=	-Wall -Wextra -Werror -W
 
 CXXFLAGS	+= "-std=c++17"
 
-CPPFLAGS	=	-I./ -I./DLLoader
+CPPFLAGS	=	-I./ -I./DLLoader -g3
 
 LDLIBS		=	-ldl
 

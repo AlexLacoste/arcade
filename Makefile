@@ -33,6 +33,7 @@ fclean:
 	$(CFLAGS) src/graphics fclean
 	$(CFLAGS) src/arcade fclean
 	rm -f lib/*.so
+	rm -f vgcore.*
 
 re:	fclean all
 

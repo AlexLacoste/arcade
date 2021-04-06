@@ -59,6 +59,12 @@ namespace ncurses
         arcade::data::IntRect getTextureRect() const override;
         void setColor(arcade::data::Color color,
             const std::vector<std::vector<arcade::data::Color>> &asciiColors) override;
+        std::vector<std::string> getSpriteNcurses();
+      private:
+        std::vector<std::string> sprite;
+        arcade::data::Vector2f pos;
+        arcade::data::Vector2f origin;
+        float rotation;
     };
 
     class GraphicNcurses : public arcade::displayer::IDisplay {

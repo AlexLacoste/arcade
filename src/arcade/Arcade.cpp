@@ -44,7 +44,7 @@ void arcade::Arcade::run()
         {GAME, &arcade::Arcade::handleGame}};
     std::unique_ptr<displayer::IText> textLib;
     std::unique_ptr<displayer::ISprite> spriteLib;
-    std::vector<std::string> spriteNcurse;
+    std::vector<std::string> spriteNcurse{{"pa"}, {"cm"}};
     std::vector<std::vector<arcade::data::Color>> spriteColorNcurse;
 
     this->graphicLib->init("Arcade");
@@ -60,7 +60,6 @@ void arcade::Arcade::run()
     spriteLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 30 / 100,
             static_cast<float>(this->graphicLib->getWindowSize().y) * 30 / 100});
     spriteLib->setTextureRect(arcade::data::IntRect{0, 0, 1200, 1270});
-    spriteLib->setColor(arcade::data::Color(255, 255, 255, 128), spriteColorNcurse);
     this->vectorSprite.emplace_back(std::move(spriteLib));
     while (this->graphicLib->isOpen()) {
         if (this->state != CLOSED) {
@@ -144,16 +143,16 @@ void arcade::Arcade::handleUserEvent()
             }
             switch (static_cast<int>(event.keyCode)) {
                 case (arcade::data::RIGHT):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{10, 0});
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x * 0.5 / 100) , 0});
                     break;
                 case (arcade::data::LEFT):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{-10, 0});
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{static_cast<float>(- (this->graphicLib->getWindowSize().x * 0.5 / 100)), 0});
                     break;
                 case (arcade::data::UP):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{0, -10});
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{0, static_cast<float>(- (this->graphicLib->getWindowSize().y * 0.5 / 100))});
                     break;
                 case (arcade::data::DOWN):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{0, 10});
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{0, static_cast<float>(this->graphicLib->getWindowSize().y * 0.5 / 100)});
                     break;
                 case (arcade::data::ESCAPE):
                     this->isClosed = true;

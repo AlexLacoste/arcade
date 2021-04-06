@@ -8,6 +8,7 @@
 #include <memory>
 #include <ncurses.h>
 #include <iostream>
+#include <string>
 #include "Ncurses.hpp"
 
 extern "C" std::unique_ptr<ncurses::GraphicNcurses> entry_point()
@@ -97,6 +98,11 @@ void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::IText> &te
 
 void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::ISprite> &sprite)
 {
+    arcade::data::Vector2f pos = sprite->getPosition() + sprite->getOrigin();
+    std::vector<std::string> spriteNcurses = reinterpret_cast<std::unique_ptr<SpriteNcurses> &>(sprite)->getSpriteNcurses();
+    for (int i = 0; i < spriteNcurses.size(); i++) {
+        mvprintw(pos.y + i, pos.x, spriteNcurses.at(i).c_str());
+    }
 }
 
 std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText(const std::string &text)

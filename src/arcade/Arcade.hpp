@@ -71,6 +71,7 @@ namespace arcade
         void handleGameEvent();
 
         std::vector<std::unique_ptr<arcade::displayer::IText>> vectorText;
+        std::vector<std::unique_ptr<arcade::displayer::ISprite>> vectorSprite;
     };
 } // namespace arcade
 

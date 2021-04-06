@@ -18,7 +18,8 @@ LD			=	g++
 NAME		=	arcade_ncurses.so
 
 SRC			=	GraphicNcurses.cpp		\
-				TextNcurses.cpp
+				TextNcurses.cpp			\
+				SpriteNcurses.cpp
 
 # TESTSRC	=	
 

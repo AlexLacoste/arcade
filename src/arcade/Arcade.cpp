@@ -6,9 +6,7 @@
 */
 
 #include "Arcade.hpp"
-#include <SFML/System/Sleep.hpp>
 #include <filesystem>
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -45,6 +43,9 @@ void arcade::Arcade::run()
         {USERNAME, &arcade::Arcade::handleUser}, {MENU, &arcade::Arcade::handleMenu},
         {GAME, &arcade::Arcade::handleGame}};
     std::unique_ptr<displayer::IText> textLib;
+    std::unique_ptr<displayer::ISprite> spriteLib;
+    std::vector<std::string> spriteNcurse;
+    std::vector<std::vector<arcade::data::Color>> spriteColorNcurse;
 
     this->graphicLib->init("Arcade");
     textLib = this->graphicLib->createText("c'est un test");
@@ -55,6 +56,12 @@ void arcade::Arcade::run()
         arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
             static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
     this->vectorText.emplace_back(std::move(textLib));
+    spriteLib = this->graphicLib->createSprite("ressources/pacman.png", spriteNcurse, arcade::data::Vector2f{0.08, 0.08});
+    spriteLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 30 / 100,
+            static_cast<float>(this->graphicLib->getWindowSize().y) * 30 / 100});
+    spriteLib->setTextureRect(arcade::data::IntRect{0, 0, 1200, 1270});
+    spriteLib->setColor(arcade::data::Color(255, 255, 255, 128), spriteColorNcurse);
+    this->vectorSprite.emplace_back(std::move(spriteLib));
     while (this->graphicLib->isOpen()) {
         if (this->state != CLOSED) {
             (this->*mapFptr.at(this->state))();
@@ -115,6 +122,9 @@ void arcade::Arcade::handleUser()
     for (auto &text : this->vectorText) {
         this->graphicLib->draw(text);
     }
+    for (auto &sprite : this->vectorSprite) {
+        this->graphicLib->draw(sprite);
+    }
     this->graphicLib->display();
 }
 
@@ -126,16 +136,31 @@ void arcade::Arcade::handleUserEvent()
             this->isClosed = true;
             return;
         }
-        if (event.type == arcade::data::KEY_PRESSED) {
+        if (event.type == arcade::data::EventType::KEY_PRESSED) {
             switch (event.key) {
-                case (arcade::data::ESCAPE):
-                    this->isClosed = true;
-                    return;
                 case ('q'):
                     this->switchGraphicLib();
                     return;
             }
+            switch (static_cast<int>(event.keyCode)) {
+                case (arcade::data::RIGHT):
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{10, 0});
+                    break;
+                case (arcade::data::LEFT):
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{-10, 0});
+                    break;
+                case (arcade::data::UP):
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{0, -10});
+                    break;
+                case (arcade::data::DOWN):
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{0, 10});
+                    break;
+                case (arcade::data::ESCAPE):
+                    this->isClosed = true;
+                    return;
+            }
         }
+
     }
 }
 

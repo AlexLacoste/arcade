@@ -18,7 +18,8 @@ LD			=	g++
 NAME		=	arcade_sfml.so
 
 SRC			=	GraphicSfml.cpp		\
-				TextSfml.cpp
+				TextSfml.cpp		\
+				SpriteSfml.cpp
 
 # TESTSRC	=	
 

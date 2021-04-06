@@ -95,6 +95,10 @@ void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::IText> &te
     mvprintw(pos.y, pos.x, text->getText().c_str());
 }
 
+void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::ISprite> &sprite)
+{
+}
+
 std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText(const std::string &text)
 {
     return std::make_unique<TextNcurses>(text);
@@ -103,6 +107,16 @@ std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText(co
 std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText()
 {
     return std::make_unique<TextNcurses>();
+}
+
+std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprite()
+{
+    return std::make_unique<SpriteNcurses>();
+}
+
+std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprite(const std::string &spritePath, const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale)
+{
+    return std::make_unique<SpriteNcurses>(spritePath, asciiSprite, scale);
 }
 
 double ncurses::GraphicNcurses::scaleMoveX(double time)

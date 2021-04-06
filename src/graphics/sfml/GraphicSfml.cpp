@@ -145,7 +145,7 @@ std::vector<arcade::data::Event> sfml::GraphicSfml::getEvents()
             if (sfToArcadeKey.find(this->event.key.code) != sfToArcadeKey.end()) {
                 this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
                     static_cast<arcade::data::KeyCode>(sfToArcadeKey.at(this->event.key.code)));
-            } else {
+            } else if (sfToArcadeKeyCode.find(this->event.key.code) != sfToArcadeKeyCode.end()){
                 this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
                     static_cast<arcade::data::KeyCode>(sfToArcadeKeyCode.at(this->event.key.code)));
             }
@@ -163,6 +163,11 @@ void sfml::GraphicSfml::draw(std::unique_ptr<arcade::displayer::IText> &text)
     this->window.draw(reinterpret_cast<std::unique_ptr<TextSfml> &>(text)->getSfText());
 }
 
+void sfml::GraphicSfml::draw(std::unique_ptr<arcade::displayer::ISprite> &sprite)
+{
+    this->window.draw(reinterpret_cast<std::unique_ptr<SpriteSfml> &>(sprite)->getSfSprite());
+}
+
 std::unique_ptr<arcade::displayer::IText> sfml::GraphicSfml::createText(const std::string &text)
 {
     return std::make_unique<TextSfml>(text);
@@ -171,6 +176,16 @@ std::unique_ptr<arcade::displayer::IText> sfml::GraphicSfml::createText(const st
 std::unique_ptr<arcade::displayer::IText> sfml::GraphicSfml::createText()
 {
     return std::make_unique<TextSfml>();
+}
+
+std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite()
+{
+    return std::make_unique<SpriteSfml>();
+}
+
+std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite(const std::string &spritePath, const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale)
+{
+    return std::make_unique<SpriteSfml>(spritePath, asciiSprite, scale); // TODO
 }
 
 double sfml::GraphicSfml::scaleMoveX(double time)

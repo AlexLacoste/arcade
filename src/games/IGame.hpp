@@ -9,6 +9,7 @@
 #define IGAME_HPP_
 
 #include <vector>
+#include "../shared/Data.hpp"
 
 namespace arcade
 {
@@ -20,7 +21,7 @@ namespace arcade
         virtual void pause() = 0;
         virtual void resume() = 0;
         virtual void update() = 0;
-        // virtual void handleEvent(const std::vector<> &keys) = 0;
+        virtual void handleEvent(const std::vector<arcade::data::Event> &event) = 0;
         virtual void changeHighScore() = 0;
 
       protected:

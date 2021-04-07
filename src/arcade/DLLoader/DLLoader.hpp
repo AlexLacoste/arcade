@@ -18,7 +18,7 @@ namespace arcade
       public:
         DLLoader(std::string path)
         {
-            this->handle = dlopen(path.c_str(), RTLD_LAZY);
+            this->handle = dlopen(path.c_str(), RTLD_NOW | RTLD_NODELETE);
         }
 
         ~DLLoader()

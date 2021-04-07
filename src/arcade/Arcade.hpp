@@ -13,7 +13,7 @@
 #include <vector>
 #include <unordered_map>
 #include "../games/IGame.hpp"
-#include "../graphics/IDisplayModule.hpp"
+#include "../shared/IDisplayModule.hpp"
 #include "DLLoader/DLLoader.hpp"
 
 namespace arcade
@@ -21,7 +21,6 @@ namespace arcade
     class Arcade {
       public:
         enum State {
-          USERNAME,
           MENU,
           GAME,
           CLOSED,
@@ -52,7 +51,7 @@ namespace arcade
         std::string username;
     
         // std::vector<std::string> getGameTitle();
-        std::vector<std::string> gameTitle;
+        std::vector<std::string> gamesTitle;
 
         // std::unordered_map<std::string, std::size_t> getGameHighScore();
         std::unordered_map<std::string, std::size_t> gameHighScore;
@@ -61,14 +60,13 @@ namespace arcade
 
         State state;
 
-        void handleUser();
-        void handleUserEvent();
-
         void handleMenu();
         void handleMenuEvent();
 
         void handleGame();
         void handleGameEvent();
+
+        void initMenu();
 
         std::vector<std::unique_ptr<arcade::displayer::IText>> vectorText;
         std::vector<std::unique_ptr<arcade::displayer::ISprite>> vectorSprite;

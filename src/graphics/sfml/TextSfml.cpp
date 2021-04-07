@@ -63,10 +63,16 @@ arcade::data::Color sfml::TextSfml::getColor() const
 
 void sfml::TextSfml::setCharacterSize(unsigned int size)
 {
-    (void)size;
+    this->text.setCharacterSize(size);
 }
 
 arcade::data::FloatRect sfml::TextSfml::getLocalBounds()
+{
+    sf::FloatRect sfRect = this->text.getLocalBounds();
+    return arcade::data::FloatRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};
+}
+
+arcade::data::FloatRect sfml::TextSfml::getGlobalBounds()
 {
     sf::FloatRect sfRect = this->text.getGlobalBounds();
     return arcade::data::FloatRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};

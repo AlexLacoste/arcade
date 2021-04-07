@@ -62,6 +62,12 @@ arcade::data::Vector2f sfml::SpriteSfml::getOrigin()
 
 arcade::data::FloatRect sfml::SpriteSfml::getLocalBounds()
 {
+    sf::FloatRect sfRect = this->sprite.getLocalBounds();
+    return arcade::data::FloatRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};
+}
+
+arcade::data::FloatRect sfml::SpriteSfml::getGlobalBounds()
+{
     sf::FloatRect sfRect = this->sprite.getGlobalBounds();
     return arcade::data::FloatRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};
 }

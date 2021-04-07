@@ -29,7 +29,7 @@ arcade::Arcade::Arcade(const std::string &libGraphic)
     this->graphicLibLoader();
     this->username = "";
     // this->gameTitle = getGameTitle();
-    this->state = USERNAME;
+    this->state = MENU;
     this->isClosed = false;
 }
 
@@ -39,34 +39,14 @@ arcade::Arcade::~Arcade()
 
 void arcade::Arcade::run()
 {
-    const std::unordered_map<State, void (arcade::Arcade::*)()> mapFptr{
-        {USERNAME, &arcade::Arcade::handleUser}, {MENU, &arcade::Arcade::handleMenu},
+    const std::unordered_map<State, void (arcade::Arcade::*)()> mapFptr{{MENU, &arcade::Arcade::handleMenu},
         {GAME, &arcade::Arcade::handleGame}};
-    std::unique_ptr<displayer::IText> textLib;
-    std::unique_ptr<displayer::ISprite> spriteLib;
-    std::vector<std::string> spriteNcurse{{"pa"}, {"cm"}};
-    std::vector<std::vector<arcade::data::Color>> spriteColorNcurse;
-
+    
     this->graphicLib->init("Arcade");
-    textLib = this->graphicLib->createText("c'est un test");
-    textLib->setFont("ressources/font.ttf");
-    textLib->setColor(arcade::data::Color::Red);
-    textLib->setCharacterSize(40);
-    textLib->setPosition(
-        arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
-            static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
-    this->vectorText.emplace_back(std::move(textLib));
-    spriteLib = this->graphicLib->createSprite("ressources/pacman.png", spriteNcurse, arcade::data::Vector2f{0.08, 0.08});
-    spriteLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 30 / 100,
-            static_cast<float>(this->graphicLib->getWindowSize().y) * 30 / 100});
-    spriteLib->setTextureRect(arcade::data::IntRect{0, 0, 1200, 1270});
-    this->vectorSprite.emplace_back(std::move(spriteLib));
-    while (this->graphicLib->isOpen()) {
+    this->initMenu();
+    while (this->graphicLib->isOpen() && !this->isClosed) {
         if (this->state != CLOSED) {
             (this->*mapFptr.at(this->state))();
-        }
-        if (this->isClosed) {
-            break;
         }
     }
     this->graphicLib->stop();
@@ -84,37 +64,29 @@ void arcade::Arcade::gameLibLoader()
 void arcade::Arcade::switchGraphicLib()
 {
     this->graphicLib->stop();
-    std::unique_ptr<displayer::IText> textLib;
-
+    this->vectorSprite.clear();
+    this->vectorText.clear();
     this->libPositionVector =
         (this->libPositionVector + 1 < this->libs.size()) ? this->libPositionVector + 1 : 0;
-    this->vectorText.clear();
+    
     this->dlLoaderGraphic = std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
     this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>(); 
     this->graphicLib->init("Arcade");
-    textLib = this->graphicLib->createText("c'est un test");
-    textLib->setFont("ressources/font.ttf");
-    textLib->setColor(arcade::data::Color::Red);
-    textLib->setCharacterSize(40);
-    textLib->setPosition(
-        arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
-            static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
-    this->vectorText.emplace_back(std::move(textLib));
+    this->initMenu();
 }
 
 void arcade::Arcade::getLib()
 {
     for (const auto &file : std::filesystem::directory_iterator("lib")) {
         std::string tmp = file.path();
-        std::cout << tmp << std::endl;
         if (tmp.find_last_of(".so"))
             this->libs.push_back(tmp);
     }
 }
 
-void arcade::Arcade::handleUser()
+void arcade::Arcade::handleMenu()
 {
-    this->handleUserEvent();
+    this->handleMenuEvent();
     if (this->isClosed)
         return;
     this->graphicLib->clearWindow();
@@ -127,7 +99,7 @@ void arcade::Arcade::handleUser()
     this->graphicLib->display();
 }
 
-void arcade::Arcade::handleUserEvent()
+void arcade::Arcade::handleMenuEvent()
 {
     std::vector<arcade::data::Event> events = this->graphicLib->getEvents();
     for (auto event : events) {
@@ -159,16 +131,7 @@ void arcade::Arcade::handleUserEvent()
                     return;
             }
         }
-
     }
-}
-
-void arcade::Arcade::handleMenu()
-{
-}
-
-void arcade::Arcade::handleMenuEvent()
-{
 }
 
 void arcade::Arcade::handleGame()
@@ -177,4 +140,26 @@ void arcade::Arcade::handleGame()
 
 void arcade::Arcade::handleGameEvent()
 {
+}
+
+void arcade::Arcade::initMenu()
+{
+    std::unique_ptr<displayer::IText> textLib;
+    std::unique_ptr<displayer::ISprite> spriteLib;
+    std::vector<std::string> spriteNcurse{{"pa"}, {"cm"}};
+    std::vector<std::vector<arcade::data::Color>> spriteColorNcurse;
+
+    textLib = this->graphicLib->createText("c'est un test");
+    textLib->setFont("ressources/font.ttf");
+    textLib->setColor(arcade::data::Color::Red);
+    textLib->setCharacterSize(40);
+    textLib->setPosition(
+        arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
+            static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
+    this->vectorText.emplace_back(std::move(textLib));
+
+    spriteLib = this->graphicLib->createSprite("ressources/pacman.png", spriteNcurse, arcade::data::Vector2f{0.08, 0.08});
+    spriteLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 30 / 100,
+            static_cast<float>(this->graphicLib->getWindowSize().y) * 30 / 100});
+    this->vectorSprite.emplace_back(std::move(spriteLib));
 }

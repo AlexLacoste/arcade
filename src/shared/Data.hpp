@@ -20,8 +20,6 @@ namespace arcade
             MOUSE_MOVED,
             MOUSE_PRESSED,
             MOUSE_RELEASED,
-            MOUSE_DOUBLE_CLICKED,
-            MOUSE_TRIPLE_CLICKED,
         };
         enum KeyCode {
             ESCAPE = 27,

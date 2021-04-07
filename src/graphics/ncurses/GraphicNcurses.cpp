@@ -5,10 +5,11 @@
 ** Sfml
 */
 
+#include <iostream>
 #include <memory>
 #include <ncurses.h>
-#include <iostream>
 #include <string>
+#include <thread>
 #include "Ncurses.hpp"
 
 extern "C" std::unique_ptr<ncurses::GraphicNcurses> entry_point()
@@ -22,9 +23,13 @@ ncurses::GraphicNcurses::GraphicNcurses()
 
 ncurses::GraphicNcurses::~GraphicNcurses()
 {
-    std::cout << "Is close lib" << std::endl;
     if (this->windowIsOpen)
         endwin();
+}
+
+int ncurses::GraphicNcurses::availableOptions() const
+{
+    return NO_OPTIONS;
 }
 
 bool ncurses::GraphicNcurses::isOpen()
@@ -44,6 +49,8 @@ void ncurses::GraphicNcurses::init(const std::string &title, const unsigned int 
     nodelay(stdscr, true);
     this->hasColors = has_colors();
     this->windowIsOpen = true;
+    this->eventFrame = false;
+    this->frameLimit = limit;
     // if (this->hasColors)
     //     start_color();
 }
@@ -52,6 +59,12 @@ void ncurses::GraphicNcurses::display()
 {
     this->eventFrame = false;
     refresh();
+    double toWait = ((1.0f / this->frameLimit) * 1000) - (getFrameDuration() * 1000);
+    if (toWait > 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(toWait)));
+    }
+    this->lastFrameTime = getFrameDuration();
+    restartClock();
 }
 
 void ncurses::GraphicNcurses::stop()
@@ -67,16 +80,26 @@ void ncurses::GraphicNcurses::clearWindow()
 }
 
 void ncurses::GraphicNcurses::restartClock()
-{}
+{
+    this->time = std::chrono::high_resolution_clock::now();
+}
 
 double ncurses::GraphicNcurses::getDeltaTime()
 {
-    return 10; // TODO : deltaTime ncurses
+    return this->lastFrameTime;
+}
+
+double ncurses::GraphicNcurses::getFrameDuration() const
+{
+    return std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1>>>(
+        std::chrono::high_resolution_clock::now() - this->time)
+        .count();
 }
 
 arcade::data::Vector2u ncurses::GraphicNcurses::getWindowSize()
 {
-    return arcade::data::Vector2u{static_cast<unsigned int>(COLS) , static_cast<unsigned int>(LINES)};
+    return arcade::data::Vector2u{
+        static_cast<unsigned int>(COLS), static_cast<unsigned int>(LINES)};
 }
 
 std::vector<arcade::data::Event> ncurses::GraphicNcurses::getEvents()
@@ -86,7 +109,8 @@ std::vector<arcade::data::Event> ncurses::GraphicNcurses::getEvents()
     int key = getch();
     this->events.clear();
     this->eventFrame = true;
-    this->events.emplace_back(arcade::data::EventType::KEY_PRESSED, static_cast<arcade::data::KeyCode>(key));
+    this->events.emplace_back(
+        arcade::data::EventType::KEY_PRESSED, static_cast<arcade::data::KeyCode>(key));
     return this->events;
 }
 
@@ -99,13 +123,15 @@ void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::IText> &te
 void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::ISprite> &sprite)
 {
     arcade::data::Vector2f pos = sprite->getPosition() + sprite->getOrigin();
-    std::vector<std::string> spriteNcurses = reinterpret_cast<std::unique_ptr<SpriteNcurses> &>(sprite)->getSpriteNcurses();
-    for (int i = 0; i < spriteNcurses.size(); i++) {
+    std::vector<std::string> spriteNcurses =
+        reinterpret_cast<std::unique_ptr<SpriteNcurses> &>(sprite)->getSpriteNcurses();
+    for (std::size_t i = 0; i < spriteNcurses.size(); i++) {
         mvprintw(pos.y + i, pos.x, spriteNcurses.at(i).c_str());
     }
 }
 
-std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText(const std::string &text)
+std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText(
+    const std::string &text)
 {
     return std::make_unique<TextNcurses>(text);
 }
@@ -120,7 +146,9 @@ std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprit
     return std::make_unique<SpriteNcurses>();
 }
 
-std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprite(const std::string &spritePath, const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale)
+std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprite(
+    const std::string &spritePath, const std::vector<std::string> &asciiSprite,
+    arcade::data::Vector2f scale)
 {
     return std::make_unique<SpriteNcurses>(spritePath, asciiSprite, scale);
 }

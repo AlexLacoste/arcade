@@ -7,6 +7,7 @@
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <thread>
 #include <iostream>
 #include <memory>
 #include "Sfml.hpp"
@@ -24,6 +25,7 @@ static const std::map<sf::Keyboard::Key, char> sfToArcadeKey{
     {sf::Keyboard::Period, '.'},
     {sf::Keyboard::Quote, '\''},
     {sf::Keyboard::Slash, '/'},
+    {sf::Keyboard::Divide, '/'},
     {sf::Keyboard::Backslash, '\\'},
     {sf::Keyboard::Tilde, '~'},
     {sf::Keyboard::Equal, '='},
@@ -92,6 +94,11 @@ sfml::GraphicSfml::~GraphicSfml()
         this->window.close();
 }
 
+int sfml::GraphicSfml::availableOptions() const
+{
+    return SET_CHARACTER_SIZE | MOUSE_MOVE | SETTING_FONTS;
+}
+
 bool sfml::GraphicSfml::isOpen()
 {
     return this->window.isOpen();
@@ -99,15 +106,22 @@ bool sfml::GraphicSfml::isOpen()
 
 void sfml::GraphicSfml::init(const std::string &title, const unsigned int limit)
 {
-    this->window.create(sf::VideoMode(1920, 1080, 32), title);
+    this->window.create(sf::VideoMode(1920, 1080), title);
     this->window.setFramerateLimit(limit);
     this->time = this->clock.getElapsedTime();
+    this->frameLimit = limit;
 }
 
 void sfml::GraphicSfml::display()
 {
     this->window.display();
     this->events.clear();
+    double toWait = ((1.0f / this->frameLimit) * 1000) - (getFrameDuration() * 1000);
+    if (toWait > 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(toWait)));
+    }
+    this->lastFrameTime = getFrameDuration();
+    restartClock();
 }
 
 void sfml::GraphicSfml::stop()
@@ -122,11 +136,19 @@ void sfml::GraphicSfml::clearWindow()
 
 void sfml::GraphicSfml::restartClock()
 {
+    this->timePoint = std::chrono::high_resolution_clock::now();
 }
 
 double sfml::GraphicSfml::getDeltaTime()
 {
-    return this->time.asSeconds();
+    return this->lastFrameTime;
+}
+
+double sfml::GraphicSfml::getFrameDuration() const
+{
+    return std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1>>>(
+        std::chrono::high_resolution_clock::now() - this->timePoint)
+        .count();
 }
 
 arcade::data::Vector2u sfml::GraphicSfml::getWindowSize()
@@ -145,7 +167,7 @@ std::vector<arcade::data::Event> sfml::GraphicSfml::getEvents()
             if (sfToArcadeKey.find(this->event.key.code) != sfToArcadeKey.end()) {
                 this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
                     static_cast<arcade::data::KeyCode>(sfToArcadeKey.at(this->event.key.code)));
-            } else if (sfToArcadeKeyCode.find(this->event.key.code) != sfToArcadeKeyCode.end()){
+            } else if (sfToArcadeKeyCode.find(this->event.key.code) != sfToArcadeKeyCode.end()) {
                 this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
                     static_cast<arcade::data::KeyCode>(sfToArcadeKeyCode.at(this->event.key.code)));
             }
@@ -183,7 +205,9 @@ std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite()
     return std::make_unique<SpriteSfml>();
 }
 
-std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite(const std::string &spritePath, const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale)
+std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite(
+    const std::string &spritePath, const std::vector<std::string> &asciiSprite,
+    arcade::data::Vector2f scale)
 {
     return std::make_unique<SpriteSfml>(spritePath, asciiSprite, scale); // TODO
 }

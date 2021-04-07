@@ -62,10 +62,15 @@ void ncurses::TextNcurses::setCharacterSize(unsigned int size)
 
 arcade::data::FloatRect ncurses::TextNcurses::getLocalBounds()
 {
-    return arcade::data::FloatRect{this->pos.x, this->pos.y, static_cast<float>(this->str.length()), 1};
+    return arcade::data::FloatRect{0, 0, static_cast<float>(this->str.length()), 1};
 }
 
-void ncurses::TextNcurses::setOrigin(arcade::data::Vector2f origin)
+arcade::data::FloatRect ncurses::TextNcurses::getGlobalBounds()
+{
+    return arcade::data::FloatRect{this->pos.x /*- origin.x*/, this->pos.y /*- origin.y*/, static_cast<float>(this->str.length()), 1};
+}
+
+void ncurses::TextNcurses::setOrigin(arcade::data::Vector2f origin) // TODO: make origin
 {
     this->pos = {origin.x, origin.y};
 }

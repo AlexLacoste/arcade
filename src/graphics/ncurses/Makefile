@@ -42,6 +42,7 @@ clean:
 fclean:		clean
 	rm -f $(NAME)
 	rm -f unit_test
+	rm -f *.o
 
 re:	fclean all
 

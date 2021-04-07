@@ -45,7 +45,7 @@ void ncurses::SpriteNcurses::move(arcade::data::Vector2f pos)
 
 void ncurses::SpriteNcurses::move(float x, float y)
 {
-    this->pos = arcade::data::Vector2f{this->getPosition().x + x, this->getPosition().y + pos.y};
+    this->pos = arcade::data::Vector2f{this->getPosition().x + x, this->getPosition().y + y};
 }
 
 void ncurses::SpriteNcurses::setOrigin(arcade::data::Vector2f origin)
@@ -59,6 +59,11 @@ arcade::data::Vector2f ncurses::SpriteNcurses::getOrigin()
 }
 
 arcade::data::FloatRect ncurses::SpriteNcurses::getLocalBounds()
+{
+    return arcade::data::FloatRect{0, 0, 1, 1};
+}
+
+arcade::data::FloatRect ncurses::SpriteNcurses::getGlobalBounds()
 {
     return arcade::data::FloatRect{0, 0, 1, 1};
 }

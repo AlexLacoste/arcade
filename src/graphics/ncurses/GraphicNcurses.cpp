@@ -188,21 +188,21 @@ double ncurses::GraphicNcurses::scaleMoveY(double time)
 
 int ncurses::GraphicNcurses::goodColor(const arcade::data::Color &color)
 {
-    if (color.isEqual(arcade::data::Color(0, 0, 0, 255)))
+    if (color == arcade::data::Color(0, 0, 0, 255))
         return (1);
-    if (color.isEqual(arcade::data::Color(255, 0, 0, 255)))
+    if (color == arcade::data::Color(255, 0, 0, 255))
         return (3);
-    if (color.isEqual(arcade::data::Color(0, 255, 0, 255)))
+    if (color == arcade::data::Color(0, 255, 0, 255))
         return (4);
-    if (color.isEqual(arcade::data::Color(0, 0, 255, 255)))
+    if (color == arcade::data::Color(0, 0, 255, 255))
         return (5);
-    if (color.isEqual(arcade::data::Color(255, 255, 0, 255)))
+    if (color == arcade::data::Color(255, 255, 0, 255))
         return (6);
-    if (color.isEqual(arcade::data::Color(255, 0, 255, 255)))
+    if (color == arcade::data::Color(255, 0, 255, 255))
         return (7);
-    if (color.isEqual(arcade::data::Color(0, 255, 255, 255)))
+    if (color == arcade::data::Color(0, 255, 255, 255))
         return (8);
-    if (color.isEqual(arcade::data::Color(255, 255, 255, 0)))
+    if (color == arcade::data::Color(255, 255, 255, 0))
         return (1);
     return (2);
 }

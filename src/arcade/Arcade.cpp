@@ -6,18 +6,20 @@
 */
 
 #include "Arcade.hpp"
+#include <algorithm>
 #include <filesystem>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <vector>
 #include <unistd.h>
+#include <vector>
 #include "../shared/Color.cpp"
 
 arcade::Arcade::Arcade(const std::string &libGraphic)
 {
     std::size_t i = 0;
 
+    this->firstLib = libGraphic;
     this->highScore = 0;
     this->getLib();
     for (i = 0; i < this->libs.size() && this->libs.at(i).compare(libGraphic) != 0; i++);
@@ -25,7 +27,7 @@ arcade::Arcade::Arcade(const std::string &libGraphic)
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
-    this->dlLoaderGraphic = std::make_shared<DLLoader>(libGraphic.c_str());
+    this->dlLoaderGraphic = std::make_unique<DLLoader>(libGraphic.c_str());
     this->graphicLibLoader();
     this->username = "";
     // this->gameTitle = getGameTitle();
@@ -39,9 +41,15 @@ arcade::Arcade::~Arcade()
 
 void arcade::Arcade::run()
 {
-    const std::unordered_map<State, void (arcade::Arcade::*)()> mapFptr{{MENU, &arcade::Arcade::handleMenu},
-        {GAME, &arcade::Arcade::handleGame}};
-    
+    const std::unordered_map<State, void (arcade::Arcade::*)()> mapFptr{
+        {MENU, &arcade::Arcade::handleMenu}, {GAME, &arcade::Arcade::handleGame}};
+
+    if (std::find(libs.begin(), libs.end(), this->firstLib) == libs.end()) {
+        std::cerr << "wrong lib" << std::endl; // remove
+        // throw error
+        return;
+    }
+    this->parseLibs();
     this->graphicLib->init("Arcade");
     this->initMenu();
     while (this->graphicLib->isOpen() && !this->isClosed) {
@@ -50,6 +58,16 @@ void arcade::Arcade::run()
         }
     }
     this->graphicLib->stop();
+}
+
+void arcade::Arcade::parseLibs()
+{
+    // si une lib dans vecteur libs est dans game et pas dans graphical -> push dans vector libsGame
+    // et delete celle dans libs si une lib dans vecteur libs est dans rien -> delete
+    if (this->libs.size() == 0) {
+        std::cerr << "no valid lib" << std::endl; // remove
+        // throw error
+    }
 }
 
 void arcade::Arcade::graphicLibLoader()
@@ -68,9 +86,10 @@ void arcade::Arcade::switchGraphicLib()
     this->vectorText.clear();
     this->libPositionVector =
         (this->libPositionVector + 1 < this->libs.size()) ? this->libPositionVector + 1 : 0;
-    
-    this->dlLoaderGraphic = std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
-    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>(); 
+
+    this->dlLoaderGraphic =
+        std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
+    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>();
     this->graphicLib->init("Arcade");
     this->initMenu();
 }
@@ -115,16 +134,20 @@ void arcade::Arcade::handleMenuEvent()
             }
             switch (static_cast<int>(event.keyCode)) {
                 case (arcade::data::RIGHT):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x * 0.5 / 100) , 0});
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{
+                        static_cast<float>(this->graphicLib->getWindowSize().x * 0.5 / 100), 0});
                     break;
                 case (arcade::data::LEFT):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{static_cast<float>(- (this->graphicLib->getWindowSize().x * 0.5 / 100)), 0});
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{
+                        static_cast<float>(-(this->graphicLib->getWindowSize().x * 0.5 / 100)), 0});
                     break;
                 case (arcade::data::UP):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{0, static_cast<float>(- (this->graphicLib->getWindowSize().y * 0.5 / 100))});
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{
+                        0, static_cast<float>(-(this->graphicLib->getWindowSize().y * 0.5 / 100))});
                     break;
                 case (arcade::data::DOWN):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{0, static_cast<float>(this->graphicLib->getWindowSize().y * 0.5 / 100)});
+                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{
+                        0, static_cast<float>(this->graphicLib->getWindowSize().y * 0.5 / 100)});
                     break;
                 case (arcade::data::ESCAPE):
                     this->isClosed = true;
@@ -149,7 +172,15 @@ void arcade::Arcade::initMenu()
 
     std::unique_ptr<displayer::IText> &textLib = this->vectorText.at(0);
     std::unique_ptr<displayer::ISprite> &spriteLib = this->vectorSprite.at(0);
-    std::vector<std::string> spriteNcurse{{"pa"}, {"cm"}};
+    std::vector<std::string> cadreNcurse{{"###########################"},
+        {"#                         #"}, {"#                         #"},
+        {"#                         #"}, {"#                         #"},
+        {"#                         #"}, {"#                         #"},
+        {"#                         #"}, {"#                         #"},
+        {"#                         #"}, {"#                         #"},
+        {"#                         #"}, {"#                         #"},
+        {"#                         #"}, {"#                         #"},
+        {"###########################"}};
     std::vector<std::vector<arcade::data::Color>> spriteColorNcurse;
 
     textLib = this->graphicLib->createText("c'est un test");
@@ -160,7 +191,9 @@ void arcade::Arcade::initMenu()
         arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
             static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
 
-    spriteLib = this->graphicLib->createSprite("ressources/pacman.png", spriteNcurse, arcade::data::Vector2f{0.08, 0.08});
+    spriteLib = this->graphicLib->createSprite(
+        "ressources/cadre.png", cadreNcurse, arcade::data::Vector2f{0.4, 0.4});
+    spriteLib->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     spriteLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 30 / 100,
-            static_cast<float>(this->graphicLib->getWindowSize().y) * 30 / 100});
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 30 / 100});
 }

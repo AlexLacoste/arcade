@@ -7,13 +7,10 @@
 
 #include <memory>
 #include <vector>
-#include <algorithm>
 #include <string>
 #include <iostream>
 #include <cstring>
 #include "Arcade.hpp"
-
-std::vector<std::string> getLib();
 
 bool badEnv(char **env)
 {
@@ -33,14 +30,6 @@ int main(int ac, char **av, char **env)
         std::cerr << "Usage : " << av[0] << "./lib/[lib_name].so" << std::endl;
         return (84);
     }
-    // TODO: check if lib is in lib.json access(av[1], F_OK)
-
-
-    // std::vector<std::string> libs = getLib();
-    // if (std::find(libs.begin(), libs.end(), av[1]) == libs.end()) {
-    //     std::cerr << "Cannot use " << av[0] << std::endl;
-    //     return (84);
-    // }
 
     // if (badEnv(env)) {
     //     std::cerr << "Cannot launch " << av[0] << ", env is not ready." << std::endl;

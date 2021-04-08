@@ -94,6 +94,7 @@ namespace ncurses
         std::unique_ptr<arcade::displayer::IText> createText(const std::string &text) override;
         std::unique_ptr<arcade::displayer::ISprite> createSprite() override;
         std::unique_ptr<arcade::displayer::ISprite> createSprite(const std::string &spritePath, const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale = arcade::data::Vector2f{1, 1}) override;
+        int goodColor(const arcade::data::Color &color);
 
         double scaleMoveX(double time) override;
         double scaleMoveY(double time) override;

@@ -139,6 +139,8 @@ namespace arcade
             Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255)
                 : r(red), g(green), b(blue), a(alpha){};
 
+            bool isEqual(arcade::data::Color other) const {return (this->r == other.r && this->g == other.g && this->b == other.b && this->a == other.a);};
+
             uint8_t r;
             uint8_t g;
             uint8_t b;

@@ -44,10 +44,9 @@ namespace arcade
         std::unique_ptr<IGame> gameLib;
         std::unique_ptr<displayer::IDisplay> graphicLib;
 
-        std::unique_ptr<DLLoader> dlLoaderGraphic;
+        std::shared_ptr<DLLoader> dlLoaderGraphic;
         std::unique_ptr<DLLoader> dlLoaderGame;
 
-        // void chooseUsername();
         std::string username;
     
         // std::vector<std::string> getGameTitle();

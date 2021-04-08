@@ -25,7 +25,7 @@ arcade::Arcade::Arcade(const std::string &libGraphic)
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
-    this->dlLoaderGraphic = std::make_unique<DLLoader>(libGraphic.c_str());
+    this->dlLoaderGraphic = std::make_shared<DLLoader>(libGraphic.c_str());
     this->graphicLibLoader();
     this->username = "";
     // this->gameTitle = getGameTitle();
@@ -144,8 +144,11 @@ void arcade::Arcade::handleGameEvent()
 
 void arcade::Arcade::initMenu()
 {
-    std::unique_ptr<displayer::IText> textLib;
-    std::unique_ptr<displayer::ISprite> spriteLib;
+    this->vectorText.emplace_back(std::unique_ptr<displayer::IText>());
+    this->vectorSprite.emplace_back(std::unique_ptr<displayer::ISprite>());
+
+    std::unique_ptr<displayer::IText> &textLib = this->vectorText.at(0);
+    std::unique_ptr<displayer::ISprite> &spriteLib = this->vectorSprite.at(0);
     std::vector<std::string> spriteNcurse{{"pa"}, {"cm"}};
     std::vector<std::vector<arcade::data::Color>> spriteColorNcurse;
 
@@ -156,10 +159,8 @@ void arcade::Arcade::initMenu()
     textLib->setPosition(
         arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
             static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
-    this->vectorText.emplace_back(std::move(textLib));
 
     spriteLib = this->graphicLib->createSprite("ressources/pacman.png", spriteNcurse, arcade::data::Vector2f{0.08, 0.08});
     spriteLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 30 / 100,
             static_cast<float>(this->graphicLib->getWindowSize().y) * 30 / 100});
-    this->vectorSprite.emplace_back(std::move(spriteLib));
 }

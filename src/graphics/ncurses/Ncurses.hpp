@@ -37,6 +37,7 @@ namespace ncurses
         std::string str;
         arcade::data::Vector2f pos;
         arcade::data::Color color;
+        arcade::data::Vector2f origin;
     };
 
     class SpriteNcurses : public arcade::displayer::ISprite {
@@ -68,6 +69,7 @@ namespace ncurses
         arcade::data::Vector2f pos;
         arcade::data::Vector2f origin;
         float rotation;
+        arcade::data::IntRect textureRect;
     };
 
     class GraphicNcurses : public arcade::displayer::IDisplay {
@@ -99,7 +101,7 @@ namespace ncurses
         // arcade::data::KeyCode getLastKey() override;
       private:
         bool windowIsOpen;
-        bool hasColors;
+        // bool hasColors;
         bool eventFrame;
         std::vector<arcade::data::Event> events;
         std::chrono::time_point<std::chrono::high_resolution_clock> time;

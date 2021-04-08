@@ -40,14 +40,13 @@ bool ncurses::GraphicNcurses::isOpen()
 void ncurses::GraphicNcurses::init(const std::string &title, const unsigned int limit)
 {
     (void)title;
-    (void)limit;
     initscr();
     cbreak();
     keypad(stdscr, true);
     noecho();
     curs_set(0);
     nodelay(stdscr, true);
-    this->hasColors = has_colors();
+    // this->hasColors = has_colors();
     this->windowIsOpen = true;
     this->eventFrame = false;
     this->frameLimit = limit;

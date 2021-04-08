@@ -125,7 +125,11 @@ void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::ISprite> &
     std::vector<std::string> spriteNcurses =
         reinterpret_cast<std::unique_ptr<SpriteNcurses> &>(sprite)->getSpriteNcurses();
     for (std::size_t i = 0; i < spriteNcurses.size(); i++) {
-        mvprintw(pos.y + i, pos.x, spriteNcurses.at(i).c_str());
+        for (std::size_t j = 0; j < spriteNcurses.at(i).length(); j++) {
+            if (spriteNcurses.at(i).at(j) != ' ') {
+                mvaddch(pos.y + i, pos.x + j, spriteNcurses.at(i).at(j));
+            }
+        }
     }
 }
 

@@ -10,6 +10,7 @@ CFLAGS = make -C
 all:
 	$(CFLAGS) src/shared
 	$(CFLAGS) src/graphics
+	$(CFLAGS) src/games
 	$(CFLAGS) src/arcade
 
 games:
@@ -26,11 +27,13 @@ core:
 clean:
 	$(CFLAGS) src/shared clean
 	$(CFLAGS) src/graphics clean
+	$(CFLAGS) src/games clean
 	$(CFLAGS) src/arcade clean
 
 fclean:
 	$(CFLAGS) src/shared fclean
 	$(CFLAGS) src/graphics fclean
+	$(CFLAGS) src/games fclean
 	$(CFLAGS) src/arcade fclean
 	rm -f lib/*.so
 	rm -f vgcore.*

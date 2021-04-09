@@ -18,7 +18,8 @@ LD			=	g++
 NAME		=	arcade
 
 SRC			=	main.cpp				\
-				Arcade.cpp
+				Arcade.cpp				\
+				Menu.cpp
 
 # TESTSRC	=	
 

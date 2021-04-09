@@ -24,7 +24,9 @@ sfml::SpriteSfml::~SpriteSfml()
 void sfml::SpriteSfml::setSprite(const std::string &spritePath, const std::vector<std::string> &asciiSprite)
 {
     (void)asciiSprite;
-    this->texture.loadFromFile(spritePath);
+    if (!this->texture.loadFromFile(spritePath)) {
+        // throw error
+    }
     this->sprite.setTexture(this->texture);
 }
 

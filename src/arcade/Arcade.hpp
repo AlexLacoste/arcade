@@ -33,7 +33,8 @@ namespace arcade
       private:
         void graphicLibLoader();
         void gameLibLoader();
-        void switchGraphicLib();
+        void switchNextGraphicLib();
+        void switchPreviousGraphicLib();
         void getLib();
         std::vector<std::string> libs;
         std::vector<std::string> libsGame;

@@ -11,7 +11,8 @@ ncurses::SpriteNcurses::SpriteNcurses() : rotation(0)
 {
 }
 
-ncurses::SpriteNcurses::SpriteNcurses(const std::string &spritePath, const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale)
+ncurses::SpriteNcurses::SpriteNcurses(const std::string &spritePath,
+    const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale)
 {
     (void)spritePath;
     (void)scale;
@@ -22,7 +23,8 @@ ncurses::SpriteNcurses::~SpriteNcurses()
 {
 }
 
-void ncurses::SpriteNcurses::setSprite(const std::string &spritePath, const std::vector<std::string> &asciiSprite)
+void ncurses::SpriteNcurses::setSprite(
+    const std::string &spritePath, const std::vector<std::string> &asciiSprite)
 {
     (void)spritePath;
     this->sprite = asciiSprite;
@@ -40,7 +42,8 @@ arcade::data::Vector2f ncurses::SpriteNcurses::getPosition() const
 
 void ncurses::SpriteNcurses::move(arcade::data::Vector2f pos)
 {
-    this->pos = arcade::data::Vector2f{this->getPosition().x + pos.x, this->getPosition().y + pos.y};
+    this->pos =
+        arcade::data::Vector2f{this->getPosition().x + pos.x, this->getPosition().y + pos.y};
 }
 
 void ncurses::SpriteNcurses::move(float x, float y)
@@ -60,12 +63,17 @@ arcade::data::Vector2f ncurses::SpriteNcurses::getOrigin()
 
 arcade::data::FloatRect ncurses::SpriteNcurses::getLocalBounds()
 {
-    return arcade::data::FloatRect{0, 0, 1, 1};
+    if (this->sprite.size() == 0) {
+        return arcade::data::FloatRect{0, 0, 0, static_cast<float>(this->sprite.size())};
+    }
+    return arcade::data::FloatRect{0, 0, static_cast<float>(this->sprite.at(0).length()),
+        static_cast<float>(this->sprite.size())};
 }
 
 arcade::data::FloatRect ncurses::SpriteNcurses::getGlobalBounds()
 {
-    return arcade::data::FloatRect{0, 0, 1, 1};
+    return arcade::data::FloatRect{this->pos.y - this->origin.y, this->pos.x - this->origin.x,
+        static_cast<float>(this->textureRect.width), static_cast<float>(this->textureRect.height)};
 }
 
 void ncurses::SpriteNcurses::setScale(arcade::data::Vector2f scale)
@@ -95,15 +103,16 @@ void ncurses::SpriteNcurses::rotate(float angle)
 
 void ncurses::SpriteNcurses::setTextureRect(const arcade::data::IntRect &rect)
 {
-    (void)rect;
+    this->textureRect = rect;
 }
 
 arcade::data::IntRect ncurses::SpriteNcurses::getTextureRect() const
 {
-    return arcade::data::IntRect{0, 0, 1, 1};
+    return this->textureRect;
 }
 
-void ncurses::SpriteNcurses::setColor(arcade::data::Color color, const std::vector<std::vector<arcade::data::Color>> &asciiColors)
+void ncurses::SpriteNcurses::setColor(
+    arcade::data::Color color, const std::vector<std::vector<arcade::data::Color>> &asciiColors)
 {
     (void)color;
     // TODO set color

@@ -67,15 +67,15 @@ arcade::data::FloatRect ncurses::TextNcurses::getLocalBounds()
 
 arcade::data::FloatRect ncurses::TextNcurses::getGlobalBounds()
 {
-    return arcade::data::FloatRect{this->pos.x /*- origin.x*/, this->pos.y /*- origin.y*/, static_cast<float>(this->str.length()), 1};
+    return arcade::data::FloatRect{this->pos.y - this->origin.y, this->pos.x - this->origin.x, static_cast<float>(this->str.length()), 1};
 }
 
 void ncurses::TextNcurses::setOrigin(arcade::data::Vector2f origin) // TODO: make origin
 {
-    this->pos = {origin.x, origin.y};
+    this->origin = origin;
 }
 
 arcade::data::Vector2f ncurses::TextNcurses::getOrigin()
 {
-    return this->pos;
+    return this->origin;
 }

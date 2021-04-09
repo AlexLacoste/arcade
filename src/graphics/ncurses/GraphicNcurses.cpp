@@ -40,19 +40,26 @@ bool ncurses::GraphicNcurses::isOpen()
 void ncurses::GraphicNcurses::init(const std::string &title, const unsigned int limit)
 {
     (void)title;
-    (void)limit;
     initscr();
+    if (has_colors()) {
+        start_color();
+        init_pair(1, COLOR_BLACK, COLOR_BLACK);
+        init_pair(2, COLOR_WHITE, COLOR_BLACK);
+        init_pair(3, COLOR_RED, COLOR_BLACK);
+        init_pair(4, COLOR_GREEN, COLOR_BLACK);
+        init_pair(5, COLOR_BLUE, COLOR_BLACK);
+        init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+        init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
+        init_pair(8, COLOR_CYAN, COLOR_BLACK);
+    }
     cbreak();
     keypad(stdscr, true);
     noecho();
     curs_set(0);
     nodelay(stdscr, true);
-    this->hasColors = has_colors();
     this->windowIsOpen = true;
     this->eventFrame = false;
     this->frameLimit = limit;
-    // if (this->hasColors)
-    //     start_color();
 }
 
 void ncurses::GraphicNcurses::display()
@@ -117,16 +124,26 @@ std::vector<arcade::data::Event> ncurses::GraphicNcurses::getEvents()
 void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::IText> &text)
 {
     arcade::data::Vector2f pos = text->getPosition();
+    if (has_colors()) {
+        attron(COLOR_PAIR(goodColor(text->getColor())));
+    }
     mvprintw(pos.y, pos.x, text->getText().c_str());
 }
 
 void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::ISprite> &sprite)
 {
+    if (has_colors()) {
+        attron(COLOR_PAIR(2));
+    }
     arcade::data::Vector2f pos = sprite->getPosition() + sprite->getOrigin();
     std::vector<std::string> spriteNcurses =
         reinterpret_cast<std::unique_ptr<SpriteNcurses> &>(sprite)->getSpriteNcurses();
     for (std::size_t i = 0; i < spriteNcurses.size(); i++) {
-        mvprintw(pos.y + i, pos.x, spriteNcurses.at(i).c_str());
+        for (std::size_t j = 0; j < spriteNcurses.at(i).length(); j++) {
+            if (spriteNcurses.at(i).at(j) != ' ') {
+                mvaddch(pos.y + i, pos.x + j, spriteNcurses.at(i).at(j));
+            }
+        }
     }
 }
 
@@ -167,4 +184,25 @@ double ncurses::GraphicNcurses::scaleMoveY(double time)
         return 0;
     }
     return (getWindowSize().y / time) / (1.0f / getDeltaTime());
+}
+
+int ncurses::GraphicNcurses::goodColor(const arcade::data::Color &color)
+{
+    if (color == arcade::data::Color(0, 0, 0, 255))
+        return (1);
+    if (color == arcade::data::Color(255, 0, 0, 255))
+        return (3);
+    if (color == arcade::data::Color(0, 255, 0, 255))
+        return (4);
+    if (color == arcade::data::Color(0, 0, 255, 255))
+        return (5);
+    if (color == arcade::data::Color(255, 255, 0, 255))
+        return (6);
+    if (color == arcade::data::Color(255, 0, 255, 255))
+        return (7);
+    if (color == arcade::data::Color(0, 255, 255, 255))
+        return (8);
+    if (color == arcade::data::Color(255, 255, 255, 0))
+        return (1);
+    return (2);
 }

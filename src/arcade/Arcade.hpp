@@ -36,18 +36,22 @@ namespace arcade
         void switchGraphicLib();
         void getLib();
         std::vector<std::string> libs;
+        std::vector<std::string> libsGame;
         std::size_t libPositionVector;
+
+        void parseLibs();
+
+        std::string firstLib;
 
         // std::size_t &getHighScore() const;
         std::size_t highScore;
 
         std::unique_ptr<IGame> gameLib;
-        std::unique_ptr<displayer::IDisplay> graphicLib;
+        std::shared_ptr<displayer::IDisplay> graphicLib;
 
         std::unique_ptr<DLLoader> dlLoaderGraphic;
         std::unique_ptr<DLLoader> dlLoaderGame;
 
-        // void chooseUsername();
         std::string username;
     
         // std::vector<std::string> getGameTitle();

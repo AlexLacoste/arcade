@@ -132,15 +132,17 @@ void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::IText> &te
 
 void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::ISprite> &sprite)
 {
-    if (has_colors()) {
-        attron(COLOR_PAIR(2));
-    }
     arcade::data::Vector2f pos = sprite->getPosition() + sprite->getOrigin();
     std::vector<std::string> spriteNcurses =
         reinterpret_cast<std::unique_ptr<SpriteNcurses> &>(sprite)->getSpriteNcurses();
+    std::vector<std::vector<arcade::data::Color>> colorNcurses =
+        reinterpret_cast<std::unique_ptr<SpriteNcurses> &>(sprite)->getColor();
     for (std::size_t i = 0; i < spriteNcurses.size(); i++) {
         for (std::size_t j = 0; j < spriteNcurses.at(i).length(); j++) {
             if (spriteNcurses.at(i).at(j) != ' ') {
+                if (has_colors()) {
+                    attron(COLOR_PAIR(goodColor(colorNcurses.at(i).at(j))));
+                }
                 mvaddch(pos.y + i, pos.x + j, spriteNcurses.at(i).at(j));
             }
         }

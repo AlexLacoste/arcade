@@ -79,13 +79,34 @@ void arcade::Arcade::gameLibLoader()
 {
 }
 
-void arcade::Arcade::switchGraphicLib()
+void arcade::Arcade::switchNextGraphicLib()
 {
+    if (this->libs.size() == 1) {
+        return;
+    }
     this->graphicLib->stop();
     this->vectorSprite.clear();
     this->vectorText.clear();
     this->libPositionVector =
         (this->libPositionVector + 1 < this->libs.size()) ? this->libPositionVector + 1 : 0;
+
+    this->dlLoaderGraphic =
+        std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
+    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>();
+    this->graphicLib->init("Arcade");
+    this->initMenu();
+}
+
+void arcade::Arcade::switchPreviousGraphicLib()
+{
+    if (this->libs.size() == 1) {
+        return;
+    }
+    this->graphicLib->stop();
+    this->vectorSprite.clear();
+    this->vectorText.clear();
+    this->libPositionVector =
+        (this->libPositionVector == 0) ? this->libs.size() - 1 : this->libPositionVector - 1;
 
     this->dlLoaderGraphic =
         std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
@@ -103,60 +124,6 @@ void arcade::Arcade::getLib()
     }
 }
 
-void arcade::Arcade::handleMenu()
-{
-    this->handleMenuEvent();
-    if (this->isClosed)
-        return;
-    this->graphicLib->clearWindow();
-    for (auto &text : this->vectorText) {
-        this->graphicLib->draw(text);
-    }
-    for (auto &sprite : this->vectorSprite) {
-        this->graphicLib->draw(sprite);
-    }
-    this->graphicLib->display();
-}
-
-void arcade::Arcade::handleMenuEvent()
-{
-    std::vector<arcade::data::Event> events = this->graphicLib->getEvents();
-    for (auto event : events) {
-        if (event.type == arcade::data::WINDOW_CLOSED) {
-            this->isClosed = true;
-            return;
-        }
-        if (event.type == arcade::data::EventType::KEY_PRESSED) {
-            switch (event.key) {
-                case ('q'):
-                    this->switchGraphicLib();
-                    return;
-            }
-            switch (static_cast<int>(event.keyCode)) {
-                case (arcade::data::RIGHT):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{
-                        static_cast<float>(this->graphicLib->getWindowSize().x * 0.5 / 100), 0});
-                    break;
-                case (arcade::data::LEFT):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{
-                        static_cast<float>(-(this->graphicLib->getWindowSize().x * 0.5 / 100)), 0});
-                    break;
-                case (arcade::data::UP):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{
-                        0, static_cast<float>(-(this->graphicLib->getWindowSize().y * 0.5 / 100))});
-                    break;
-                case (arcade::data::DOWN):
-                    this->vectorSprite.at(0)->move(arcade::data::Vector2f{
-                        0, static_cast<float>(this->graphicLib->getWindowSize().y * 0.5 / 100)});
-                    break;
-                case (arcade::data::ESCAPE):
-                    this->isClosed = true;
-                    return;
-            }
-        }
-    }
-}
-
 void arcade::Arcade::handleGame()
 {
 }
@@ -165,35 +132,34 @@ void arcade::Arcade::handleGameEvent()
 {
 }
 
-void arcade::Arcade::initMenu()
+std::vector<std::vector<arcade::data::Color>> arcade::Arcade::colorSprite(std::size_t i, std::size_t j, arcade::data::Color color)
 {
-    this->vectorText.emplace_back(std::unique_ptr<displayer::IText>());
-    this->vectorSprite.emplace_back(std::unique_ptr<displayer::ISprite>());
+    std::vector<std::vector<arcade::data::Color>> spriteColor;
 
-    std::unique_ptr<displayer::IText> &textLib = this->vectorText.at(0);
-    std::unique_ptr<displayer::ISprite> &spriteLib = this->vectorSprite.at(0);
-    std::vector<std::string> cadreNcurse{{"###########################"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"###########################"}};
-    std::vector<std::vector<arcade::data::Color>> spriteColorNcurse;
+    for (std::size_t x = 0; x < i; x++) {
+        spriteColor.emplace_back(std::vector<arcade::data::Color>{});
+        for (std::size_t y = 0; y < j; y++) {
+            spriteColor.at(x).push_back(color);
+        }
+    }
+    return (spriteColor);
+}
 
-    textLib = this->graphicLib->createText("c'est un test");
-    textLib->setFont("ressources/font.ttf");
-    textLib->setColor(arcade::data::Color::Red);
-    textLib->setCharacterSize(40);
-    textLib->setPosition(
-        arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 20 / 100,
-            static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
+std::vector<std::string> arcade::Arcade::createSquare(std::size_t i, std::size_t j, bool isFill, char c)
+{
+    std::vector<std::string> square;
 
-    spriteLib = this->graphicLib->createSprite(
-        "ressources/cadre.png", cadreNcurse, arcade::data::Vector2f{0.4, 0.4});
-    spriteLib->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
-    spriteLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 30 / 100,
-        static_cast<float>(this->graphicLib->getWindowSize().y) * 30 / 100});
+    for (std::size_t x = 0; x < i; x++) {
+        square.emplace_back(std::string{});
+        for (std::size_t y = 0; y < j; y++) {
+            if (isFill) {
+                square.at(x).push_back(c);
+            } else if ((x == 0 || x == i - 1) || (y == 0 || y == j - 1)) {
+                square.at(x).push_back(c);
+            } else {
+                square.at(x).push_back(' ');
+            }
+        }
+    }
+    return (square);
 }

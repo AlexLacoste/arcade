@@ -75,6 +75,9 @@ namespace arcade
 
         std::vector<std::unique_ptr<arcade::displayer::IText>> vectorText;
         std::vector<std::unique_ptr<arcade::displayer::ISprite>> vectorSprite;
+
+        std::vector<std::vector<arcade::data::Color>> colorSprite(std::size_t i, std::size_t j, arcade::data::Color color);
+        std::vector<std::string> createSquare(std::size_t i, std::size_t j, bool isFill, char c);
     };
 } // namespace arcade
 

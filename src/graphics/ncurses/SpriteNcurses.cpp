@@ -115,10 +115,15 @@ void ncurses::SpriteNcurses::setColor(
     arcade::data::Color color, const std::vector<std::vector<arcade::data::Color>> &asciiColors)
 {
     (void)color;
-    // TODO set color
+    this->asciiColors = asciiColors;
 }
 
 std::vector<std::string> ncurses::SpriteNcurses::getSpriteNcurses()
 {
     return this->sprite;
+}
+
+std::vector<std::vector<arcade::data::Color>> ncurses::SpriteNcurses::getColor()
+{
+    return this->asciiColors;
 }

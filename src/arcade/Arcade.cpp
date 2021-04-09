@@ -131,3 +131,35 @@ void arcade::Arcade::handleGame()
 void arcade::Arcade::handleGameEvent()
 {
 }
+
+std::vector<std::vector<arcade::data::Color>> arcade::Arcade::colorSprite(std::size_t i, std::size_t j, arcade::data::Color color)
+{
+    std::vector<std::vector<arcade::data::Color>> spriteColor;
+
+    for (std::size_t x = 0; x < i; x++) {
+        spriteColor.emplace_back(std::vector<arcade::data::Color>{});
+        for (std::size_t y = 0; y < j; y++) {
+            spriteColor.at(x).push_back(color);
+        }
+    }
+    return (spriteColor);
+}
+
+std::vector<std::string> arcade::Arcade::createSquare(std::size_t i, std::size_t j, bool isFill, char c)
+{
+    std::vector<std::string> square;
+
+    for (std::size_t x = 0; x < i; x++) {
+        square.emplace_back(std::string{});
+        for (std::size_t y = 0; y < j; y++) {
+            if (isFill) {
+                square.at(x).push_back(c);
+            } else if ((x == 0 || x == i - 1) || (y == 0 || y == j - 1)) {
+                square.at(x).push_back(c);
+            } else {
+                square.at(x).push_back(' ');
+            }
+        }
+    }
+    return (square);
+}

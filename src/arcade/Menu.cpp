@@ -94,47 +94,16 @@ void arcade::Arcade::initMenu()
     std::unique_ptr<displayer::ISprite> &boxGameLib = this->vectorSprite.at(1);
     std::unique_ptr<displayer::ISprite> &boxScore = this->vectorSprite.at(2);
     std::unique_ptr<displayer::ISprite> &boxUsername = this->vectorSprite.at(3);
-    std::unique_ptr<displayer::ISprite> &boxkeyAction = this->vectorSprite.at(4);
-    std::vector<std::string> boxLibNcurse{{"###########################"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"#                         #"}, {"#                         #"},
-        {"###########################"}};
+    std::unique_ptr<displayer::ISprite> &boxKeyAction = this->vectorSprite.at(4);
+    std::vector<std::string> boxLibNcurse{this->createSquare(18, 27, false, '#')};
+    std::vector<std::string> boxScoreNcurses{this->createSquare(10, 53, false, '#')};
+    std::vector<std::string> boxUsernameNcurses{this->createSquare(8, 54, false, '#')};
+    std::vector<std::string> boxkeyActionNcurses{this->createSquare(24, 43, false, '#')};
 
-    std::vector<std::string> boxScoreNcurses{{"#####################################################"},
-        {"#                                                   #"}, {"#                                                   #"},
-        {"#                                                   #"}, {"#                                                   #"},
-        {"#                                                   #"}, {"#                                                   #"},
-        {"#                                                   #"}, {"#                                                   #"},
-        {"#####################################################"}};
-
-    std::vector<std::string> boxUsernameNcurses{{"######################################################"},
-        {"#                                                    #"}, {"#                                                    #"},
-        {"#                                                    #"}, {"#                                                    #"},
-        {"#                                                    #"}, {"#                                                    #"},
-        {"######################################################"}};
-    
-
-    std::vector<std::string> boxkeyActionNcurses{{"###########################################"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"#                                         #"}, {"#                                         #"},
-        {"###########################################"}};
-
-    std::vector<std::vector<arcade::data::Color>> spriteColorNcurse;
+    std::vector<std::vector<arcade::data::Color>> spriteColorLibNcurses{colorSprite(18, 27, arcade::data::Color::Red)};
+    std::vector<std::vector<arcade::data::Color>> spriteColorScoreNcurses{colorSprite(10, 53, arcade::data::Color::Blue)};
+    std::vector<std::vector<arcade::data::Color>> spriteColorUsernameNcurses{colorSprite(8, 54, arcade::data::Color::Cyan)};
+    std::vector<std::vector<arcade::data::Color>> spriteColorActionNcurses{colorSprite(24, 43, arcade::data::Color::Magenta)};
 
     textKeyActions = this->graphicLib->createText("Keys Action :");
     textKeyActions->setFont("ressources/font.ttf");
@@ -205,28 +174,33 @@ void arcade::Arcade::initMenu()
     boxGraphicLib->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxGraphicLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 10 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 12 / 100});
+    boxGraphicLib->setColor(arcade::data::Color::Red, spriteColorLibNcurses);
 
     boxGameLib = this->graphicLib->createSprite(
         "ressources/cadre.png", boxLibNcurse, arcade::data::Vector2f{0.4, 0.4});
     boxGameLib->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxGameLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 75 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 12 / 100});
+    boxGameLib->setColor(arcade::data::Color::Red, spriteColorLibNcurses);
 
     boxScore = this->graphicLib->createSprite(
         "ressources/cadre.png", boxScoreNcurses, arcade::data::Vector2f{0.8, 0.3});
     boxScore->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxScore->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 37 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 7 / 100});
+    boxScore->setColor(arcade::data::Color::Blue, spriteColorScoreNcurses);
 
     boxUsername = this->graphicLib->createSprite(
         "ressources/cadre.png", boxUsernameNcurses, arcade::data::Vector2f{0.8, 0.15});
     boxUsername->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxUsername->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 37 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 70 / 100});
+    boxUsername->setColor(arcade::data::Color::Cyan, spriteColorUsernameNcurses);
     
-    boxkeyAction = this->graphicLib->createSprite(
+    boxKeyAction = this->graphicLib->createSprite(
         "ressources/cadre.png", boxkeyActionNcurses, arcade::data::Vector2f{0.62, 0.36});
-    boxkeyAction->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
-    boxkeyAction->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 80 / 100,
+    boxKeyAction->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
+    boxKeyAction->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 80 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 60 / 100});
+    boxKeyAction->setColor(arcade::data::Color::Magenta, spriteColorActionNcurses);
 }

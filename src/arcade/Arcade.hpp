@@ -26,11 +26,12 @@ namespace arcade
           CLOSED,
         };
 
-        Arcade(const std::string &libGraphic);
+        Arcade(const std::string &libGraphic) noexcept;
         ~Arcade();
 
         void run();
       private:
+        void init();
         void graphicLibLoader();
         void gameLibLoader();
         void switchNextGraphicLib();
@@ -78,6 +79,10 @@ namespace arcade
 
         std::vector<std::vector<arcade::data::Color>> colorSprite(std::size_t i, std::size_t j, arcade::data::Color color);
         std::vector<std::string> createSquare(std::size_t i, std::size_t j, bool isFill, char c);
+
+        std::pair<std::vector<std::string>, std::vector<std::string>> parseLibConf();
+        bool isALib(const std::string &libPath);
+
     };
 } // namespace arcade
 

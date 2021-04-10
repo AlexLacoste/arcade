@@ -7,28 +7,24 @@
 
 #include "Arcade.hpp"
 #include <algorithm>
+#include <exception>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <unistd.h>
 #include <vector>
 #include "../shared/Color.cpp"
 
-arcade::Arcade::Arcade(const std::string &libGraphic)
+arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 {
-    std::size_t i = 0;
-
     this->firstLib = libGraphic;
     this->highScore = 0;
-    this->getLib();
-    for (i = 0; i < this->libs.size() && this->libs.at(i).compare(libGraphic) != 0; i++);
-    this->libPositionVector = i;
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
-    this->dlLoaderGraphic = std::make_unique<DLLoader>(libGraphic.c_str());
-    this->graphicLibLoader();
     this->username = "";
     // this->gameTitle = getGameTitle();
     this->state = MENU;
@@ -39,16 +35,24 @@ arcade::Arcade::~Arcade()
 {
 }
 
+void arcade::Arcade::init()
+{
+    std::size_t idx = 0;
+    this->getLib();
+    for (; idx < this->libs.size() && this->libs.at(idx).compare(this->firstLib) != 0; idx++);
+    if (idx == this->libs.size())
+        throw std::exception();
+    this->libPositionVector = idx;
+    this->dlLoaderGraphic = std::make_unique<DLLoader>(firstLib.c_str());
+    this->graphicLibLoader();
+}
+
 void arcade::Arcade::run()
 {
     const std::unordered_map<State, void (arcade::Arcade::*)()> mapFptr{
         {MENU, &arcade::Arcade::handleMenu}, {GAME, &arcade::Arcade::handleGame}};
 
-    if (std::find(libs.begin(), libs.end(), this->firstLib) == libs.end()) {
-        std::cerr << "wrong lib" << std::endl; // remove
-        // throw error
-        return;
-    }
+    this->init();
     this->parseLibs();
     this->graphicLib->init("Arcade");
     this->initMenu();
@@ -117,10 +121,16 @@ void arcade::Arcade::switchPreviousGraphicLib()
 
 void arcade::Arcade::getLib()
 {
+    std::pair<std::vector<std::string>, std::vector<std::string>> pairLib = this->parseLibConf();
     for (const auto &file : std::filesystem::directory_iterator("lib")) {
         std::string tmp = file.path();
-        if (tmp.find_last_of(".so"))
-            this->libs.push_back(tmp);
+        if (this->isALib(tmp)) {
+            if (std::find(pairLib.first.begin(), pairLib.first.end(), tmp) != pairLib.first.end()) {
+                this->libs.push_back(tmp);
+            } else if (std::find(pairLib.second.begin(), pairLib.second.end(), tmp) != pairLib.second.end()) {
+                this->libsGame.push_back(tmp);
+            }
+        }
     }
 }
 
@@ -162,4 +172,47 @@ std::vector<std::string> arcade::Arcade::createSquare(std::size_t i, std::size_t
         }
     }
     return (square);
+}
+
+std::pair<std::vector<std::string>, std::vector<std::string>> arcade::Arcade::parseLibConf()
+{
+    std::pair<std::vector<std::string>, std::vector<std::string>> pairLib;
+    std::ifstream fs{"lib.conf.txt"};
+    std::string line{};
+    int libType = 0;
+
+    if (!fs.is_open()) {
+        return (pairLib);
+    }
+    while (std::getline(fs, line)) {
+        if (line == "graphicals:") {
+            libType = 1;
+        } else if (line == "games:") {
+            libType = 2;
+        } else if (line[0] == '-' && isALib(line.substr(1))) {
+            line = line.substr(line.find("lib/arcade_"));
+            if (libType == 1) {
+                pairLib.first.emplace_back(line);
+            }
+            else if (libType == 2) {
+                pairLib.second.emplace_back(line);
+            }
+        }
+    }
+    fs.close();
+    return (pairLib);
+}
+
+bool arcade::Arcade::isALib(const std::string &libPath)
+{
+    std::stringstream ss{libPath};
+    std::string path{};
+
+    ss >> path;
+    if (!ss.eof())
+        return (false);
+    if (path.find("lib/arcade_") == 0 && path.find_last_of(".so") == path.size() - 1) {
+        return (true);
+    }
+    return (false);
 }

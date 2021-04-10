@@ -24,14 +24,32 @@ void arcade::pacman::Pacman::init(std::shared_ptr<displayer::IDisplay> &disp)
 {
     this->graphicLib = disp;
     this->gameMap = this->createGameMap("ressources/pacman/pacman_map.txt");
+    this->createAllSprites();
 }
 void arcade::pacman::Pacman::update()
-
 {
+    std::for_each(this->gameSprites.begin(), this->gameSprites.end(), [&](std::unique_ptr<displayer::ISprite> &sprite) {
+        this->graphicLib->draw(sprite);
+    });
 }
 
 void arcade::pacman::Pacman::stop()
 {
+}
+
+void arcade::pacman::Pacman::createAllSprites(void)
+{
+    std::for_each(this->gameMap.begin(), this->gameMap.end(), [&](arcade::pacman::Pixel pixel) {
+      std::vector<std::string> spriteCharacters;
+      std::unique_ptr<displayer::ISprite> sprite;
+
+      spriteCharacters.push_back(std::string{pixel.getCharacter()});
+      sprite = this->graphicLib->createSprite(pixel.getPixelImage(), spriteCharacters, arcade::data::Vector2f{0.03, 0.03});
+      sprite->setTextureRect(arcade::data::IntRect{0, 0, 500, 500});
+      sprite->setColor(pixel.getPixelColor(), this->colorSprite(spriteCharacters.size(), spriteCharacters.at(0).length(), pixel.getPixelColor()));
+      sprite->setPosition(arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * pixel.getPosX() / 100, static_cast<float>(this->graphicLib->getWindowSize().y) * pixel.getPosY() / 100});
+      this->gameSprites.push_back(std::move(sprite));
+    });
 }
 
 std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createGameMap(std::string filepath) const
@@ -56,13 +74,56 @@ std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createMapPixels(std::
 
     std::for_each(map.begin(), map.end(), [&](std::string line) {
         for (std::size_t index = 0; index < line.length(); ++index) {
-            arcade::pacman::Pixel mapPixel{line.at(index), static_cast<float>(index), static_cast<float>(y)};
+            char actualChar = line.at(index);
+            arcade::pacman::Pixel mapPixel{actualChar, this->getPixelImageType(actualChar)};
 
+            mapPixel.setPosX(static_cast<float>(index));
+            mapPixel.setPosY(static_cast<float>(y));
+            mapPixel.setColor(this->getPixelColorType(actualChar));
             mapPixels.push_back(mapPixel);
         }
         y += 1;
     });
-    /*std::for_each(mapPixels.begin(), mapPixels.end(), [](arcade::pacman::Pixel pixel) {
-        std::cout << "Char: " << pixel.getCharacter() << " at pos : [" << pixel.getPosX()  << ", " << pixel.getPosY() << "]" << std::endl;
-    });*/
+    return mapPixels;
+}
+
+std::string arcade::pacman::Pacman::getPixelImageType(char c) const
+{
+    if (c == '#') {
+        return "ressources/pacman/wall.png";
+    }
+    if (c == 'O') {
+        return "ressources/pacman/energizer.png";
+    }
+    if (c == 'P') {
+        return "ressources/pacman/wall.png";
+    }
+    return "ressources/pacman/pacgum.png";
+}
+
+arcade::data::Color arcade::pacman::Pacman::getPixelColorType(char c) const
+{
+    if (c == '#') {
+        return arcade::data::Color{0, 165, 255};
+    }
+    if (c == 'O') {
+        return arcade::data::Color{255, 141, 50};
+    }
+    if (c == 'P') {
+        return arcade::data::Color{0, 165, 255};
+    }
+    return arcade::data::Color{246, 141, 67};
+}
+
+std::vector<std::vector<arcade::data::Color>> arcade::pacman::Pacman::colorSprite(std::size_t i, std::size_t j, arcade::data::Color color)
+{
+    std::vector<std::vector<arcade::data::Color>> spriteColor;
+
+    for (std::size_t x = 0; x < i; x++) {
+        spriteColor.emplace_back(std::vector<arcade::data::Color>{});
+        for (std::size_t y = 0; y < j; y++) {
+            spriteColor.at(x).push_back(color);
+        }
+    }
+    return (spriteColor);
 }

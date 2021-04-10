@@ -26,11 +26,12 @@ namespace arcade
           CLOSED,
         };
 
-        Arcade(const std::string &libGraphic);
+        Arcade(const std::string &libGraphic) noexcept;
         ~Arcade();
 
         void run();
       private:
+        void init();
         void graphicLibLoader();
         void gameLibLoader();
         void switchNextGraphicLib();

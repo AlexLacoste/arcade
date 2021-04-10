@@ -7,6 +7,7 @@
 
 #include "Arcade.hpp"
 #include <algorithm>
+#include <exception>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -17,20 +18,13 @@
 #include <vector>
 #include "../shared/Color.cpp"
 
-arcade::Arcade::Arcade(const std::string &libGraphic)
+arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 {
-    std::size_t i = 0;
-
     this->firstLib = libGraphic;
     this->highScore = 0;
-    this->getLib();
-    for (i = 0; i < this->libs.size() && this->libs.at(i).compare(libGraphic) != 0; i++);
-    this->libPositionVector = i;
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
-    this->dlLoaderGraphic = std::make_unique<DLLoader>(libGraphic.c_str());
-    this->graphicLibLoader();
     this->username = "";
     // this->gameTitle = getGameTitle();
     this->state = MENU;
@@ -41,16 +35,24 @@ arcade::Arcade::~Arcade()
 {
 }
 
+void arcade::Arcade::init()
+{
+    std::size_t idx = 0;
+    this->getLib();
+    for (; idx < this->libs.size() && this->libs.at(idx).compare(this->firstLib) != 0; idx++);
+    if (idx == this->libs.size())
+        throw std::exception();
+    this->libPositionVector = idx;
+    this->dlLoaderGraphic = std::make_unique<DLLoader>(firstLib.c_str());
+    this->graphicLibLoader();
+}
+
 void arcade::Arcade::run()
 {
     const std::unordered_map<State, void (arcade::Arcade::*)()> mapFptr{
         {MENU, &arcade::Arcade::handleMenu}, {GAME, &arcade::Arcade::handleGame}};
 
-    if (std::find(libs.begin(), libs.end(), this->firstLib) == libs.end()) {
-        std::cerr << "wrong lib" << std::endl; // remove
-        // throw error
-        return;
-    }
+    this->init();
     this->parseLibs();
     this->graphicLib->init("Arcade");
     this->initMenu();

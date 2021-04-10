@@ -21,6 +21,7 @@
 arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 {
     this->firstLib = libGraphic;
+    this->libPositionVector = 0;
     this->highScore = 0;
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
@@ -39,7 +40,11 @@ void arcade::Arcade::init()
 {
     std::size_t idx = 0;
     this->getLib();
-    for (; idx < this->libs.size() && this->libs.at(idx).compare(this->firstLib) != 0; idx++);
+    for (; idx < this->libs.size(); idx++) {
+        if (std::filesystem::equivalent(this->firstLib, this->libs.at(idx))) {
+            break;
+        }
+    }
     if (idx == this->libs.size())
         throw std::exception();
     this->libPositionVector = idx;

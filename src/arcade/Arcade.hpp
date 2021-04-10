@@ -78,6 +78,10 @@ namespace arcade
 
         std::vector<std::vector<arcade::data::Color>> colorSprite(std::size_t i, std::size_t j, arcade::data::Color color);
         std::vector<std::string> createSquare(std::size_t i, std::size_t j, bool isFill, char c);
+
+        std::pair<std::vector<std::string>, std::vector<std::string>> parseLibConf();
+        bool isALib(const std::string &libPath);
+
     };
 } // namespace arcade
 

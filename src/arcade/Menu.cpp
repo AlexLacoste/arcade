@@ -179,35 +179,35 @@ void arcade::Arcade::initMenu()
         static_cast<float>(this->graphicLib->getWindowSize().y) * 94 / 100});
 
     boxGraphicLib = this->graphicLib->createSprite(
-        "ressources/cadre.png", boxLibNcurse, arcade::data::Vector2f{0.4, 0.4});
+        "ressources/cadre.bmp", boxLibNcurse, arcade::data::Vector2f{0.4, 0.4});
     boxGraphicLib->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxGraphicLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 10 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 12 / 100});
     boxGraphicLib->setColor(arcade::data::Color::Red, spriteColorLibNcurses);
 
     boxGameLib = this->graphicLib->createSprite(
-        "ressources/cadre.png", boxLibNcurse, arcade::data::Vector2f{0.4, 0.4});
+        "ressources/cadre.bmp", boxLibNcurse, arcade::data::Vector2f{0.4, 0.4});
     boxGameLib->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxGameLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 75 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 12 / 100});
     boxGameLib->setColor(arcade::data::Color::Red, spriteColorLibNcurses);
 
     boxScore = this->graphicLib->createSprite(
-        "ressources/cadre.png", boxScoreNcurses, arcade::data::Vector2f{0.8, 0.3});
+        "ressources/cadre.bmp", boxScoreNcurses, arcade::data::Vector2f{0.8, 0.3});
     boxScore->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxScore->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 37 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 7 / 100});
     boxScore->setColor(arcade::data::Color::Blue, spriteColorScoreNcurses);
 
     boxUsername = this->graphicLib->createSprite(
-        "ressources/cadre.png", boxUsernameNcurses, arcade::data::Vector2f{0.8, 0.15});
+        "ressources/cadre.bmp", boxUsernameNcurses, arcade::data::Vector2f{0.8, 0.15});
     boxUsername->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxUsername->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 37 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 70 / 100});
     boxUsername->setColor(arcade::data::Color::Cyan, spriteColorUsernameNcurses);
     
     boxKeyAction = this->graphicLib->createSprite(
-        "ressources/cadre.png", boxkeyActionNcurses, arcade::data::Vector2f{0.62, 0.36});
+        "ressources/cadre.bmp", boxkeyActionNcurses, arcade::data::Vector2f{0.62, 0.36});
     boxKeyAction->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxKeyAction->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 80 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 60 / 100});

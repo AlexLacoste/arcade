@@ -60,12 +60,12 @@ void ncurses::TextNcurses::setCharacterSize(unsigned int size)
     (void)size;
 }
 
-arcade::data::FloatRect ncurses::TextNcurses::getLocalBounds()
+arcade::data::FloatRect ncurses::TextNcurses::getLocalBounds() const
 {
     return arcade::data::FloatRect{0, 0, static_cast<float>(this->str.length()), 1};
 }
 
-arcade::data::FloatRect ncurses::TextNcurses::getGlobalBounds()
+arcade::data::FloatRect ncurses::TextNcurses::getGlobalBounds() const
 {
     return arcade::data::FloatRect{this->pos.y - this->origin.y, this->pos.x - this->origin.x, static_cast<float>(this->str.length()), 1};
 }
@@ -75,7 +75,7 @@ void ncurses::TextNcurses::setOrigin(arcade::data::Vector2f origin) // TODO: mak
     this->origin = origin;
 }
 
-arcade::data::Vector2f ncurses::TextNcurses::getOrigin()
+arcade::data::Vector2f ncurses::TextNcurses::getOrigin() const
 {
     return this->origin;
 }

@@ -42,13 +42,12 @@ arcade::data::Vector2f ncurses::SpriteNcurses::getPosition() const
 
 void ncurses::SpriteNcurses::move(arcade::data::Vector2f pos)
 {
-    this->pos =
-        arcade::data::Vector2f{this->getPosition().x + pos.x, this->getPosition().y + pos.y};
+    this->pos += pos;
 }
 
 void ncurses::SpriteNcurses::move(float x, float y)
 {
-    this->pos = arcade::data::Vector2f{this->getPosition().x + x, this->getPosition().y + y};
+    this->pos = arcade::data::Vector2f{this->pos.x + x, this->pos.y + y};
 }
 
 void ncurses::SpriteNcurses::setOrigin(arcade::data::Vector2f origin)
@@ -56,12 +55,12 @@ void ncurses::SpriteNcurses::setOrigin(arcade::data::Vector2f origin)
     this->origin = origin;
 }
 
-arcade::data::Vector2f ncurses::SpriteNcurses::getOrigin()
+arcade::data::Vector2f ncurses::SpriteNcurses::getOrigin() const
 {
     return this->origin;
 }
 
-arcade::data::FloatRect ncurses::SpriteNcurses::getLocalBounds()
+arcade::data::FloatRect ncurses::SpriteNcurses::getLocalBounds() const
 {
     if (this->sprite.size() == 0) {
         return arcade::data::FloatRect{0, 0, 0, static_cast<float>(this->sprite.size())};
@@ -70,7 +69,7 @@ arcade::data::FloatRect ncurses::SpriteNcurses::getLocalBounds()
         static_cast<float>(this->sprite.size())};
 }
 
-arcade::data::FloatRect ncurses::SpriteNcurses::getGlobalBounds()
+arcade::data::FloatRect ncurses::SpriteNcurses::getGlobalBounds() const
 {
     return arcade::data::FloatRect{this->pos.y - this->origin.y, this->pos.x - this->origin.x,
         static_cast<float>(this->textureRect.width), static_cast<float>(this->textureRect.height)};
@@ -81,12 +80,12 @@ void ncurses::SpriteNcurses::setScale(arcade::data::Vector2f scale)
     (void)scale;
 }
 
-arcade::data::Vector2f ncurses::SpriteNcurses::getScale()
+arcade::data::Vector2f ncurses::SpriteNcurses::getScale() const
 {
     return arcade::data::Vector2f{1, 1};
 }
 
-float ncurses::SpriteNcurses::getRotation()
+float ncurses::SpriteNcurses::getRotation() const
 {
     return this->rotation;
 }

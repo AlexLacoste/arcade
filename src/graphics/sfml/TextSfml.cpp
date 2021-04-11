@@ -66,16 +66,16 @@ void sfml::TextSfml::setCharacterSize(unsigned int size)
     this->text.setCharacterSize(size);
 }
 
-arcade::data::FloatRect sfml::TextSfml::getLocalBounds()
+arcade::data::FloatRect sfml::TextSfml::getLocalBounds() const
 {
     sf::FloatRect sfRect = this->text.getLocalBounds();
-    return arcade::data::FloatRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};
+    return arcade::data::FloatRect{sfRect.top, sfRect.left, sfRect.width, sfRect.height};
 }
 
-arcade::data::FloatRect sfml::TextSfml::getGlobalBounds()
+arcade::data::FloatRect sfml::TextSfml::getGlobalBounds() const
 {
     sf::FloatRect sfRect = this->text.getGlobalBounds();
-    return arcade::data::FloatRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};
+    return arcade::data::FloatRect{sfRect.top, sfRect.left, sfRect.width, sfRect.height};
 }
 
 void sfml::TextSfml::setOrigin(arcade::data::Vector2f origin)
@@ -84,7 +84,7 @@ void sfml::TextSfml::setOrigin(arcade::data::Vector2f origin)
     this->text.setOrigin(sfOrigin);
 }
 
-arcade::data::Vector2f sfml::TextSfml::getOrigin()
+arcade::data::Vector2f sfml::TextSfml::getOrigin() const
 {
     sf::Vector2f sfOrigin = this->text.getOrigin();
     return arcade::data::Vector2f{sfOrigin.x, sfOrigin.y};

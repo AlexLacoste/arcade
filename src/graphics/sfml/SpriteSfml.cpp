@@ -43,13 +43,11 @@ arcade::data::Vector2f sfml::SpriteSfml::getPosition() const
 void sfml::SpriteSfml::move(arcade::data::Vector2f pos)
 {
     this->sprite.move(pos.x, pos.y);
-    // this->sprite.setPosition(this->sprite.getPosition().x + pos.x, this->sprite.getPosition().y + pos.y);
 }
 
 void sfml::SpriteSfml::move(float x, float y)
 {
     this->sprite.move(x, y);
-    // this->sprite.setPosition(this->sprite.getPosition().x + x, this->sprite.getPosition().y + y);
 }
 
 void sfml::SpriteSfml::setOrigin(arcade::data::Vector2f origin)
@@ -57,21 +55,21 @@ void sfml::SpriteSfml::setOrigin(arcade::data::Vector2f origin)
     this->sprite.setOrigin(origin.x, origin.y);
 }
 
-arcade::data::Vector2f sfml::SpriteSfml::getOrigin()
+arcade::data::Vector2f sfml::SpriteSfml::getOrigin() const
 {
     return arcade::data::Vector2f{this->sprite.getOrigin().x, this->sprite.getOrigin().y};
 }
 
-arcade::data::FloatRect sfml::SpriteSfml::getLocalBounds()
+arcade::data::FloatRect sfml::SpriteSfml::getLocalBounds() const
 {
     sf::FloatRect sfRect = this->sprite.getLocalBounds();
-    return arcade::data::FloatRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};
+    return arcade::data::FloatRect{sfRect.top, sfRect.left, sfRect.width, sfRect.height};
 }
 
-arcade::data::FloatRect sfml::SpriteSfml::getGlobalBounds()
+arcade::data::FloatRect sfml::SpriteSfml::getGlobalBounds() const
 {
     sf::FloatRect sfRect = this->sprite.getGlobalBounds();
-    return arcade::data::FloatRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};
+    return arcade::data::FloatRect{sfRect.top, sfRect.left, sfRect.width, sfRect.height};
 }
 
 void sfml::SpriteSfml::setScale(arcade::data::Vector2f scale)
@@ -79,12 +77,12 @@ void sfml::SpriteSfml::setScale(arcade::data::Vector2f scale)
     this->sprite.setScale(scale.x, scale.y);
 }
 
-arcade::data::Vector2f sfml::SpriteSfml::getScale()
+arcade::data::Vector2f sfml::SpriteSfml::getScale() const
 {
     return arcade::data::Vector2f{this->sprite.getScale().x, this->sprite.getScale().y};
 }
 
-float sfml::SpriteSfml::getRotation()
+float sfml::SpriteSfml::getRotation() const
 {
     return this->sprite.getRotation();
 }
@@ -108,7 +106,7 @@ void sfml::SpriteSfml::setTextureRect(const arcade::data::IntRect &rect)
 arcade::data::IntRect sfml::SpriteSfml::getTextureRect() const
 {
     sf::IntRect sfRect = this->sprite.getTextureRect();
-    return arcade::data::IntRect{sfRect.left, sfRect.top, sfRect.width, sfRect.height};
+    return arcade::data::IntRect{sfRect.top, sfRect.left, sfRect.width, sfRect.height};
 }
 
 void sfml::SpriteSfml::setColor(arcade::data::Color color, const std::vector<std::vector<arcade::data::Color>> &asciiColors)

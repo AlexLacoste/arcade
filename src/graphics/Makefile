@@ -5,23 +5,20 @@
 ## Makefile
 ##
 
-CFLAGS = make -C
-
 all:
-	$(CFLAGS) ncurses
-	$(CFLAGS) sfml
-
-# tests_run:
-# 	$(CFLAGS) solver tests_run
-# 	$(CFLAGS) generator tests_run
+	make -C ncurses
+	make -C sfml
+	make -C sdl2
 
 clean:
-	$(CFLAGS) ncurses clean
-	$(CFLAGS) sfml clean
+	make -C ncurses clean
+	make -C sfml clean
+	make -C sdl2 clean
 
 fclean:
-	$(CFLAGS) ncurses fclean
-	$(CFLAGS) sfml fclean
+	make -C ncurses fclean
+	make -C sfml fclean
+	make -C sdl2 fclean
 
 re:	fclean all
 

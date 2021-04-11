@@ -22,15 +22,15 @@ namespace arcade
             MOUSE_RELEASED,
         };
         enum KeyCode {
+            ENTER = 10,
             ESCAPE = 27,
             SPACE = 32,
-            BACKSPACE = 59,
             SPECIAL_KEYS_START = 257,
             DOWN = 258,
             UP = 259,
             LEFT = 260,
             RIGHT = 261,
-            ENTER = 343,
+            BACKSPACE = 263,
         };
         enum MouseBtn {
             BTN_1,
@@ -76,8 +76,8 @@ namespace arcade
 
             template <typename U> Vector2<T> &operator+=(const Vector2<U> &other)
             {
-                x = static_cast<T>(other.x);
-                y = static_cast<T>(other.y);
+                x += static_cast<T>(other.x);
+                y += static_cast<T>(other.y);
                 return *this;
             };
 
@@ -100,6 +100,12 @@ namespace arcade
             {
                 this->x += x;
                 this->y += y;
+                return *this;
+            };
+            template <typename U> Vector2<T> &move(const Vector2<U> &other)
+            {
+                x += static_cast<T>(other.x);
+                y += static_cast<T>(other.y);
                 return *this;
             };
 
@@ -134,13 +140,15 @@ namespace arcade
         typedef Rect<int> IntRect;
         typedef Rect<float> FloatRect;
 
-        struct Color
-        {
-            Color() : r(255), g(255), b(255), a(255) {};
+        struct Color {
+            Color() : r(255), g(255), b(255), a(255){};
             Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255)
-                : r(red), g(green), b(blue), a(alpha) {};
+                : r(red), g(green), b(blue), a(alpha){};
 
-            bool operator==(const Color &other) const { return r == other.r && g == other.g && b == other.b && a == other.a; };
+            bool operator==(const Color &other) const
+            {
+                return r == other.r && g == other.g && b == other.b && a == other.a;
+            };
 
             uint8_t r;
             uint8_t g;
@@ -159,5 +167,21 @@ namespace arcade
         };
     } // namespace data
 } // namespace arcade
+
+// #include <iostream>
+
+// template <typename T>
+// std::ostream &operator<<(std::ostream &s, const arcade::data::Vector2<T> &vect)
+// {
+//     s << '[' << vect.x << ", " << vect.y << ']';
+//     return s;
+// }
+
+// template <typename T> std::ostream &operator<<(std::ostream &s, const arcade::data::Rect<T> &rect)
+// {
+//     s << "pos:[" << rect.left << ", " << rect.top << "]-size[" << rect.width << ", " << rect.height
+//       << "]";
+//     return s;
+// }
 
 #endif /* !DATA_HPP_ */

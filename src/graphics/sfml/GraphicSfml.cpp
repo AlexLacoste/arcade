@@ -5,11 +5,10 @@
 ** Sfml
 */
 
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <thread>
 #include <iostream>
 #include <memory>
+#include <thread>
+#include <unordered_map>
 #include "Sfml.hpp"
 
 extern "C" std::unique_ptr<sfml::GraphicSfml> entry_point()
@@ -17,7 +16,7 @@ extern "C" std::unique_ptr<sfml::GraphicSfml> entry_point()
     return std::make_unique<sfml::GraphicSfml>();
 }
 
-static const std::map<sf::Keyboard::Key, char> sfToArcadeKey{
+static const std::unordered_map<sf::Keyboard::Key, char> sfToArcadeKey{
     {sf::Keyboard::LBracket, '['},
     {sf::Keyboard::RBracket, ']'},
     {sf::Keyboard::Semicolon, ';'},
@@ -61,7 +60,7 @@ static const std::map<sf::Keyboard::Key, char> sfToArcadeKey{
     {sf::Keyboard::Z, 'z'},
 };
 
-static const std::map<sf::Keyboard::Key, arcade::data::KeyCode> sfToArcadeKeyCode{
+static const std::unordered_map<sf::Keyboard::Key, arcade::data::KeyCode> sfToArcadeKeyCode{
     {sf::Keyboard::Enter, arcade::data::KeyCode::ENTER},
     {sf::Keyboard::Backspace, arcade::data::KeyCode::BACKSPACE},
     {sf::Keyboard::Escape, arcade::data::KeyCode::ESCAPE},
@@ -73,12 +72,12 @@ static const std::map<sf::Keyboard::Key, arcade::data::KeyCode> sfToArcadeKeyCod
     {sf::Keyboard::Enter, arcade::data::KeyCode::ENTER},
 };
 
-static const std::map<sf::Event::EventType, arcade::data::EventType> sfToArcadeMouseType{
+static const std::unordered_map<sf::Event::EventType, arcade::data::EventType> sfToArcadeMouseType{
     {sf::Event::EventType::MouseButtonPressed, arcade::data::EventType::MOUSE_PRESSED},
     {sf::Event::EventType::MouseButtonReleased, arcade::data::EventType::MOUSE_RELEASED},
     {sf::Event::EventType::MouseMoved, arcade::data::EventType::MOUSE_MOVED},
 };
-static const std::map<sf::Mouse::Button, arcade::data::MouseBtn> sfToArcadeMouseBtn{
+static const std::unordered_map<sf::Mouse::Button, arcade::data::MouseBtn> sfToArcadeMouseBtn{
     {sf::Mouse::Button::Left, arcade::data::MouseBtn::BTN_1},
     {sf::Mouse::Button::Middle, arcade::data::MouseBtn::BTN_2},
     {sf::Mouse::Button::Right, arcade::data::MouseBtn::BTN_3},
@@ -99,7 +98,7 @@ int sfml::GraphicSfml::availableOptions() const
     return SET_CHARACTER_SIZE | MOUSE_MOVE | SETTING_FONTS;
 }
 
-bool sfml::GraphicSfml::isOpen()
+bool sfml::GraphicSfml::isOpen() const
 {
     return this->window.isOpen();
 }
@@ -108,19 +107,14 @@ void sfml::GraphicSfml::init(const std::string &title, const unsigned int limit)
 {
     this->window.create(sf::VideoMode(1920, 1080), title);
     this->window.setFramerateLimit(limit);
-    this->time = this->clock.getElapsedTime();
-    this->frameLimit = limit;
+    this->restartClock();
 }
 
 void sfml::GraphicSfml::display()
 {
     this->window.display();
     this->events.clear();
-    double toWait = ((1.0f / this->frameLimit) * 1000) - (getFrameDuration() * 1000);
-    if (toWait > 0) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(toWait)));
-    }
-    this->lastFrameTime = getFrameDuration();
+    this->lastFrameTime = this->getFrameDuration();
     restartClock();
 }
 
@@ -139,7 +133,7 @@ void sfml::GraphicSfml::restartClock()
     this->timePoint = std::chrono::high_resolution_clock::now();
 }
 
-double sfml::GraphicSfml::getDeltaTime()
+double sfml::GraphicSfml::getDeltaTime() const
 {
     return this->lastFrameTime;
 }
@@ -151,30 +145,37 @@ double sfml::GraphicSfml::getFrameDuration() const
         .count();
 }
 
-arcade::data::Vector2u sfml::GraphicSfml::getWindowSize()
+arcade::data::Vector2u sfml::GraphicSfml::getWindowSize() const
 {
     return arcade::data::Vector2u{this->window.getSize().x, this->window.getSize().y};
 }
 
 std::vector<arcade::data::Event> sfml::GraphicSfml::getEvents()
 {
-    while (this->window.pollEvent(this->event)) {
-        if (this->event.type == sf::Event::Closed) {
+    sf::Event event;
+    while (this->window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
             this->events.emplace_back(arcade::data::EventType::WINDOW_CLOSED,
-                static_cast<arcade::data::EventType>(this->event.MouseButtonPressed));
+                static_cast<arcade::data::EventType>(event.MouseButtonPressed));
         }
-        if (this->event.type == sf::Event::KeyPressed) {
-            if (sfToArcadeKey.find(this->event.key.code) != sfToArcadeKey.end()) {
+        if (event.type == sf::Event::KeyPressed) {
+            if (sfToArcadeKey.find(event.key.code) != sfToArcadeKey.end()) {
+                char c = static_cast<arcade::data::KeyCode>(sfToArcadeKey.at(event.key.code));
+                int maj = (c >= 'a' && c <= 'z' && event.key.shift) ? 32 : 0;
+                this->events.emplace_back(arcade::data::EventType::KEY_PRESSED, c - maj);
+            } else if (sfToArcadeKeyCode.find(event.key.code) != sfToArcadeKeyCode.end()) {
                 this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
-                    static_cast<arcade::data::KeyCode>(sfToArcadeKey.at(this->event.key.code)));
-            } else if (sfToArcadeKeyCode.find(this->event.key.code) != sfToArcadeKeyCode.end()) {
-                this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
-                    static_cast<arcade::data::KeyCode>(sfToArcadeKeyCode.at(this->event.key.code)));
+                    static_cast<arcade::data::KeyCode>(sfToArcadeKeyCode.at(event.key.code)));
             }
         }
-        if (this->event.type == sf::Event::MouseButtonPressed) {
-            this->events.emplace_back(arcade::data::EventType::MOUSE_PRESSED,
-                static_cast<arcade::data::MouseBtn>(this->event.MouseButtonPressed));
+        if (event.type == sf::Event::MouseButtonPressed) {
+            if (sfToArcadeMouseBtn.find(event.mouseButton.button)
+                != sfToArcadeMouseBtn.end()) {
+                this->events.emplace_back(arcade::data::EventType::MOUSE_PRESSED,
+                    static_cast<arcade::data::MouseBtn>(
+                        sfToArcadeMouseBtn.at(event.mouseButton.button)),
+                    event.mouseButton.x, event.mouseButton.y);
+            }
         }
     }
     return this->events;
@@ -190,29 +191,29 @@ void sfml::GraphicSfml::draw(std::unique_ptr<arcade::displayer::ISprite> &sprite
     this->window.draw(reinterpret_cast<std::unique_ptr<SpriteSfml> &>(sprite)->getSfSprite());
 }
 
-std::unique_ptr<arcade::displayer::IText> sfml::GraphicSfml::createText(const std::string &text)
+std::unique_ptr<arcade::displayer::IText> sfml::GraphicSfml::createText(const std::string &text) const
 {
     return std::make_unique<TextSfml>(text);
 }
 
-std::unique_ptr<arcade::displayer::IText> sfml::GraphicSfml::createText()
+std::unique_ptr<arcade::displayer::IText> sfml::GraphicSfml::createText() const
 {
     return std::make_unique<TextSfml>();
 }
 
-std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite()
+std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite() const
 {
     return std::make_unique<SpriteSfml>();
 }
 
 std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite(
     const std::string &spritePath, const std::vector<std::string> &asciiSprite,
-    arcade::data::Vector2f scale)
+    arcade::data::Vector2f scale) const
 {
-    return std::make_unique<SpriteSfml>(spritePath, asciiSprite, scale); // TODO
+    return std::make_unique<SpriteSfml>(spritePath, asciiSprite, scale);
 }
 
-double sfml::GraphicSfml::scaleMoveX(double time)
+double sfml::GraphicSfml::scaleMoveX(double time) const
 {
     if (!time) {
         return 0;
@@ -220,7 +221,7 @@ double sfml::GraphicSfml::scaleMoveX(double time)
     return (getWindowSize().x / time) / (1.0f / getDeltaTime());
 }
 
-double sfml::GraphicSfml::scaleMoveY(double time)
+double sfml::GraphicSfml::scaleMoveY(double time) const
 {
     if (!time) {
         return 0;

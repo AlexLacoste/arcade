@@ -5,16 +5,14 @@
 ## Makefile
 ##
 
-CFLAGS 	= make -C
-
 all:
-		$(CFLAGS) pacman
+		make -C pacman
 
 clean:
-		$(CFLAGS) pacman clean
+		make -C pacman clean
 
 fclean:
-		$(CFLAGS) pacman fclean
+		make -C pacman fclean
 
 re:		fclean all
 

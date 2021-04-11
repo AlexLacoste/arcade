@@ -5,6 +5,7 @@
 ** Menu
 */
 
+#include <iostream>
 #include "Arcade.hpp"
 
 void arcade::Arcade::handleMenu()
@@ -38,6 +39,9 @@ void arcade::Arcade::handleMenuEvent()
                 case ('s'):
                     this->switchNextGraphicLib();
                     return;
+                // case ('A'):
+                //     std::cout << "A" << std::endl;
+                //     break;
             }
             switch (static_cast<int>(event.keyCode)) {
             //     case (arcade::data::RIGHT):
@@ -61,6 +65,11 @@ void arcade::Arcade::handleMenuEvent()
                     return;
             }
         }
+        // if (event.type == arcade::data::EventType::MOUSE_PRESSED) {
+        //     if (event.btn == arcade::data::BTN_1) {
+        //         std::cout << event.x << "    " << event.y << std::endl;
+        //     }
+        // }
     }
 }
 
@@ -161,7 +170,7 @@ void arcade::Arcade::initMenu()
         arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 81 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 90 / 100});
 
-    textExit = this->graphicLib->createText("\"e\" : exit");
+    textExit = this->graphicLib->createText("\"ESCAPE\" : exit");
     textExit->setFont("ressources/font.ttf");
     textExit->setColor(arcade::data::Color::White);
     textExit->setCharacterSize(17);

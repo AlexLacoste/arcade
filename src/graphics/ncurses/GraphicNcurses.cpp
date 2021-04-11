@@ -32,7 +32,7 @@ int ncurses::GraphicNcurses::availableOptions() const
     return NO_OPTIONS;
 }
 
-bool ncurses::GraphicNcurses::isOpen()
+bool ncurses::GraphicNcurses::isOpen() const
 {
     return this->windowIsOpen;
 }
@@ -41,7 +41,8 @@ void ncurses::GraphicNcurses::init(const std::string &title, const unsigned int 
 {
     (void)title;
     initscr();
-    if (has_colors()) {
+    this->hasColors = has_colors();
+    if (this->hasColors) {
         start_color();
         init_pair(1, COLOR_BLACK, COLOR_BLACK);
         init_pair(2, COLOR_WHITE, COLOR_BLACK);
@@ -60,6 +61,7 @@ void ncurses::GraphicNcurses::init(const std::string &title, const unsigned int 
     this->windowIsOpen = true;
     this->eventFrame = false;
     this->frameLimit = limit;
+    restartClock();
 }
 
 void ncurses::GraphicNcurses::display()
@@ -91,7 +93,7 @@ void ncurses::GraphicNcurses::restartClock()
     this->time = std::chrono::high_resolution_clock::now();
 }
 
-double ncurses::GraphicNcurses::getDeltaTime()
+double ncurses::GraphicNcurses::getDeltaTime() const
 {
     return this->lastFrameTime;
 }
@@ -103,10 +105,10 @@ double ncurses::GraphicNcurses::getFrameDuration() const
         .count();
 }
 
-arcade::data::Vector2u ncurses::GraphicNcurses::getWindowSize()
+arcade::data::Vector2u ncurses::GraphicNcurses::getWindowSize() const
 {
     return arcade::data::Vector2u{
-        static_cast<unsigned int>(COLS), static_cast<unsigned int>(LINES)};
+        static_cast<unsigned int>(getmaxx(stdscr)), static_cast<unsigned int>(getmaxy(stdscr))};
 }
 
 std::vector<arcade::data::Event> ncurses::GraphicNcurses::getEvents()
@@ -124,10 +126,13 @@ std::vector<arcade::data::Event> ncurses::GraphicNcurses::getEvents()
 void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::IText> &text)
 {
     arcade::data::Vector2f pos = text->getPosition();
-    if (has_colors()) {
+    if (this->hasColors) {
         attron(COLOR_PAIR(goodColor(text->getColor())));
     }
     mvprintw(pos.y, pos.x, text->getText().c_str());
+    if (this->hasColors) {
+        attroff(A_UNDERLINE);
+    }
 }
 
 void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::ISprite> &sprite)
@@ -140,39 +145,44 @@ void ncurses::GraphicNcurses::draw(std::unique_ptr<arcade::displayer::ISprite> &
     for (std::size_t i = 0; i < spriteNcurses.size(); i++) {
         for (std::size_t j = 0; j < spriteNcurses.at(i).length(); j++) {
             if (spriteNcurses.at(i).at(j) != ' ') {
-                if (has_colors()) {
-                    attron(COLOR_PAIR(goodColor(colorNcurses.at(i).at(j))));
+                if (this->hasColors) {
+                    if (!colorNcurses.empty()) {
+                        attron(COLOR_PAIR(goodColor(colorNcurses.at(i).at(j))));
+                    }
                 }
                 mvaddch(pos.y + i, pos.x + j, spriteNcurses.at(i).at(j));
+                if (this->hasColors) {
+                    attroff(A_UNDERLINE);
+                }
             }
         }
     }
 }
 
 std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText(
-    const std::string &text)
+    const std::string &text) const
 {
     return std::make_unique<TextNcurses>(text);
 }
 
-std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText()
+std::unique_ptr<arcade::displayer::IText> ncurses::GraphicNcurses::createText() const
 {
     return std::make_unique<TextNcurses>();
 }
 
-std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprite()
+std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprite() const
 {
     return std::make_unique<SpriteNcurses>();
 }
 
 std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprite(
     const std::string &spritePath, const std::vector<std::string> &asciiSprite,
-    arcade::data::Vector2f scale)
+    arcade::data::Vector2f scale) const
 {
     return std::make_unique<SpriteNcurses>(spritePath, asciiSprite, scale);
 }
 
-double ncurses::GraphicNcurses::scaleMoveX(double time)
+double ncurses::GraphicNcurses::scaleMoveX(double time) const
 {
     if (!time) {
         return 0;
@@ -180,7 +190,7 @@ double ncurses::GraphicNcurses::scaleMoveX(double time)
     return (getWindowSize().x / time) / (1.0f / getDeltaTime());
 }
 
-double ncurses::GraphicNcurses::scaleMoveY(double time)
+double ncurses::GraphicNcurses::scaleMoveY(double time) const
 {
     if (!time) {
         return 0;

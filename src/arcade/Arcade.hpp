@@ -36,12 +36,13 @@ namespace arcade
         void gameLibLoader();
         void switchNextGraphicLib();
         void switchPreviousGraphicLib();
+        void switchNextGameLib();
+        void switchPreviousGameLib();
         void getLib();
         std::vector<std::string> libs;
         std::vector<std::string> libsGame;
         std::size_t libPositionVector;
 
-        void parseLibs();
 
         std::string firstLib;
 
@@ -67,7 +68,7 @@ namespace arcade
         State state;
 
         void handleMenu();
-        void handleMenuEvent();
+        void handleEvents();
 
         void handleGame();
         void handleGameEvent();

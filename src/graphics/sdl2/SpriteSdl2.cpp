@@ -5,6 +5,7 @@
 ** SpriteSdl2
 */
 
+#include <iostream>
 #include "Sdl2.hpp"
 #include <SDL2/SDL_render.h>
 
@@ -41,9 +42,11 @@ void sdl2::SpriteSdl2::setSprite(
     if (SDL_QueryTexture(this->texture.get(), NULL, NULL, &this->srcRect.w, &this->srcRect.h)) {
         // throw error;
     }
-    this->rectSize = {static_cast<float>(this->srcRect.w), static_cast<float>(this->srcRect.h)};
-    this->size = this->rectSize;
+    this->destRect = {0, 0, this->srcRect.w, this->srcRect.h};
+    this->size = {static_cast<float>(this->srcRect.w), static_cast<float>(this->srcRect.h)};
     this->scale = {1, 1};
+    this->rotation = 0;
+    this->origin = {0, 0};
     SDL_FreeSurface(image);
 }
 
@@ -73,9 +76,9 @@ void sdl2::SpriteSdl2::move(float x, float y)
 
 void sdl2::SpriteSdl2::setOrigin(arcade::data::Vector2f origin)
 {
-    this->origin = SDL_Point{static_cast<int>(origin.x), static_cast<int>(origin.y)};
     this->destRect = {static_cast<int>(this->destRect.x + this->origin.x),
         static_cast<int>(this->destRect.y + this->origin.y), this->destRect.w, this->destRect.h};
+    this->origin = SDL_Point{static_cast<int>(origin.x), static_cast<int>(origin.y)};
     this->origin = {static_cast<int>(this->origin.x * this->scale.x), static_cast<int>(this->origin.y * this->scale.y)};
     this->destRect = {static_cast<int>(this->destRect.x - this->origin.x),
         static_cast<int>(this->destRect.y - this->origin.y), this->destRect.w, this->destRect.h};
@@ -102,8 +105,8 @@ void sdl2::SpriteSdl2::setScale(arcade::data::Vector2f scale)
     this->origin = {static_cast<int>(this->origin.x / this->scale.x), static_cast<int>(this->origin.y / this->scale.y)};
     this->scale = scale;
     this->origin = {static_cast<int>(this->origin.x * this->scale.x), static_cast<int>(this->origin.y * this->scale.y)};
-    this->destRect = {static_cast<int>(this->destRect.x - this->size.x),
-        static_cast<int>(this->destRect.y - this->size.y), this->destRect.w, this->destRect.h};
+    this->destRect = {this->destRect.x,
+        this->destRect.y, static_cast<int>(this->destRect.w  * this->scale.x), static_cast<int>(this->destRect.h  * this->scale.y)};
 }
 
 arcade::data::Vector2f sdl2::SpriteSdl2::getScale() const
@@ -153,8 +156,3 @@ void sdl2::SpriteSdl2::drawSprite()
         // throw error
     }
 }
-
-// sf::Sprite &sdl2::SpriteSdl2::getSfSprite()
-// {
-//     return this->sprite;
-// }

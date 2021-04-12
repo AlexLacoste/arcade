@@ -10,7 +10,6 @@
 
 void arcade::Arcade::handleMenu()
 {
-    this->handleMenuEvent();
     if (this->isClosed)
         return;
     this->graphicLib->clearWindow();
@@ -19,57 +18,6 @@ void arcade::Arcade::handleMenu()
     }
     for (auto &text : this->vectorText) {
         this->graphicLib->draw(text);
-    }
-    this->graphicLib->display();
-}
-
-void arcade::Arcade::handleMenuEvent()
-{
-    std::vector<arcade::data::Event> events = this->graphicLib->getEvents();
-    for (auto event : events) {
-        if (event.type == arcade::data::WINDOW_CLOSED) {
-            this->isClosed = true;
-            return;
-        }
-        if (event.type == arcade::data::EventType::KEY_PRESSED) {
-            switch (event.key) {
-                case ('q'):
-                    this->switchPreviousGraphicLib();
-                    return;
-                case ('s'):
-                    this->switchNextGraphicLib();
-                    return;
-                // case ('A'):
-                //     std::cout << "A" << std::endl;
-                //     break;
-            }
-            switch (static_cast<int>(event.keyCode)) {
-            //     case (arcade::data::RIGHT):
-            //         this->vectorSprite.at(0)->move(arcade::data::Vector2f{
-            //             static_cast<float>(this->graphicLib->getWindowSize().x * 0.5 / 100), 0});
-            //         break;
-            //     case (arcade::data::LEFT):
-            //         this->vectorSprite.at(0)->move(arcade::data::Vector2f{
-            //             static_cast<float>(-(this->graphicLib->getWindowSize().x * 0.5 / 100)), 0});
-            //         break;
-            //     case (arcade::data::UP):
-            //         this->vectorSprite.at(0)->move(arcade::data::Vector2f{
-            //             0, static_cast<float>(-(this->graphicLib->getWindowSize().y * 0.5 / 100))});
-            //         break;
-            //     case (arcade::data::DOWN):
-            //         this->vectorSprite.at(0)->move(arcade::data::Vector2f{
-            //             0, static_cast<float>(this->graphicLib->getWindowSize().y * 0.5 / 100)});
-            //         break;
-                case (arcade::data::ESCAPE):
-                    this->isClosed = true;
-                    return;
-            }
-        }
-        // if (event.type == arcade::data::EventType::MOUSE_PRESSED) {
-        //     if (event.btn == arcade::data::BTN_1) {
-        //         std::cout << event.x << "    " << event.y << std::endl;
-        //     }
-        // }
     }
 }
 
@@ -146,7 +94,7 @@ void arcade::Arcade::initMenu()
         arcade::data::Vector2f{static_cast<float>(this->graphicLib->getWindowSize().x) * 81 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 78 / 100});
 
-    textNextGame = this->graphicLib->createText("\"w\" : next game");
+    textNextGame = this->graphicLib->createText("\"x\" : next game");
     textNextGame->setFont("ressources/font.ttf");
     textNextGame->setColor(arcade::data::Color::White);
     textNextGame->setCharacterSize(17);

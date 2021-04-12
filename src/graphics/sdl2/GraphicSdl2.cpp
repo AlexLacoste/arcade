@@ -94,7 +94,7 @@ void sdl2::GraphicSdl2::init(const std::string &title, const unsigned int limit)
         // throw error;
     }
     this->window = create_window(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_OPENGL));
+        SDL_WINDOWPOS_UNDEFINED, 1920, 1080,  SDL_WINDOW_RESIZABLE));
     if (!this->window || SDL_GetError()) {
         // throw error;
     }

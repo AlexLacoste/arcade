@@ -5,9 +5,8 @@
 ** TextSdl2
 */
 
+#include <iostream>
 #include "Sdl2.hpp"
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
 
 sdl2::TextSdl2::TextSdl2()
@@ -25,10 +24,10 @@ sdl2::TextSdl2::~TextSdl2()
 
 void sdl2::TextSdl2::setText(const std::string &text)
 {
-    if (!font) {
+    this->text = text;
+    if (!this->font) {
         return;
     }
-    this->text = text;
     SDL_Surface *surface = TTF_RenderText_Solid(this->font.get(), this->text.c_str(), this->color);
     if (!surface) {
         // throw error
@@ -114,10 +113,10 @@ arcade::data::Vector2f sdl2::TextSdl2::getOrigin() const
 
 void sdl2::TextSdl2::drawText()
 {
-    
+    if (!this->texture) {
+        return;
+    }
+    if (SDL_RenderCopy(sdl2::GraphicSdl2::renderer.get(), this->texture.get(), NULL, &this->destRect) != 0) {
+        // throw error;
+    }
 }
-
-// sf::Text &sdl2::TextSdl2::getSfText()
-// {
-//     return this->text;
-// }

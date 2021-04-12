@@ -39,7 +39,6 @@ namespace sdl2
         void setOrigin(arcade::data::Vector2f origin) override;
         arcade::data::Vector2f getOrigin() const override;
         void drawText();
-        // sf::Text &getSfText();
 
       private:
         typedef std::unique_ptr<TTF_Font, std::function<void(TTF_Font *)>> Font;
@@ -80,14 +79,13 @@ namespace sdl2
         void setColor(arcade::data::Color color,
             const std::vector<std::vector<arcade::data::Color>> &asciiColors) override;
         void drawSprite();
-        // sf::Sprite &getSfSprite();
+
       private:
         Texture texture;
         SDL_Rect srcRect;
         SDL_Rect destRect;
         SDL_Point origin;
         arcade::data::Vector2f scale;
-        arcade::data::Vector2f rectSize;
         arcade::data::Vector2f size;
         float rotation;
     };

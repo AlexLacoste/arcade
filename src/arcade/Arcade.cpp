@@ -26,7 +26,7 @@ arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
-    this->username = "";
+    this->username = "user";
     // this->gameTitle = getGameTitle();
     this->state = MENU;
     this->isClosed = false;
@@ -47,6 +47,9 @@ void arcade::Arcade::init()
     }
     if (idx == this->libs.size())
         throw std::exception();
+    if (this->libs.size() == 0) {
+        // throw error
+    }
     this->libPositionVector = idx;
     this->dlLoaderGraphic = std::make_unique<DLLoader>(firstLib.c_str());
     this->graphicLibLoader();
@@ -58,25 +61,16 @@ void arcade::Arcade::run()
         {MENU, &arcade::Arcade::handleMenu}, {GAME, &arcade::Arcade::handleGame}};
 
     this->init();
-    this->parseLibs();
     this->graphicLib->init("Arcade");
     this->initMenu();
     while (this->graphicLib->isOpen() && !this->isClosed) {
+        this->handleEvents();
         if (this->state != CLOSED) {
             (this->*mapFptr.at(this->state))();
         }
+        this->graphicLib->display();
     }
     this->graphicLib->stop();
-}
-
-void arcade::Arcade::parseLibs()
-{
-    // si une lib dans vecteur libs est dans game et pas dans graphical -> push dans vector libsGame
-    // et delete celle dans libs si une lib dans vecteur libs est dans rien -> delete
-    if (this->libs.size() == 0) {
-        std::cerr << "no valid lib" << std::endl; // remove
-        // throw error
-    }
 }
 
 void arcade::Arcade::graphicLibLoader()
@@ -124,6 +118,14 @@ void arcade::Arcade::switchPreviousGraphicLib()
     this->initMenu();
 }
 
+void arcade::Arcade::switchPreviousGameLib()
+{
+}
+
+void arcade::Arcade::switchNextGameLib()
+{
+}
+
 void arcade::Arcade::getLib()
 {
     std::pair<std::vector<std::string>, std::vector<std::string>> pairLib = this->parseLibConf();
@@ -132,7 +134,8 @@ void arcade::Arcade::getLib()
         if (this->isALib(tmp)) {
             if (std::find(pairLib.first.begin(), pairLib.first.end(), tmp) != pairLib.first.end()) {
                 this->libs.push_back(tmp);
-            } else if (std::find(pairLib.second.begin(), pairLib.second.end(), tmp) != pairLib.second.end()) {
+            } else if (std::find(pairLib.second.begin(), pairLib.second.end(), tmp)
+                != pairLib.second.end()) {
                 this->libsGame.push_back(tmp);
             }
         }
@@ -147,7 +150,8 @@ void arcade::Arcade::handleGameEvent()
 {
 }
 
-std::vector<std::vector<arcade::data::Color>> arcade::Arcade::colorSprite(std::size_t i, std::size_t j, arcade::data::Color color)
+std::vector<std::vector<arcade::data::Color>> arcade::Arcade::colorSprite(
+    std::size_t i, std::size_t j, arcade::data::Color color)
 {
     std::vector<std::vector<arcade::data::Color>> spriteColor;
 
@@ -160,7 +164,8 @@ std::vector<std::vector<arcade::data::Color>> arcade::Arcade::colorSprite(std::s
     return (spriteColor);
 }
 
-std::vector<std::string> arcade::Arcade::createSquare(std::size_t i, std::size_t j, bool isFill, char c)
+std::vector<std::string> arcade::Arcade::createSquare(
+    std::size_t i, std::size_t j, bool isFill, char c)
 {
     std::vector<std::string> square;
 
@@ -198,8 +203,7 @@ std::pair<std::vector<std::string>, std::vector<std::string>> arcade::Arcade::pa
             line = line.substr(line.find("lib/arcade_"));
             if (libType == 1) {
                 pairLib.first.emplace_back(line);
-            }
-            else if (libType == 2) {
+            } else if (libType == 2) {
                 pairLib.second.emplace_back(line);
             }
         }
@@ -220,4 +224,68 @@ bool arcade::Arcade::isALib(const std::string &libPath)
         return (true);
     }
     return (false);
+}
+
+void arcade::Arcade::handleEvents()
+{
+    std::vector<arcade::data::Event> events = this->graphicLib->getEvents();
+
+    for (auto event : events) {
+        if (event.type == arcade::data::WINDOW_CLOSED) {
+            this->isClosed = true;
+            return;
+        }
+        if (event.type == arcade::data::EventType::KEY_PRESSED) {
+            switch (event.key) {
+                case ('q'):
+                    this->switchPreviousGraphicLib();
+                    return;
+                case ('s'):
+                    this->switchNextGraphicLib();
+                    return;
+            }
+            if (this->state == MENU) {
+                switch (static_cast<int>(event.keyCode)) {
+                        //     case (arcade::data::UP):
+                        //         passez à la lib au dessus
+                        //         break;
+                        //     case (arcade::data::DOWN):
+                        //         passez à la lib en dessous
+                        //         break;
+                    case (arcade::data::ESCAPE):
+                        this->isClosed = true;
+                        return;
+                }
+            } else if (this->state == GAME) {
+                switch (event.key) {
+                    case ('w'):
+                        this->switchPreviousGameLib();
+                        return;
+                    case ('x'):
+                        this->switchNextGameLib();
+                        return;
+                    // case ('r'):
+                    //     this->gameLib.restart();
+                    //     return;
+                    case ('m'):
+                        this->state = MENU;
+                        this->gameLib->stop();
+                        this->initMenu();
+                        return;
+                }
+                switch (static_cast<int>(event.keyCode)) {
+                        //     case (arcade::data::UP):
+                        //         passez à la lib au dessus
+                        //         break;
+                        //     case (arcade::data::DOWN):
+                        //         passez à la lib en dessous
+                        //         break;
+                    case (arcade::data::ESCAPE):
+                        this->gameLib->stop();
+                        this->isClosed = true;
+                        return;
+                }
+            }
+        }
+    }
 }

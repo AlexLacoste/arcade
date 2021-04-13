@@ -88,6 +88,8 @@ namespace arcade
         void generateHighscore(const std::string &game);
         void verifHighscore();
         void generateHighscoreFile();
+        void sortHighscore(std::vector<std::pair<std::string, std::size_t>> &highscore);
+        void addHighscore(const std::string &game, const std::string &user, size_t score);
         std::unordered_map<std::string, std::vector<std::pair<std::string, std::size_t>>> highscoreMap;
 
     };

@@ -83,6 +83,12 @@ namespace arcade
 
         std::pair<std::vector<std::string>, std::vector<std::string>> parseLibConf();
         bool isALib(const std::string &libPath);
+        void parseHighscore();
+        void getHighscore(std::ifstream &fs, const std::string &game);
+        void generateHighscore(const std::string &game);
+        void verifHighscore();
+        void generateHighscoreFile();
+        std::unordered_map<std::string, std::vector<std::pair<std::string, std::size_t>>> highscoreMap;
 
     };
 } // namespace arcade

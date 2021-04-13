@@ -28,6 +28,7 @@ void ncurses::SpriteNcurses::setSprite(
 {
     (void)spritePath;
     this->sprite = asciiSprite;
+    this->textureRect = {0, 0, static_cast<int>(this->sprite.at(0).length()), static_cast<int>(this->sprite.size())};
 }
 
 void ncurses::SpriteNcurses::setPosition(arcade::data::Vector2f pos)
@@ -102,7 +103,7 @@ void ncurses::SpriteNcurses::rotate(float angle)
 
 void ncurses::SpriteNcurses::setTextureRect(const arcade::data::IntRect &rect)
 {
-    this->textureRect = rect;
+    (void)rect;
 }
 
 arcade::data::IntRect ncurses::SpriteNcurses::getTextureRect() const

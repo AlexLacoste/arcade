@@ -15,11 +15,7 @@ LDLIBS		=	-lgtest -lgtest_main -lpthread --coverage
 
 LD			=	g++
 
-
-
 SRC			=	Color.cpp
-
-# TESTSRC	=	
 
 OBJ			=	$(SRC:.cpp=.o)
 
@@ -38,11 +34,6 @@ fclean:		clean
 	rm -f unit_test
 
 re:	fclean all
-
-# tests_run:
-# 	rm -f *.gc*
-# 	$(LD) -o unit_test $(SRC) $(TESTSRC) $(CFLAGS) $(LDFLAGS) $(LDLIBS)
-# 	./unit_test
 
 debug:
 	$(LD) -g -o $(NAME) $(SRC) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)

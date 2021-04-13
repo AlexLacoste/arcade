@@ -21,8 +21,6 @@ SRC			=	GraphicSfml.cpp		\
 				TextSfml.cpp		\
 				SpriteSfml.cpp
 
-# TESTSRC	=	
-
 OBJ			=	$(SRC:.cpp=.o)
 
 all:	$(NAME)
@@ -45,11 +43,6 @@ fclean:		clean
 	rm -f unit_test
 
 re:	fclean all
-
-# tests_run:
-# 	rm -f *.gc*
-# 	$(LD) -o unit_test $(SRC) $(TESTSRC) $(CFLAGS) $(LDFLAGS) $(LDLIBS)
-# 	./unit_test
 
 debug:
 	$(LD) -g -o $(NAME) $(MAIN) $(SRC) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)

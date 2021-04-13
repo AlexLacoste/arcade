@@ -21,8 +21,6 @@ SRC			=	GraphicSdl2.cpp		\
 				TextSdl2.cpp		\
 				SpriteSdl2.cpp
 
-# TESTSRC	=	
-
 OBJ			=	$(SRC:.cpp=.o)
 
 all:	$(NAME)
@@ -46,11 +44,6 @@ fclean:		clean
 	rm -f *.o
 
 re:	fclean all
-
-# tests_run:
-# 	rm -f *.gc*
-# 	$(LD) -o unit_test $(SRC) $(TESTSRC) $(CFLAGS) $(LDFLAGS) $(LDLIBS)
-# 	./unit_test
 
 debug:
 	$(LD) -g -o $(NAME) $(MAIN) $(SRC) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)

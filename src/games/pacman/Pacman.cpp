@@ -7,7 +7,7 @@
 
 #include "Pacman.hpp"
 
-extern "C" std::unique_ptr<arcade::IGame> entry_point()
+extern "C" std::unique_ptr<arcade::games::IGame> GAMES_ENTRY_POINT()
 {
     return std::make_unique<arcade::pacman::Pacman>();
 }
@@ -26,7 +26,7 @@ void arcade::pacman::Pacman::init(std::shared_ptr<displayer::IDisplay> &disp)
     this->gameMap = this->createGameMap("ressources/pacman/pacman_map.txt");
     this->createAllSprites();
 }
-void arcade::pacman::Pacman::update()
+arcade::games::GameStatus arcade::pacman::Pacman::update()
 {
     std::for_each(this->gameSprites.begin(), this->gameSprites.end(), [&](std::unique_ptr<displayer::ISprite> &sprite) {
         this->graphicLib->draw(sprite);
@@ -37,8 +37,17 @@ void arcade::pacman::Pacman::stop()
 {
 }
 
+void arcade::pacman::Pacman::restart()
+{
+}
+
+unsigned int arcade::pacman::Pacman::getScore() const
+{
+}
+
 void arcade::pacman::Pacman::createAllSprites(void)
 {
+    int i = 0;
     float offsetX = 0;
     float offsetY = 0;
 
@@ -49,14 +58,19 @@ void arcade::pacman::Pacman::createAllSprites(void)
       spriteCharacters.push_back(std::string{pixel.getCharacter()});
       sprite = this->graphicLib->createSprite(pixel.getPixelImage(), spriteCharacters, arcade::data::Vector2f{0.04, 0.04});
       sprite->setTextureRect(arcade::data::IntRect{0, 0, 500, 500});
+      if (i == 0 || i == 1){
+              std::cout << "CHAR: " << spriteCharacters.at(0).size() << ", " << spriteCharacters.size() << std::endl;
+              std::cout << "RECT: " << sprite->getTextureRect().width << ", " << sprite->getTextureRect().height << std::endl;
+      }
       sprite->setColor(pixel.getPixelColor(), this->colorSprite(spriteCharacters.size(), spriteCharacters.at(0).length(), pixel.getPixelColor()));
-      sprite->setPosition(arcade::data::Vector2f{pixel.getPosX() + offsetX, pixel.getPosY() + offsetY});
+      sprite->setPosition(arcade::data::Vector2f{pixel.getPosX() * sprite->getTextureRect().width, pixel.getPosY() * sprite->getTextureRect().height});
       this->gameSprites.push_back(std::move(sprite));
-      offsetX += 20;
+      /*offsetX += 20;
       if ((pixel.getPosX() + 1) >= this->mapWidth) {
           offsetX = 0;
           offsetY += 20;
-      }
+      }*/
+      i += 1;
     });
 }
 

@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include "../games/IGame.hpp"
+#include "../shared/IGame.hpp"
 #include "../shared/IDisplayModule.hpp"
 #include "DLLoader/DLLoader.hpp"
 
@@ -49,7 +49,7 @@ namespace arcade
         // std::size_t &getHighScore() const;
         std::size_t highScore;
 
-        std::unique_ptr<IGame> gameLib;
+        std::unique_ptr<games::IGame> gameLib;
         std::shared_ptr<displayer::IDisplay> graphicLib;
 
         std::unique_ptr<DLLoader> dlLoaderGraphic;

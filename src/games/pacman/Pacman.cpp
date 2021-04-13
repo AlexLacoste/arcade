@@ -25,12 +25,14 @@ void arcade::pacman::Pacman::init(std::shared_ptr<displayer::IDisplay> &disp)
     this->graphicLib = disp;
     this->gameMap = this->createGameMap("ressources/pacman/pacman_map.txt");
     this->createAllSprites();
+    this->createPlayer();
 }
 arcade::games::GameStatus arcade::pacman::Pacman::update()
 {
     std::for_each(this->gameSprites.begin(), this->gameSprites.end(), [&](std::unique_ptr<displayer::ISprite> &sprite) {
         this->graphicLib->draw(sprite);
     });
+    this->graphicLib->draw(playerSprite);
     return arcade::games::PLAYING;
 }
 
@@ -45,6 +47,18 @@ void arcade::pacman::Pacman::restart()
 unsigned int arcade::pacman::Pacman::getScore() const
 {
     return 0;
+}
+
+void arcade::pacman::Pacman::createPlayer(void)
+{
+    std::unique_ptr<displayer::ISprite> sprite;
+    arcade::data::Vector2f position{13, 23};
+
+    sprite = this->graphicLib->createSprite("ressources/pacman/pacman.png", std::vector<std::string>{"G"}, arcade::data::Vector2f{0.04, 0.04});
+    sprite->setTextureRect(arcade::data::IntRect{0, 0, 500, 500});
+    //sprite->setColor(pixel.getPixelColor(), this->colorSprite(spriteCharacters.size(), spriteCharacters.at(0).length(), pixel.getPixelColor()));
+    sprite->setPosition(arcade::data::Vector2f{position.x * (sprite->getTextureRect().width * sprite->getScale().x), position.y * (sprite->getTextureRect().height * sprite->getScale().y)});
+    this->playerSprite = std::move(sprite);
 }
 
 void arcade::pacman::Pacman::createAllSprites(void)

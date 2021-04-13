@@ -57,6 +57,7 @@ namespace arcade
 
             protected:
             private:
+                void createPlayer(void);
                 void createAllSprites(void);
 
                 std::vector<Pixel> createGameMap(std::string filepath);
@@ -70,6 +71,7 @@ namespace arcade
                 std::vector<Pixel> gameMap;
                 std::size_t mapWidth;
                 std::vector<std::unique_ptr<displayer::ISprite>> gameSprites;
+                std::unique_ptr<displayer::ISprite> playerSprite;
         };
     }
 }

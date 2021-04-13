@@ -57,8 +57,8 @@ namespace arcade
             private:
                 void createAllSprites(void);
 
-                std::vector<Pixel> createGameMap(std::string filepath) const;
-                std::vector<Pixel> createMapPixels(std::vector<std::string> map) const;
+                std::vector<Pixel> createGameMap(std::string filepath);
+                std::vector<Pixel> createMapPixels(std::vector<std::string> map);
                 std::string getPixelImageType(char c) const;
                 arcade::data::Color getPixelColorType(char c) const;
 
@@ -66,6 +66,7 @@ namespace arcade
 
                 std::shared_ptr<displayer::IDisplay> graphicLib;
                 std::vector<Pixel> gameMap;
+                std::size_t mapWidth;
                 std::vector<std::unique_ptr<displayer::ISprite>> gameSprites;
         };
     }

@@ -17,6 +17,7 @@ ncurses::SpriteNcurses::SpriteNcurses(const std::string &spritePath,
     (void)spritePath;
     (void)scale;
     this->sprite = asciiSprite;
+    this->textureRect = {0, 0, static_cast<int>(this->sprite.at(0).length()), static_cast<int>(this->sprite.size())};
 }
 
 ncurses::SpriteNcurses::~SpriteNcurses()

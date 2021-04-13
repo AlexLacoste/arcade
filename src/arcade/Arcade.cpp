@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <vector>
 #include "../shared/Color.cpp"
+#include <bits/c++config.h>
 
 arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 {
@@ -55,6 +56,8 @@ void arcade::Arcade::init()
     }
     this->libPositionVector = idx;
     this->graphicLibLoader(this->firstLib);
+    this->parseHighscore();
+    this->verifHighscore();
 }
 
 void arcade::Arcade::run()
@@ -73,6 +76,7 @@ void arcade::Arcade::run()
         this->graphicLib->display();
     }
     this->graphicLib->stop();
+    this->generateHighscoreFile();
 }
 
 void arcade::Arcade::graphicLibLoader(std::string lib)
@@ -327,5 +331,112 @@ void arcade::Arcade::handleEvents()
                 }
             }
         }
+    }
+}
+
+void arcade::Arcade::parseHighscore()
+{
+    std::ifstream fs {"highscore.txt"};
+    std::string line{};
+
+    if (!fs.is_open()) {
+        return;
+    }
+    while (std::getline(fs, line)) {
+        if (line.find_last_of(':') == line.size() - 1) {
+            line = line.substr(0, line.size() - 1);
+            if (std::find(this->libsGame.begin(), this->libsGame.end(), line) != this->libsGame.end()) {
+                this->getHighscore(fs, line);
+            }
+        }
+    }
+    fs.close();
+}
+
+void arcade::Arcade::getHighscore(std::ifstream &fs, const std::string &game)
+{
+    std::vector<std::pair<std::string, std::size_t>> gameHighscore{};
+    std::string line{};
+    std::stringstream ss{};
+    std::size_t i = 0;
+
+    for (; i < 3 && std::getline(fs, line); i++) {
+        if (line[0] != '-')
+            break;
+        std::pair<std::string, std::size_t> highscore;
+        ss.str(line.substr(1));
+        ss >> highscore.first >> highscore.second;
+        std::cout << highscore.first << ' ' << highscore.second << std::endl;
+        if (highscore.first.empty() || highscore.second == 0)
+            return;
+        if (ss.eof())
+            gameHighscore.emplace_back(highscore);
+        ss.clear();
+    }
+    if (gameHighscore.size() != 3)
+        return;
+    std::cout << "Highscore find for : " << game << std::endl;
+    this->sortHighscore(gameHighscore);
+    this->highscoreMap[game] = gameHighscore;
+}
+
+void arcade::Arcade::generateHighscore(const std::string &game)
+{
+    std::vector<std::pair<std::string, std::size_t>> gameHighscore{};
+
+    if (std::find(this->libsGame.begin(), this->libsGame.end(), game) != this->libsGame.end()) {
+        gameHighscore.emplace_back(std::pair<std::string, std::size_t>{"Jay", 10000});
+        gameHighscore.emplace_back(std::pair<std::string, std::size_t>{"Jay", 5000});
+        gameHighscore.emplace_back(std::pair<std::string, std::size_t>{"Jay", 2000});
+        this->highscoreMap[game] = gameHighscore;
+    }
+}
+
+void arcade::Arcade::verifHighscore()
+{
+    for (const auto &game : this->libsGame) {
+        if (this->highscoreMap.count(game) == 0) {
+            std::cout << "No highscore : " << game << std::endl; 
+            generateHighscore(game);
+        }
+    }
+}
+
+void arcade::Arcade::generateHighscoreFile()
+{
+    std::ofstream fs{"highscore.txt"};
+    
+    if (!fs.is_open()) {
+        return;
+    }
+    for (const auto &game : this->libsGame) {
+        if (this->highscoreMap.count(game)) {
+            this->sortHighscore(highscoreMap[game]);
+            fs << game << ':' << std::endl;
+            for (const auto &pair : this->highscoreMap[game]) {
+                fs << "- " << pair.first << ' ' << pair.second << std::endl;
+            }
+        }
+    }
+}
+
+void arcade::Arcade::sortHighscore(std::vector<std::pair<std::string, std::size_t>> &highscore)
+{
+    for (std::size_t i = highscore.size() - 2; i > 0; i--) {
+        for (std::size_t j = 0; j <= i; j++) {
+            if (highscore.at(j).second < highscore.at(j + 1).second)
+                highscore.at(j).swap(highscore.at(j + 1));
+        }
+    }
+    while (highscore.size() > 3) {
+        highscore.pop_back();
+    }
+}
+
+void arcade::Arcade::addHighscore(const std::string &game, const std::string &user, size_t score)
+{
+    if (this->highscoreMap.count(game)) {
+        this->highscoreMap[game].emplace_back(std::pair<std::string, std::size_t>{user, score});
+        sortHighscore(this->highscoreMap[game]);
     }
 }

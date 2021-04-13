@@ -14,7 +14,7 @@
 #include <memory>
 #include <fstream>
 
-#include "IGame.hpp"
+#include "../../shared/IGame.hpp"
 
 namespace arcade
 {
@@ -44,17 +44,20 @@ namespace arcade
                 float y;
         };
 
-        class Pacman : public arcade::IGame {
+        class Pacman : public arcade::games::IGame {
             public:
                 Pacman();
                 ~Pacman();
 
-                void init(std::shared_ptr<displayer::IDisplay> &disp) override;
-                void update() override;
+                void init(std::shared_ptr<arcade::displayer::IDisplay> &disp) override;
+                arcade::games::GameStatus update() override;
                 void stop() override;
+                void restart() override;
+                unsigned int getScore() const override;
 
             protected:
             private:
+                void createPlayer(void);
                 void createAllSprites(void);
 
                 std::vector<Pixel> createGameMap(std::string filepath);
@@ -68,6 +71,7 @@ namespace arcade
                 std::vector<Pixel> gameMap;
                 std::size_t mapWidth;
                 std::vector<std::unique_ptr<displayer::ISprite>> gameSprites;
+                std::unique_ptr<displayer::ISprite> playerSprite;
         };
     }
 }

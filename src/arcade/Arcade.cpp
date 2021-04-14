@@ -17,7 +17,6 @@
 #include <unistd.h>
 #include <vector>
 #include "../shared/Color.cpp"
-#include <bits/c++config.h>
 
 arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 {
@@ -27,7 +26,11 @@ arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
-    this->username = "user";
+    this->username = "user____";
+    this->realUsername = "user";
+    this->isChooseGame = true;
+    this->posChooseGraphic = 0;
+    this->posChooseGame = 0;
     // this->gameTitle = getGameTitle();
     this->state = MENU;
     this->isClosed = false;
@@ -35,6 +38,9 @@ arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 
 arcade::Arcade::~Arcade()
 {
+    if (this->graphicLib) {
+        this->graphicLib->stop();
+    }
 }
 
 void arcade::Arcade::init()
@@ -48,12 +54,11 @@ void arcade::Arcade::init()
     }
     if (idx == this->libs.size())
         throw std::exception();
-    if (this->libs.size() == 0) {
+    if (this->libs.size() == 0 || this->libsGame.size() == 0) {
         // throw error
     }
     this->libPositionVector = idx;
-    this->dlLoaderGraphic = std::make_unique<DLLoader>(firstLib.c_str());
-    this->graphicLibLoader();
+    this->graphicLibLoader(this->firstLib);
     this->parseHighscore();
     this->verifHighscore();
 }
@@ -77,13 +82,22 @@ void arcade::Arcade::run()
     this->generateHighscoreFile();
 }
 
-void arcade::Arcade::graphicLibLoader()
+void arcade::Arcade::graphicLibLoader(std::string lib)
 {
+    this->dlLoaderGraphic = std::make_unique<DLLoader>(lib.c_str());
     this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>();
 }
 
 void arcade::Arcade::gameLibLoader()
 {
+}
+
+void arcade::Arcade::clearVector()
+{
+    this->vectorSprite.clear();
+    this->vectorTextInit.clear();
+    this->vectorTextLib.clear();
+    this->vectorTextGame.clear();
 }
 
 void arcade::Arcade::switchNextGraphicLib()
@@ -92,14 +106,9 @@ void arcade::Arcade::switchNextGraphicLib()
         return;
     }
     this->graphicLib->stop();
-    this->vectorSprite.clear();
-    this->vectorText.clear();
-    this->libPositionVector =
-        (this->libPositionVector + 1 < this->libs.size()) ? this->libPositionVector + 1 : 0;
-
-    this->dlLoaderGraphic =
-        std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
-    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>();
+    this->libPositionVector = (this->libPositionVector + 1 < this->libs.size()) ? this->libPositionVector + 1 : 0;
+    this->clearVector();
+    this->graphicLibLoader(this->libs.at(this->libPositionVector));
     this->graphicLib->init("Arcade");
     this->initMenu();
 }
@@ -110,14 +119,21 @@ void arcade::Arcade::switchPreviousGraphicLib()
         return;
     }
     this->graphicLib->stop();
-    this->vectorSprite.clear();
-    this->vectorText.clear();
-    this->libPositionVector =
-        (this->libPositionVector == 0) ? this->libs.size() - 1 : this->libPositionVector - 1;
+    this->libPositionVector = (this->libPositionVector == 0) ? this->libs.size() - 1 : this->libPositionVector - 1;
+    this->clearVector();
+    this->graphicLibLoader(this->libs.at(this->libPositionVector));
+    this->graphicLib->init("Arcade");
+    this->initMenu();
+}
 
-    this->dlLoaderGraphic =
-        std::make_unique<DLLoader>(this->libs.at(this->libPositionVector).c_str());
-    this->graphicLib = this->dlLoaderGraphic->getInstance<displayer::IDisplay>();
+void arcade::Arcade::switchSpecificGraphicLib()
+{
+    if (this->libs.size() == 1) {
+        return;
+    }
+    this->graphicLib->stop();
+    this->clearVector();
+    this->graphicLibLoader(this->libs.at(this->posChooseGraphic));
     this->graphicLib->init("Arcade");
     this->initMenu();
 }
@@ -138,8 +154,7 @@ void arcade::Arcade::getLib()
         if (this->isALib(tmp)) {
             if (std::find(pairLib.first.begin(), pairLib.first.end(), tmp) != pairLib.first.end()) {
                 this->libs.push_back(tmp);
-            } else if (std::find(pairLib.second.begin(), pairLib.second.end(), tmp)
-                != pairLib.second.end()) {
+            } else if (std::find(pairLib.second.begin(), pairLib.second.end(), tmp) != pairLib.second.end()) {
                 this->libsGame.push_back(tmp);
             }
         }
@@ -168,8 +183,7 @@ std::vector<std::vector<arcade::data::Color>> arcade::Arcade::colorSprite(
     return (spriteColor);
 }
 
-std::vector<std::string> arcade::Arcade::createSquare(
-    std::size_t i, std::size_t j, bool isFill, char c)
+std::vector<std::string> arcade::Arcade::createSquare(std::size_t i, std::size_t j, bool isFill, char c)
 {
     std::vector<std::string> square;
 
@@ -241,24 +255,72 @@ void arcade::Arcade::handleEvents()
         }
         if (event.type == arcade::data::EventType::KEY_PRESSED) {
             switch (event.key) {
-                case ('q'):
+                case ('.'):
                     this->switchPreviousGraphicLib();
                     return;
-                case ('s'):
+                case ('/'):
                     this->switchNextGraphicLib();
                     return;
             }
             if (this->state == MENU) {
+                if (event.key >= 'a' && event.key <= 'z' || event.key >= 'A' && event.key <= 'Z') {
+                    this->addCharToUsername(event.key);
+                    return;
+                }
+                if (event.key == 127) {
+                    this->deleteOneCharUsername();
+                    return;
+                }
                 switch (static_cast<int>(event.keyCode)) {
-                        //     case (arcade::data::UP):
-                        //         passez à la lib au dessus
-                        //         break;
-                        //     case (arcade::data::DOWN):
-                        //         passez à la lib en dessous
-                        //         break;
+                    case (arcade::data::UP):
+                        if (this->isChooseGame) {
+                            this->posChooseGame =
+                                (this->posChooseGame == 0) ? this->libsGame.size() - 1 : this->posChooseGame - 1;
+                        } else {
+                            this->posChooseGraphic =
+                                (this->posChooseGraphic == 0) ? this->libs.size() - 1 : this->posChooseGraphic - 1;
+                        }
+                        break;
+                    case (arcade::data::DOWN):
+                        if (this->isChooseGame) {
+                            this->posChooseGame =
+                                (this->posChooseGame + 1 < this->libsGame.size()) ? this->posChooseGame + 1 : 0;
+                        } else {
+                            this->posChooseGraphic =
+                                (this->posChooseGraphic + 1 < this->libs.size()) ? this->posChooseGraphic + 1 : 0;
+                        }
+                        break;
+                    case (arcade::data::LEFT):
+                        this->isChooseGame = !this->isChooseGame;
+                        if (this->isChooseGame) {
+                            this->posChooseGame = 0;
+                        } else {
+                            this->posChooseGraphic = 0;
+                        }
+                        break;
+                    case (arcade::data::RIGHT):
+                        this->isChooseGame = !this->isChooseGame;
+                        if (this->isChooseGame) {
+                            this->posChooseGame = 0;
+                        } else {
+                            this->posChooseGraphic = 0;
+                        }
+                        break;
                     case (arcade::data::ESCAPE):
                         this->isClosed = true;
                         return;
+                    case (arcade::data::ENTER):
+                        if (this->isChooseGame) {
+                            if (this->realUsername.size() != 0) {
+                                this->state = GAME;
+                            }
+                        } else {
+                            this->switchSpecificGraphicLib();
+                        }
+                        return;
+                    case (arcade::data::BACKSPACE):
+                        this->deleteOneCharUsername();
+                        break;
                 }
             } else if (this->state == GAME) {
                 switch (event.key) {
@@ -268,9 +330,9 @@ void arcade::Arcade::handleEvents()
                     case ('x'):
                         this->switchNextGameLib();
                         return;
-                    // case ('r'):
-                    //     this->gameLib.restart();
-                    //     return;
+                    case ('r'):
+                        this->gameLib->restart();
+                        return;
                     case ('m'):
                         this->state = MENU;
                         this->gameLib->stop();
@@ -278,12 +340,6 @@ void arcade::Arcade::handleEvents()
                         return;
                 }
                 switch (static_cast<int>(event.keyCode)) {
-                        //     case (arcade::data::UP):
-                        //         passez à la lib au dessus
-                        //         break;
-                        //     case (arcade::data::DOWN):
-                        //         passez à la lib en dessous
-                        //         break;
                     case (arcade::data::ESCAPE):
                         this->gameLib->stop();
                         this->isClosed = true;
@@ -296,7 +352,7 @@ void arcade::Arcade::handleEvents()
 
 void arcade::Arcade::parseHighscore()
 {
-    std::ifstream fs {"highscore.txt"};
+    std::ifstream fs{"highscore.txt"};
     std::string line{};
 
     if (!fs.is_open()) {
@@ -356,7 +412,7 @@ void arcade::Arcade::verifHighscore()
 {
     for (const auto &game : this->libsGame) {
         if (this->highscoreMap.count(game) == 0) {
-            std::cout << "No highscore : " << game << std::endl; 
+            std::cout << "No highscore : " << game << std::endl;
             generateHighscore(game);
         }
     }
@@ -365,7 +421,7 @@ void arcade::Arcade::verifHighscore()
 void arcade::Arcade::generateHighscoreFile()
 {
     std::ofstream fs{"highscore.txt"};
-    
+
     if (!fs.is_open()) {
         return;
     }

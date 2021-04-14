@@ -32,10 +32,11 @@ namespace arcade
         void run();
       private:
         void init();
-        void graphicLibLoader();
+        void graphicLibLoader(std::string lib);
         void gameLibLoader();
         void switchNextGraphicLib();
         void switchPreviousGraphicLib();
+        void switchSpecificGraphicLib();
         void switchNextGameLib();
         void switchPreviousGameLib();
         void getLib();
@@ -43,6 +44,9 @@ namespace arcade
         std::vector<std::string> libsGame;
         std::size_t libPositionVector;
 
+        bool isChooseGame;
+        std::size_t posChooseGraphic;
+        std::size_t posChooseGame;
 
         std::string firstLib;
 
@@ -56,6 +60,9 @@ namespace arcade
         std::unique_ptr<DLLoader> dlLoaderGame;
 
         std::string username;
+        std::string realUsername;
+        void addCharToUsername(char c);
+        void deleteOneCharUsername();
     
         // std::vector<std::string> getGameTitle();
         std::vector<std::string> gamesTitle;
@@ -74,9 +81,18 @@ namespace arcade
         void handleGameEvent();
 
         void initMenu();
+        void initTextMenu();
+        void initTextLib();
+        void initSpriteMenu();
 
-        std::vector<std::unique_ptr<arcade::displayer::IText>> vectorText;
+        std::vector<std::unique_ptr<arcade::displayer::IText>> vectorTextInit;
+        std::vector<std::unique_ptr<arcade::displayer::IText>> vectorTextGame;
+        std::vector<std::unique_ptr<arcade::displayer::IText>> vectorTextLib;
+        std::vector<std::unique_ptr<arcade::displayer::IText>> vectorTextScore;
+        std::unique_ptr<arcade::displayer::IText> iTextUsername;
         std::vector<std::unique_ptr<arcade::displayer::ISprite>> vectorSprite;
+
+        void clearVector();
 
         std::vector<std::vector<arcade::data::Color>> colorSprite(std::size_t i, std::size_t j, arcade::data::Color color);
         std::vector<std::string> createSquare(std::size_t i, std::size_t j, bool isFill, char c);

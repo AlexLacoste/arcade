@@ -36,8 +36,6 @@ void sdl2::TextSdl2::setText(const std::string &text)
     if (!this->texture) {
         // throw error;
     }
-    this->destRect.x = 0;
-    this->destRect.y = 0;
     if (SDL_QueryTexture(this->texture.get(), NULL, NULL, &this->destRect.w, &this->destRect.h) != 0) {
         // throw error;
     }

@@ -112,6 +112,15 @@ void arcade::pacman::Pacman::movePlayer(std::string imagePath, arcade::data::Vec
 
 void arcade::pacman::Pacman::eatPacgums()
 {
+    char c = this->getCharAtPos(this->playerPixel->getPos());
+
+    if (c == '.') {
+        auto itElement = std::find_if(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
+          return (element.first.getPosX() == this->playerPixel->getPos().x) && (element.first.getPosY() == this->playerPixel->getPos().y);
+        });
+
+        this->gameStorage.erase(itElement);
+    }
 }
 
 char arcade::pacman::Pacman::getCharAtPos(arcade::data::Vector2f pos)

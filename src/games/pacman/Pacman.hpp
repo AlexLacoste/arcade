@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <vector>
+#include <utility>
 #include <algorithm>
 #include <memory>
 #include <fstream>
@@ -29,10 +30,12 @@ namespace arcade
                 std::string getPixelImage(void) const { return this->pixelImage; };
                 float getPosX(void) const { return this->x; };
                 float getPosY(void) const { return this->y; };
+                data::Vector2f getPos(void) const { return data::Vector2f{this->x, this->y}; };
                 arcade::data::Color getPixelColor(void) const { return this->color; };
 
                 void setPosX(float x) { this->x = x; };
                 void setPosY(float y) { this->y = y; };
+                void setPos(data::Vector2f pos) { this->x = pos.x; this->y = pos.y; };
                 void setColor(arcade::data::Color color) { this->color = color; };
                 void setPixelImage(std::string pixelImage) { this->pixelImage = pixelImage; };
 
@@ -59,24 +62,22 @@ namespace arcade
             protected:
             private:
                 void createPlayer(void);
-                void createAllSprites(void);
 
                 void handleEvents(void);
                 void movePlayer(std::string imagePath, data::Vector2i movement);
+                void eatPacgums(void);
 
-                char getCharAtPos(data::Vector2f pos) const;
+                char getCharAtPos(data::Vector2f pos);
 
                 std::vector<Pixel> createGameMap(std::string filepath);
                 std::vector<Pixel> createMapPixels(std::vector<std::string> map);
                 std::string getPixelImageType(char c) const;
                 arcade::data::Color getPixelColorType(char c) const;
-
                 std::vector<std::vector<arcade::data::Color>> colorSprite(std::size_t i, std::size_t j, arcade::data::Color color);
 
                 std::shared_ptr<displayer::IDisplay> graphicLib;
                 std::vector<Pixel> gameMap;
-                std::size_t mapWidth;
-                std::vector<std::unique_ptr<displayer::ISprite>> gameSprites;
+                std::vector<std::pair<Pixel, std::unique_ptr<displayer::ISprite>>> gameStorage;
                 std::unique_ptr<Pixel> playerPixel;
                 std::unique_ptr<displayer::ISprite> playerSprite;
         };

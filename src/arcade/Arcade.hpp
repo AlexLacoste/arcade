@@ -50,9 +50,6 @@ namespace arcade
 
         std::string firstLib;
 
-        // std::size_t &getHighScore() const;
-        std::size_t highScore;
-
         std::unique_ptr<games::IGame> gameLib;
         std::shared_ptr<displayer::IDisplay> graphicLib;
 
@@ -64,12 +61,6 @@ namespace arcade
         void addCharToUsername(char c);
         void deleteOneCharUsername();
     
-        // std::vector<std::string> getGameTitle();
-        std::vector<std::string> gamesTitle;
-
-        // std::unordered_map<std::string, std::size_t> getGameHighScore();
-        std::unordered_map<std::string, std::size_t> gameHighScore;
-
         bool isClosed;
 
         State state;
@@ -78,7 +69,6 @@ namespace arcade
         void handleEvents();
 
         void handleGame();
-        void handleGameEvent();
 
         void initMenu();
         void initTextMenu();

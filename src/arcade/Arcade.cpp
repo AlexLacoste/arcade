@@ -22,7 +22,6 @@ arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 {
     this->firstLib = libGraphic;
     this->libPositionVector = 0;
-    this->highScore = 0;
     this->gameLib = nullptr;
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
@@ -31,7 +30,6 @@ arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
     this->isChooseGame = true;
     this->posChooseGraphic = 0;
     this->posChooseGame = 0;
-    // this->gameTitle = getGameTitle();
     this->state = MENU;
     this->isClosed = false;
 }
@@ -73,6 +71,7 @@ void arcade::Arcade::run()
     this->initMenu();
     while (this->graphicLib->isOpen() && !this->isClosed) {
         this->handleEvents();
+        this->graphicLib->clearWindow();
         if (this->state != CLOSED) {
             (this->*mapFptr.at(this->state))();
         }
@@ -90,6 +89,9 @@ void arcade::Arcade::graphicLibLoader(std::string lib)
 
 void arcade::Arcade::gameLibLoader()
 {
+    this->dlLoaderGame = std::make_unique<DLLoader>(this->libsGame.at(this->posChooseGame));
+    this->gameLib = this->dlLoaderGame->getInstance<arcade::games::IGame>();
+    this->gameLib->init(this->graphicLib);
 }
 
 void arcade::Arcade::clearVector()
@@ -140,10 +142,22 @@ void arcade::Arcade::switchSpecificGraphicLib()
 
 void arcade::Arcade::switchPreviousGameLib()
 {
+    if (this->libsGame.size() == 1) {
+        return;
+    }
+    this->gameLib->stop();
+    this->posChooseGame = (this->posChooseGame == 0) ? this->libsGame.size() - 1 : this->posChooseGame - 1;
+    this->gameLibLoader();
 }
 
 void arcade::Arcade::switchNextGameLib()
 {
+    if (this->libsGame.size() == 1) {
+        return;
+    }
+    this->gameLib->stop();
+    this->posChooseGame = (this->posChooseGame + 1 < this->libsGame.size()) ? this->posChooseGame + 1 : 0;
+    this->gameLibLoader();
 }
 
 void arcade::Arcade::getLib()
@@ -163,10 +177,7 @@ void arcade::Arcade::getLib()
 
 void arcade::Arcade::handleGame()
 {
-}
-
-void arcade::Arcade::handleGameEvent()
-{
+    this->gameLib->update();
 }
 
 std::vector<std::vector<arcade::data::Color>> arcade::Arcade::colorSprite(
@@ -257,9 +268,17 @@ void arcade::Arcade::handleEvents()
             switch (event.key) {
                 case ('.'):
                     this->switchPreviousGraphicLib();
+                    if (this->state == GAME) {
+                        this->gameLib->stop();
+                        this->gameLib->init(this->graphicLib);
+                    }
                     return;
                 case ('/'):
                     this->switchNextGraphicLib();
+                    if (this->state == GAME) {
+                        this->gameLib->stop();
+                        this->gameLib->init(this->graphicLib);
+                    }
                     return;
             }
             if (this->state == MENU) {
@@ -307,11 +326,13 @@ void arcade::Arcade::handleEvents()
                         }
                         break;
                     case (arcade::data::ESCAPE):
+                        this->state = CLOSED;
                         this->isClosed = true;
                         return;
                     case (arcade::data::ENTER):
                         if (this->isChooseGame) {
                             if (this->realUsername.size() != 0) {
+                                this->gameLibLoader();
                                 this->state = GAME;
                             }
                         } else {
@@ -336,6 +357,7 @@ void arcade::Arcade::handleEvents()
                     case ('m'):
                         this->state = MENU;
                         this->gameLib->stop();
+                        this->clearVector();
                         this->initMenu();
                         return;
                 }
@@ -343,6 +365,7 @@ void arcade::Arcade::handleEvents()
                     case (arcade::data::ESCAPE):
                         this->gameLib->stop();
                         this->isClosed = true;
+                        this->state = CLOSED;
                         return;
                 }
             }

@@ -12,7 +12,6 @@ void arcade::Arcade::handleMenu()
 {
     if (this->isClosed)
         return;
-    this->graphicLib->clearWindow();
     for (auto &text : this->vectorTextGame) {
         text->setColor(arcade::data::Color::White);
     }

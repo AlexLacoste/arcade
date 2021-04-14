@@ -17,7 +17,6 @@
 #include <unistd.h>
 #include <vector>
 #include "../shared/Color.cpp"
-#include <bits/c++config.h>
 
 arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 {
@@ -28,6 +27,7 @@ arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
     this->graphicLib = nullptr;
     this->dlLoaderGame = nullptr;
     this->username = "user____";
+    this->realUsername = "user";
     this->isChooseGame = true;
     this->posChooseGraphic = 0;
     this->posChooseGame = 0;
@@ -38,6 +38,9 @@ arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 
 arcade::Arcade::~Arcade()
 {
+    if (this->graphicLib) {
+        this->graphicLib->stop();
+    }
 }
 
 void arcade::Arcade::init()
@@ -252,14 +255,22 @@ void arcade::Arcade::handleEvents()
         }
         if (event.type == arcade::data::EventType::KEY_PRESSED) {
             switch (event.key) {
-                case ('q'):
+                case ('.'):
                     this->switchPreviousGraphicLib();
                     return;
-                case ('s'):
+                case ('/'):
                     this->switchNextGraphicLib();
                     return;
             }
             if (this->state == MENU) {
+                if (event.key >= 'a' && event.key <= 'z' || event.key >= 'A' && event.key <= 'Z') {
+                    this->addCharToUsername(event.key);
+                    return;
+                }
+                if (event.key == 127) {
+                    this->deleteOneCharUsername();
+                    return;
+                }
                 switch (static_cast<int>(event.keyCode)) {
                     case (arcade::data::UP):
                         if (this->isChooseGame) {
@@ -300,11 +311,16 @@ void arcade::Arcade::handleEvents()
                         return;
                     case (arcade::data::ENTER):
                         if (this->isChooseGame) {
-                            this->state = GAME;
+                            if (this->realUsername.size() != 0) {
+                                this->state = GAME;
+                            }
                         } else {
                             this->switchSpecificGraphicLib();
                         }
                         return;
+                    case (arcade::data::BACKSPACE):
+                        this->deleteOneCharUsername();
+                        break;
                 }
             } else if (this->state == GAME) {
                 switch (event.key) {
@@ -314,9 +330,9 @@ void arcade::Arcade::handleEvents()
                     case ('x'):
                         this->switchNextGameLib();
                         return;
-                    // case ('r'):
-                    //     this->gameLib.restart();
-                    //     return;
+                    case ('r'):
+                        this->gameLib->restart();
+                        return;
                     case ('m'):
                         this->state = MENU;
                         this->gameLib->stop();
@@ -325,7 +341,7 @@ void arcade::Arcade::handleEvents()
                 }
                 switch (static_cast<int>(event.keyCode)) {
                     case (arcade::data::ESCAPE):
-                        // this->gameLib->stop();
+                        this->gameLib->stop();
                         this->isClosed = true;
                         return;
                 }
@@ -336,7 +352,7 @@ void arcade::Arcade::handleEvents()
 
 void arcade::Arcade::parseHighscore()
 {
-    std::ifstream fs {"highscore.txt"};
+    std::ifstream fs{"highscore.txt"};
     std::string line{};
 
     if (!fs.is_open()) {
@@ -396,7 +412,7 @@ void arcade::Arcade::verifHighscore()
 {
     for (const auto &game : this->libsGame) {
         if (this->highscoreMap.count(game) == 0) {
-            std::cout << "No highscore : " << game << std::endl; 
+            std::cout << "No highscore : " << game << std::endl;
             generateHighscore(game);
         }
     }
@@ -405,7 +421,7 @@ void arcade::Arcade::verifHighscore()
 void arcade::Arcade::generateHighscoreFile()
 {
     std::ofstream fs{"highscore.txt"};
-    
+
     if (!fs.is_open()) {
         return;
     }

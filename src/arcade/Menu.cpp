@@ -27,6 +27,7 @@ void arcade::Arcade::handleMenu()
     for (auto &sprite : this->vectorSprite) {
         this->graphicLib->draw(sprite);
     }
+    this->iTextUsername->setText(this->username);
     this->graphicLib->draw(this->iTextUsername);
     for (auto &text : this->vectorTextInit) {
         this->graphicLib->draw(text);
@@ -80,7 +81,7 @@ void arcade::Arcade::initTextMenu()
     textKeyActions->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 86 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 62 / 100});
 
-    textPreviousLib = this->graphicLib->createText("\"q\" : previous graphic library");
+    textPreviousLib = this->graphicLib->createText("\".\" : previous graphic library");
     textPreviousLib->setFont("ressources/font.ttf");
     textPreviousLib->setColor(arcade::data::Color::White);
     textPreviousLib->setCharacterSize(17);
@@ -88,7 +89,7 @@ void arcade::Arcade::initTextMenu()
         {static_cast<float>(this->graphicLib->getWindowSize().x) * 81 / 100,
             static_cast<float>(this->graphicLib->getWindowSize().y) * 70 / 100});
 
-    textNextLib = this->graphicLib->createText("\"s\" : next graphic library");
+    textNextLib = this->graphicLib->createText("\"/\" : next graphic library");
     textNextLib->setFont("ressources/font.ttf");
     textNextLib->setColor(arcade::data::Color::White);
     textNextLib->setCharacterSize(17);
@@ -262,4 +263,30 @@ void arcade::Arcade::initSpriteMenu()
     boxKeyAction->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 80 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 60 / 100});
     boxKeyAction->setColor(arcade::data::Color::Magenta, spriteColorActionNcurses);
+}
+
+void arcade::Arcade::addCharToUsername(char c)
+{
+    if (this->realUsername.size() == 8) {
+        return;
+    }
+    this->realUsername.push_back(c);
+    for (int i = 0; i < this->username.size(); i++) {
+        if (this->username.at(i) == '_') {
+            this->username.at(i) = c;
+            break;
+        }
+    }
+}
+
+void arcade::Arcade::deleteOneCharUsername()
+{
+    int i = 0;
+
+    if (this->realUsername.size() == 0) {
+        return;
+    }
+    for (; i < this->username.size() && this->username.at(i) != '_'; i++);
+    this->username.at(i - 1) = '_';
+    this->realUsername.pop_back();
 }

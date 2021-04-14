@@ -60,6 +60,9 @@ namespace arcade
         std::unique_ptr<DLLoader> dlLoaderGame;
 
         std::string username;
+        std::string realUsername;
+        void addCharToUsername(char c);
+        void deleteOneCharUsername();
     
         // std::vector<std::string> getGameTitle();
         std::vector<std::string> gamesTitle;

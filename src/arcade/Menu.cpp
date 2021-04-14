@@ -27,7 +27,22 @@ void arcade::Arcade::handleMenu()
         this->graphicLib->draw(sprite);
     }
     this->iTextUsername->setText(this->username);
+    this->firstScoreUser->setText(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(0).first);
+    this->secondScoreUser->setText(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(1).first);
+    this->thirdScoreUser->setText(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(2).first);
+    this->firstScore->setText(
+        std::to_string(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(0).second));
+    this->secondScore->setText(
+        std::to_string(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(1).second));
+    this->thirdScore->setText(
+        std::to_string(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(2).second));
     this->graphicLib->draw(this->iTextUsername);
+    this->graphicLib->draw(this->firstScoreUser);
+    this->graphicLib->draw(this->secondScoreUser);
+    this->graphicLib->draw(this->thirdScoreUser);
+    this->graphicLib->draw(this->firstScore);
+    this->graphicLib->draw(this->secondScore);
+    this->graphicLib->draw(this->thirdScore);
     for (auto &text : this->vectorTextInit) {
         this->graphicLib->draw(text);
     }
@@ -84,9 +99,8 @@ void arcade::Arcade::initTextMenu()
     textPreviousLib->setFont("ressources/font.ttf");
     textPreviousLib->setColor(arcade::data::Color::White);
     textPreviousLib->setCharacterSize(17);
-    textPreviousLib->setPosition(
-        {static_cast<float>(this->graphicLib->getWindowSize().x) * 81 / 100,
-            static_cast<float>(this->graphicLib->getWindowSize().y) * 70 / 100});
+    textPreviousLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 81 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 70 / 100});
 
     textNextLib = this->graphicLib->createText("\"/\" : next graphic library");
     textNextLib->setFont("ressources/font.ttf");
@@ -99,9 +113,8 @@ void arcade::Arcade::initTextMenu()
     textPreviousGame->setFont("ressources/font.ttf");
     textPreviousGame->setColor(arcade::data::Color::White);
     textPreviousGame->setCharacterSize(17);
-    textPreviousGame->setPosition(
-        {static_cast<float>(this->graphicLib->getWindowSize().x) * 81 / 100,
-            static_cast<float>(this->graphicLib->getWindowSize().y) * 78 / 100});
+    textPreviousGame->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 81 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 78 / 100});
 
     textNextGame = this->graphicLib->createText("\"x\" : next game");
     textNextGame->setFont("ressources/font.ttf");
@@ -163,9 +176,56 @@ void arcade::Arcade::initTextMenu()
     this->iTextUsername->setFont("ressources/font.ttf");
     this->iTextUsername->setColor(arcade::data::Color::White);
     this->iTextUsername->setCharacterSize(17);
-    this->iTextUsername->setPosition(
-        {static_cast<float>(this->graphicLib->getWindowSize().x) * 44 / 100,
-            static_cast<float>(this->graphicLib->getWindowSize().y) * 77 / 100});
+    this->iTextUsername->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 44 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 77 / 100});
+
+    this->firstScoreUser =
+        this->graphicLib->createText(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(0).first);
+    this->firstScoreUser->setFont("ressources/font.ttf");
+    this->firstScoreUser->setColor(arcade::data::Color::White);
+    this->firstScoreUser->setCharacterSize(17);
+    this->firstScoreUser->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 42 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 12 / 100});
+
+    this->secondScoreUser =
+        this->graphicLib->createText(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(1).first);
+    this->secondScoreUser->setFont("ressources/font.ttf");
+    this->secondScoreUser->setColor(arcade::data::Color::White);
+    this->secondScoreUser->setCharacterSize(17);
+    this->secondScoreUser->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 42 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
+
+    this->thirdScoreUser =
+        this->graphicLib->createText(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(2).first);
+    this->thirdScoreUser->setFont("ressources/font.ttf");
+    this->thirdScoreUser->setColor(arcade::data::Color::White);
+    this->thirdScoreUser->setCharacterSize(17);
+    this->thirdScoreUser->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 42 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 28 / 100});
+
+    this->firstScore = this->graphicLib->createText(
+        std::to_string(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(0).second));
+    this->firstScore->setFont("ressources/font.ttf");
+    this->firstScore->setColor(arcade::data::Color::White);
+    this->firstScore->setCharacterSize(17);
+    this->firstScore->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 48 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 12 / 100});
+
+    this->secondScore = this->graphicLib->createText(
+        std::to_string(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(1).second));
+    this->secondScore->setFont("ressources/font.ttf");
+    this->secondScore->setColor(arcade::data::Color::White);
+    this->secondScore->setCharacterSize(17);
+    this->secondScore->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 48 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 20 / 100});
+
+    this->thirdScore = this->graphicLib->createText(
+        std::to_string(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(2).second));
+    this->thirdScore->setFont("ressources/font.ttf");
+    this->thirdScore->setColor(arcade::data::Color::White);
+    this->thirdScore->setCharacterSize(17);
+    this->thirdScore->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 48 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 28 / 100});
 
     this->initTextLib();
 }
@@ -219,8 +279,7 @@ void arcade::Arcade::initSpriteMenu()
     std::vector<std::string> boxUsernameNcurses{this->createSquare(8, 54, false, '#')};
     std::vector<std::string> boxkeyActionNcurses{this->createSquare(24, 43, false, '#')};
 
-    std::vector<std::vector<arcade::data::Color>> spriteColorLibNcurses{
-        colorSprite(18, 27, arcade::data::Color::Red)};
+    std::vector<std::vector<arcade::data::Color>> spriteColorLibNcurses{colorSprite(18, 27, arcade::data::Color::Red)};
     std::vector<std::vector<arcade::data::Color>> spriteColorScoreNcurses{
         colorSprite(18, 53, arcade::data::Color::Blue)};
     std::vector<std::vector<arcade::data::Color>> spriteColorUsernameNcurses{
@@ -228,36 +287,35 @@ void arcade::Arcade::initSpriteMenu()
     std::vector<std::vector<arcade::data::Color>> spriteColorActionNcurses{
         colorSprite(24, 43, arcade::data::Color::Magenta)};
 
-    boxGraphicLib = this->graphicLib->createSprite(
-        "ressources/cadre.bmp", boxLibNcurse, arcade::data::Vector2f{0.5, 0.4});
+    boxGraphicLib =
+        this->graphicLib->createSprite("ressources/cadre.bmp", boxLibNcurse, arcade::data::Vector2f{0.5, 0.4});
     boxGraphicLib->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxGraphicLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 10 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 12 / 100});
     boxGraphicLib->setColor(arcade::data::Color::Red, spriteColorLibNcurses);
 
-    boxGameLib = this->graphicLib->createSprite(
-        "ressources/cadre.bmp", boxLibNcurse, arcade::data::Vector2f{0.5, 0.4});
+    boxGameLib = this->graphicLib->createSprite("ressources/cadre.bmp", boxLibNcurse, arcade::data::Vector2f{0.5, 0.4});
     boxGameLib->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxGameLib->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 75 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 12 / 100});
     boxGameLib->setColor(arcade::data::Color::Red, spriteColorLibNcurses);
 
-    boxScore = this->graphicLib->createSprite(
-        "ressources/cadre.bmp", boxScoreNcurses, arcade::data::Vector2f{0.8, 0.3});
+    boxScore =
+        this->graphicLib->createSprite("ressources/cadre.bmp", boxScoreNcurses, arcade::data::Vector2f{0.8, 0.3});
     boxScore->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxScore->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 37 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 7 / 100});
     boxScore->setColor(arcade::data::Color::Blue, spriteColorScoreNcurses);
 
-    boxUsername = this->graphicLib->createSprite(
-        "ressources/cadre.bmp", boxUsernameNcurses, arcade::data::Vector2f{0.8, 0.15});
+    boxUsername =
+        this->graphicLib->createSprite("ressources/cadre.bmp", boxUsernameNcurses, arcade::data::Vector2f{0.8, 0.15});
     boxUsername->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxUsername->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 37 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 70 / 100});
     boxUsername->setColor(arcade::data::Color::Green, spriteColorUsernameNcurses);
 
-    boxKeyAction = this->graphicLib->createSprite(
-        "ressources/cadre.bmp", boxkeyActionNcurses, arcade::data::Vector2f{0.62, 0.36});
+    boxKeyAction =
+        this->graphicLib->createSprite("ressources/cadre.bmp", boxkeyActionNcurses, arcade::data::Vector2f{0.62, 0.36});
     boxKeyAction->setTextureRect(arcade::data::IntRect{32, 65, 590, 1102});
     boxKeyAction->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 80 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 60 / 100});
@@ -285,7 +343,8 @@ void arcade::Arcade::deleteOneCharUsername()
     if (this->realUsername.size() == 0) {
         return;
     }
-    for (; i < this->username.size() && this->username.at(i) != '_'; i++);
+    for (; i < this->username.size() && this->username.at(i) != '_'; i++)
+        ;
     this->username.at(i - 1) = '_';
     this->realUsername.pop_back();
 }

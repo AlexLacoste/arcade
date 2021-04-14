@@ -80,6 +80,12 @@ namespace arcade
         std::vector<std::unique_ptr<arcade::displayer::IText>> vectorTextLib;
         std::vector<std::unique_ptr<arcade::displayer::IText>> vectorTextScore;
         std::unique_ptr<arcade::displayer::IText> iTextUsername;
+        std::unique_ptr<arcade::displayer::IText> firstScoreUser;
+        std::unique_ptr<arcade::displayer::IText> secondScoreUser;
+        std::unique_ptr<arcade::displayer::IText> thirdScoreUser;
+        std::unique_ptr<arcade::displayer::IText> firstScore;
+        std::unique_ptr<arcade::displayer::IText> secondScore;
+        std::unique_ptr<arcade::displayer::IText> thirdScore;
         std::vector<std::unique_ptr<arcade::displayer::ISprite>> vectorSprite;
 
         void clearVector();

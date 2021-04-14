@@ -34,6 +34,7 @@ namespace arcade
                 void setPosX(float x) { this->x = x; };
                 void setPosY(float y) { this->y = y; };
                 void setColor(arcade::data::Color color) { this->color = color; };
+                void setPixelImage(std::string pixelImage) { this->pixelImage = pixelImage; };
 
             protected:
             private:
@@ -60,6 +61,11 @@ namespace arcade
                 void createPlayer(void);
                 void createAllSprites(void);
 
+                void handleEvents(void);
+                void movePlayer(std::string imagePath, data::Vector2i movement);
+
+                char getCharAtPos(data::Vector2f pos) const;
+
                 std::vector<Pixel> createGameMap(std::string filepath);
                 std::vector<Pixel> createMapPixels(std::vector<std::string> map);
                 std::string getPixelImageType(char c) const;
@@ -71,6 +77,7 @@ namespace arcade
                 std::vector<Pixel> gameMap;
                 std::size_t mapWidth;
                 std::vector<std::unique_ptr<displayer::ISprite>> gameSprites;
+                std::unique_ptr<Pixel> playerPixel;
                 std::unique_ptr<displayer::ISprite> playerSprite;
         };
     }

@@ -60,6 +60,8 @@ void arcade::pacman::Pacman::stop()
 {
     this->gameStorage.clear();
     this->gameMap.clear();
+    this->gameTexts.clear();
+    this->previousEnemiesMove.clear();
 }
 
 void arcade::pacman::Pacman::restart()

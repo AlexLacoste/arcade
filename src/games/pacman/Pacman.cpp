@@ -357,7 +357,7 @@ std::string arcade::pacman::Pacman::getPixelImageType(char c) const
         return "ressources/pacman/energizer.bmp";
     }
     if (c == 'P') {
-        return "ressources/pacman/wall.bmp";
+        return "ressources/pacman/portal.bmp";
     }
     if (c == 'D') {
         return "ressources/pacman/ghost_r.bmp";

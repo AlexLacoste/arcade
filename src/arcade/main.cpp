@@ -19,10 +19,10 @@ bool badEnv(char **env)
     if (!env[0])
         return true;
     for (int i = 0; env[i]; i++) {
-        if (strcmp(env[i], "DISPLAY=:1") == 0 || strcmp(env[i], "XDG_RUNTIME_DIR=/run/user/1000"))
+        if (strcmp(env[i], "DISPLAY=:0") == 0 || strcmp(env[i], "XDG_RUNTIME_DIR=/run/user/1000") == 0)
             checkEnv++;
     }
-    return (checkEnv == 2) ? true : false;
+    return (checkEnv != 2) ? true : false;
 }
 
 int main(int ac, char **av, char **env)
@@ -32,10 +32,10 @@ int main(int ac, char **av, char **env)
         return (84);
     }
 
-    // if (badEnv(env)) {
-    //     std::cerr << "Cannot launch " << av[0] << ", env is not ready." << std::endl;
-    //     return 84;
-    // }
+    if (badEnv(env)) {
+        std::cerr << "Cannot launch " << av[0] << ", env is not ready." << std::endl;
+        return 84;
+    }
 
     std::unique_ptr<arcade::Arcade> core = std::make_unique<arcade::Arcade>(av[1]);
     try {

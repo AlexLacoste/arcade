@@ -174,9 +174,9 @@ std::vector<arcade::data::Event> sdl2::GraphicSdl2::getEvents()
                 != sdl2ToArcadeKeyCode.end()) {
                 this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
                     sdl2ToArcadeKeyCode.at(event.key.keysym.sym));
-            } else if (event.key.keysym.sym >= 'a' && event.key.keysym.sym <= 'z') {
+            } else if (event.key.keysym.sym <= '~') {
                 int maj = 0;
-                if (event.key.keysym.mod & KMOD_SHIFT) {
+                if (event.key.keysym.sym >= 'a' && event.key.keysym.sym <= 'z' && event.key.keysym.mod & KMOD_SHIFT) {
                     maj = 32;
                 }
                 this->events.emplace_back(

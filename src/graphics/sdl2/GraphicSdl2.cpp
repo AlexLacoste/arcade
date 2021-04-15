@@ -87,17 +87,17 @@ bool sdl2::GraphicSdl2::isOpen() const
 
 void sdl2::GraphicSdl2::init(const std::string &title, const unsigned int limit)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0 || TTF_Init() != 0 || SDL_GetError()) {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0 || TTF_Init() != 0) {
         throw arcade::errors::Error("SDL init error or TTF init");
     }
     this->window = create_window(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED, 1920, 1080,  SDL_WINDOW_RESIZABLE));
-    if (!this->window || SDL_GetError()) {
+    if (!this->window) {
         throw arcade::errors::Error("SDL create window");
     }
     sdl2::GraphicSdl2::renderer = create_renderer(
         SDL_CreateRenderer(this->window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
-    if (!sdl2::GraphicSdl2::renderer || SDL_GetError()) {
+    if (!sdl2::GraphicSdl2::renderer) {
         throw arcade::errors::Error("SDL create renderer");
     }
     this->windowIsOpen = true;

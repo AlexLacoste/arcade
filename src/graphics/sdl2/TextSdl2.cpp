@@ -50,7 +50,7 @@ std::string sdl2::TextSdl2::getText() const
 
 void sdl2::TextSdl2::setPosition(arcade::data::Vector2f pos)
 {
-    this->destRect = {static_cast<int>(pos.x + this->origin.x), static_cast<int>(pos.y + this->origin.y),
+    this->destRect = {static_cast<int>(pos.x - this->origin.x), static_cast<int>(pos.y - this->origin.y),
         this->destRect.w, this->destRect.h};
 }
 

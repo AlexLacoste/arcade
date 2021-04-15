@@ -19,7 +19,7 @@ namespace arcade
 {
     namespace displayer
     {
-#define DISPLAYER_ENTRY_POINT entry_point
+        #define DISPLAYER_ENTRY_POINT entry_point
 
         class IText {
           public:
@@ -68,8 +68,8 @@ namespace arcade
                 MOUSE_MOVE = 1 << 1,
                 SETTING_FONTS = 1 << 2,
             };
-#define isOptions(disp, opt) \
-    ((disp)->availableOptions() & arcade::displayer::IDisplay::AvailableOptions::opt)
+            #define isOptions(disp, opt) \
+            ((disp)->availableOptions() & arcade::displayer::IDisplay::AvailableOptions::opt)
 
             virtual int availableOptions() const = 0;
             virtual void init(const std::string &winName, unsigned int framesLimit = 60) = 0;
@@ -91,8 +91,6 @@ namespace arcade
                 arcade::data::Vector2f scale = arcade::data::Vector2f{1, 1}) const = 0;
             virtual double scaleMoveX(double time) const = 0;
             virtual double scaleMoveY(double time) const = 0;
-
-            // virtual std::ofstream &log() = 0;
         };
     } // namespace displayer
 

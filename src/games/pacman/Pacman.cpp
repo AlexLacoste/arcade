@@ -50,6 +50,9 @@ arcade::games::GameStatus arcade::pacman::Pacman::update()
     if (this->getTimeDelay() > 0.3) {
         this->moveEnemies();
     }
+    if (this->pacmanDamage() == 1) {
+        return arcade::games::GAME_ENDED;
+    }
     return arcade::games::PLAYING;
 }
 
@@ -224,13 +227,13 @@ void arcade::pacman::Pacman::eatPacgums()
 {
     char c = this->getCharAtPos(this->playerPixel->getPos());
 
-    if (c == '.') {
+    if (c == '.' || c == 'O') {
         auto itElement = std::find_if(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
           return (element.first.getPosX() == this->playerPixel->getPos().x) && (element.first.getPosY() == this->playerPixel->getPos().y);
         });
 
         this->gameStorage.erase(itElement);
-        this->playerScore += 100;
+        c == '.' ? this->playerScore += 100 : this->playerScore += 220;
     }
 }
 
@@ -256,6 +259,27 @@ void arcade::pacman::Pacman::onTeleportPointPlayer(data::Vector2f pos)
           this->playerSprite->setPosition(arcade::data::Vector2f{this->playerPixel->getPosX() * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x), this->playerPixel->getPosY() * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
       }
     });
+}
+
+int arcade::pacman::Pacman::pacmanDamage(void)
+{
+    int exitStatus = 0;
+    int nbrPacgum = 0;
+
+    std::for_each(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
+      if (element.first.getCharacter() == 'D') {
+          if ((element.first.getPosX() == this->playerPixel->getPosX()) && (element.first.getPosY() == this->playerPixel->getPosY())) {
+              exitStatus = 1;
+          }
+      }
+      if (element.first.getCharacter() == '.' || element.first.getCharacter() == 'O') {
+          nbrPacgum += 1;
+      }
+    });
+    if (nbrPacgum == 0) {
+        exitStatus = 1;
+    }
+    return exitStatus;
 }
 
 char arcade::pacman::Pacman::getCharAtPos(arcade::data::Vector2f pos)

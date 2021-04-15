@@ -79,6 +79,7 @@ namespace arcade
                 void eatPacgums(void);
                 void onTeleportPointEnemie(std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element, data::Vector2f pos);
                 void onTeleportPointPlayer(data::Vector2f pos);
+                int pacmanDamage(void);
 
                 char getCharAtPos(data::Vector2f pos);
                 void restartClock(void);

@@ -177,7 +177,6 @@ void arcade::Arcade::handleGame()
     if (this->gameLib->update() == arcade::games::GAME_ENDED) {
         this->state = MENU;
         this->gameLib->stop();
-        this->initMenu();
     }
 }
 

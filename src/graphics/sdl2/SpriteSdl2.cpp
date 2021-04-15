@@ -9,12 +9,12 @@
 #include "Sdl2.hpp"
 #include "../../shared/Errors.hpp"
 
-sdl2::SpriteSdl2::SpriteSdl2()
+sdl2::SpriteSdl2::SpriteSdl2() : texture(nullptr)
 {
 }
 
 sdl2::SpriteSdl2::SpriteSdl2(const std::string &spritePath,
-    const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale)
+    const std::vector<std::string> &asciiSprite, arcade::data::Vector2f scale) : texture(nullptr)
 {
     this->setSprite(spritePath, asciiSprite);
     this->setScale(scale);
@@ -22,6 +22,7 @@ sdl2::SpriteSdl2::SpriteSdl2(const std::string &spritePath,
 
 sdl2::SpriteSdl2::~SpriteSdl2()
 {
+    SDL_DestroyTexture(this->texture);
 }
 
 void sdl2::SpriteSdl2::setSprite(
@@ -32,14 +33,13 @@ void sdl2::SpriteSdl2::setSprite(
     if (!image) {
         throw arcade::errors::Error("SDL load image");
     }
-    this->texture =
-        create_texture(SDL_CreateTextureFromSurface(sdl2::GraphicSdl2::renderer.get(), image));
+    this->texture = SDL_CreateTextureFromSurface(sdl2::GraphicSdl2::renderer, image);
     if (!this->texture) {
         throw arcade::errors::Error("SDL create texture sprite");
     }
     this->srcRect.x = 0;
     this->srcRect.y = 0;
-    if (SDL_QueryTexture(this->texture.get(), NULL, NULL, &this->srcRect.w, &this->srcRect.h)) {
+    if (SDL_QueryTexture(this->texture, NULL, NULL, &this->srcRect.w, &this->srcRect.h)) {
         throw arcade::errors::Error("SDL query texture");
     }
     this->destRect = {0, 0, this->srcRect.w, this->srcRect.h};
@@ -144,13 +144,13 @@ void sdl2::SpriteSdl2::setColor(
     arcade::data::Color color, const std::vector<std::vector<arcade::data::Color>> &asciiColors)
 {
     (void)asciiColors;
-    SDL_SetTextureColorMod(this->texture.get(), color.r, color.g, color.b);
-    SDL_SetTextureAlphaMod(this->texture.get(), color.a);
+    SDL_SetTextureColorMod(this->texture, color.r, color.g, color.b);
+    SDL_SetTextureAlphaMod(this->texture, color.a);
 }
 
 void sdl2::SpriteSdl2::drawSprite()
 {
-    if (SDL_RenderCopyEx(sdl2::GraphicSdl2::renderer.get(), this->texture.get(), &this->srcRect,
+    if (SDL_RenderCopyEx(sdl2::GraphicSdl2::renderer, this->texture, &this->srcRect,
             &this->destRect, this->rotation, &this->origin, SDL_FLIP_NONE)
         != 0) {
         throw arcade::errors::Error("SDL draw sprite");

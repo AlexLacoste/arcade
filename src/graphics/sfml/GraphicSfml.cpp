@@ -114,7 +114,7 @@ void sfml::GraphicSfml::display()
 {
     this->window.display();
     this->events.clear();
-    this->lastFrameTime = this->getFrameDuration();
+    this->timeSinceLastFrame = this->getFrameDuration();
     restartClock();
 }
 
@@ -130,18 +130,18 @@ void sfml::GraphicSfml::clearWindow()
 
 void sfml::GraphicSfml::restartClock()
 {
-    this->timePoint = std::chrono::high_resolution_clock::now();
+    this->chrono = std::chrono::high_resolution_clock::now();
 }
 
 double sfml::GraphicSfml::getDeltaTime() const
 {
-    return this->lastFrameTime;
+    return this->timeSinceLastFrame;
 }
 
 double sfml::GraphicSfml::getFrameDuration() const
 {
     return std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1>>>(
-        std::chrono::high_resolution_clock::now() - this->timePoint)
+        std::chrono::high_resolution_clock::now() - this->chrono)
         .count();
 }
 
@@ -215,7 +215,7 @@ std::unique_ptr<arcade::displayer::ISprite> sfml::GraphicSfml::createSprite(
 
 double sfml::GraphicSfml::scaleMoveX(double time) const
 {
-    if (!time) {
+    if (time == 0) {
         return 0;
     }
     return (getWindowSize().x / time) / (1.0f / getDeltaTime());
@@ -223,7 +223,7 @@ double sfml::GraphicSfml::scaleMoveX(double time) const
 
 double sfml::GraphicSfml::scaleMoveY(double time) const
 {
-    if (!time) {
+    if (time == 0) {
         return 0;
     }
     return (getWindowSize().y / time) / (1.0f / getDeltaTime());

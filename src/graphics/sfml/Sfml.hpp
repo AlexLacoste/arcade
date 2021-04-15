@@ -96,8 +96,8 @@ namespace sfml
       private:
         sf::RenderWindow window;
         std::vector<arcade::data::Event> events;
-        std::chrono::time_point<std::chrono::high_resolution_clock> timePoint;
-        double lastFrameTime;
+        std::chrono::time_point<std::chrono::high_resolution_clock> chrono;
+        double timeSinceLastFrame;
     };
 } // namespace sfml
 

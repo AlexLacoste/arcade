@@ -24,7 +24,7 @@ OBJ			=	$(SRC:.cpp=.o)
 all:		$(NAME)
 
 $(NAME):	$(OBJ)
-			$(LD) -o $(NAME) $(OBJ) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+			$(LD) -o $(NAME) ../../shared/*.o $(OBJ) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 			mv $(NAME) ../../../lib/
 
 clean:

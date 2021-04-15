@@ -405,7 +405,6 @@ void arcade::Arcade::getHighscore(std::ifstream &fs, const std::string &game)
         std::pair<std::string, std::size_t> highscore;
         ss.str(line.substr(1));
         ss >> highscore.first >> highscore.second;
-        std::cout << highscore.first << ' ' << highscore.second << std::endl;
         if (highscore.first.empty() || highscore.second == 0)
             return;
         if (ss.eof())
@@ -414,7 +413,6 @@ void arcade::Arcade::getHighscore(std::ifstream &fs, const std::string &game)
     }
     if (gameHighscore.size() != 3)
         return;
-    std::cout << "Highscore find for : " << game << std::endl;
     this->sortHighscore(gameHighscore);
     this->highscoreMap[game] = gameHighscore;
 }
@@ -435,7 +433,6 @@ void arcade::Arcade::verifHighscore()
 {
     for (const auto &game : this->libsGame) {
         if (this->highscoreMap.count(game) == 0) {
-            std::cout << "No highscore : " << game << std::endl;
             generateHighscore(game);
         }
     }

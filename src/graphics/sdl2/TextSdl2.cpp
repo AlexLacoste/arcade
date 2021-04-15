@@ -10,17 +10,19 @@
 #include "../../shared/Errors.hpp"
 #include "Sdl2.hpp"
 
-sdl2::TextSdl2::TextSdl2()
+sdl2::TextSdl2::TextSdl2() : font(nullptr), texture(nullptr)
 {
 }
 
-sdl2::TextSdl2::TextSdl2(const std::string &text)
+sdl2::TextSdl2::TextSdl2(const std::string &text) : font(nullptr), texture(nullptr)
 {
     this->setText(text);
 }
 
 sdl2::TextSdl2::~TextSdl2()
 {
+    TTF_CloseFont(this->font);
+    SDL_DestroyTexture(this->texture);
 }
 
 void sdl2::TextSdl2::setText(const std::string &text)
@@ -29,15 +31,15 @@ void sdl2::TextSdl2::setText(const std::string &text)
     if (!this->font) {
         return;
     }
-    SDL_Surface *surface = TTF_RenderText_Solid(this->font.get(), this->text.c_str(), this->color);
+    SDL_Surface *surface = TTF_RenderText_Solid(this->font, this->text.c_str(), this->color);
     if (!surface) {
         throw arcade::errors::Error("SDL load text");
     }
-    this->texture = create_texture(SDL_CreateTextureFromSurface(sdl2::GraphicSdl2::renderer.get(), surface));
+    this->texture = SDL_CreateTextureFromSurface(sdl2::GraphicSdl2::renderer, surface);
     if (!this->texture) {
         throw arcade::errors::Error("SDL create texture text");
     }
-    if (SDL_QueryTexture(this->texture.get(), NULL, NULL, &this->destRect.w, &this->destRect.h) != 0) {
+    if (SDL_QueryTexture(this->texture, NULL, NULL, &this->destRect.w, &this->destRect.h) != 0) {
         throw arcade::errors::Error("SDL query texture");
     }
     SDL_FreeSurface(surface);
@@ -62,7 +64,7 @@ arcade::data::Vector2f sdl2::TextSdl2::getPosition() const
 void sdl2::TextSdl2::setFont(const std::string &font)
 {
     this->fontPath = font;
-    this->font = create_font(TTF_OpenFont(this->fontPath.c_str(), this->size));
+    this->font = TTF_OpenFont(this->fontPath.c_str(), this->size);
     if (!this->font) {
         throw arcade::errors::Error("SDL open font");
     }
@@ -117,7 +119,7 @@ void sdl2::TextSdl2::drawText()
     if (!this->texture) {
         return;
     }
-    if (SDL_RenderCopy(sdl2::GraphicSdl2::renderer.get(), this->texture.get(), NULL, &this->destRect) != 0) {
+    if (SDL_RenderCopy(sdl2::GraphicSdl2::renderer, this->texture, NULL, &this->destRect) != 0) {
         throw arcade::errors::Error("SDL draw text error");
     }
 }

@@ -16,9 +16,6 @@
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_ttf.h>
 
-typedef std::unique_ptr<SDL_Texture, std::function<void(SDL_Texture *)>> Texture;
-#define create_texture(__value) (Texture{__value, SDL_DestroyTexture})
-
 namespace sdl2
 {
     class TextSdl2 : public arcade::displayer::IText {
@@ -41,10 +38,8 @@ namespace sdl2
         void drawText();
 
       private:
-        typedef std::unique_ptr<TTF_Font, std::function<void(TTF_Font *)>> Font;
-#define create_font(__value) (Font{__value, TTF_CloseFont})
-        Font font;
-        Texture texture;
+        TTF_Font *font;
+        SDL_Texture *texture;
         SDL_Color color = {.r = 255, .g = 255, .b = 255, .a = 255};
         std::string text;
         arcade::data::Vector2f origin;
@@ -81,7 +76,7 @@ namespace sdl2
         void drawSprite();
 
       private:
-        Texture texture;
+        SDL_Texture *texture;
         SDL_Rect srcRect;
         SDL_Rect destRect;
         SDL_Point origin;
@@ -117,20 +112,16 @@ namespace sdl2
         double scaleMoveX(double time) const override;
         double scaleMoveY(double time) const override;
 
-        typedef std::unique_ptr<SDL_Renderer, std::function<void(SDL_Renderer *)>> Renderer;
-        #define create_renderer(__value) (Renderer{__value, SDL_DestroyRenderer})
-        static Renderer renderer;
+        static SDL_Renderer *renderer;
 
       private:
         std::vector<arcade::data::Event> events;
         bool windowIsOpen;
 
-        typedef std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>> Window;
-        #define create_window(__value) (Window{__value, SDL_DestroyWindow})
-        Window window;
+        SDL_Window *window;
 
-        std::chrono::time_point<std::chrono::high_resolution_clock> timePoint;
-        double lastFrameTime;
+        std::chrono::time_point<std::chrono::high_resolution_clock> chrono;
+        double timeSinceLastFrame;
         unsigned int frameLimit;
     };
 } // namespace sdl2

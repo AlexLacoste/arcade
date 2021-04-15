@@ -11,6 +11,7 @@
 #include <string>
 
 #include "Pacman.hpp"
+#include "../../shared/Errors.hpp"
 
 extern "C" std::unique_ptr<arcade::games::IGame> entry_point()
 {
@@ -34,25 +35,23 @@ void arcade::pacman::Pacman::init(std::shared_ptr<displayer::IDisplay> &disp)
     this->gameMap = this->createGameMap("ressources/pacman/pacman_map.txt");
     this->createPlayer();
     this->createTexts();
-    std::for_each(this->gameStorage.begin(), this->gameStorage.end(),
-        [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
-            if (element.first.getCharacter() == 'D') {
-                this->previousEnemiesMove.push_back(2);
-            }
-        });
+    for (const auto &element : this->gameStorage) {
+        if (element.first.getCharacter() == 'D') {
+            this->previousEnemiesMove.push_back(2);
+        }
+    }
 }
 arcade::games::GameStatus arcade::pacman::Pacman::update()
 {
     this->handleEvents();
     this->updateTexts();
     this->eatPacgums();
-    std::for_each(this->gameStorage.begin(), this->gameStorage.end(),
-        [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
-            this->graphicLib->draw(element.second);
-        });
-    std::for_each(this->gameTexts.begin(), this->gameTexts.end(), [&](std::unique_ptr<displayer::IText> &text) {
+    for (auto &element : this->gameStorage) {
+        this->graphicLib->draw(element.second);
+    }
+    for (auto &text : this->gameTexts) {
         this->graphicLib->draw(text);
-    });
+    }
     this->graphicLib->draw(playerSprite);
     if (this->getTimeDelay() > 0.3) {
         this->moveEnemies();
@@ -352,8 +351,7 @@ std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createGameMap(std::st
     std::vector<std::string> map;
 
     if (!file) {
-        std::cout << "Error: file opening" << std::endl;
-        // throw
+        throw arcade::errors::Error("file opening");
     }
     while (std::getline(file, buffer)) {
         map.push_back(buffer);

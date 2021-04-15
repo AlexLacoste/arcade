@@ -19,7 +19,7 @@ extern "C" std::unique_ptr<sdl2::GraphicSdl2> entry_point()
     return std::make_unique<sdl2::GraphicSdl2>();
 }
 
-sdl2::GraphicSdl2::Renderer sdl2::GraphicSdl2::renderer = nullptr;
+SDL_Renderer *sdl2::GraphicSdl2::renderer = nullptr;
 
 static const std::unordered_map<int, char> sdl2ToArcadeKey{
     {SDLK_KP_DIVIDE, '/'},
@@ -60,7 +60,7 @@ static const std::unordered_map<int, arcade::data::MouseBtn> sdl2ToArcadeMouseBt
     {SDL_BUTTON_RIGHT, arcade::data::MouseBtn::BTN_3},
 };
 
-sdl2::GraphicSdl2::GraphicSdl2()
+sdl2::GraphicSdl2::GraphicSdl2() : window(nullptr)
 {
 }
 
@@ -68,8 +68,8 @@ sdl2::GraphicSdl2::~GraphicSdl2()
 {
     if (!this->windowIsOpen) {
         this->windowIsOpen = false;
-        this->window.reset();
-        sdl2::GraphicSdl2::renderer.reset();
+        SDL_DestroyWindow(this->window);
+        SDL_DestroyRenderer(sdl2::GraphicSdl2::renderer);
         TTF_Quit();
         SDL_Quit();
     }
@@ -90,13 +90,12 @@ void sdl2::GraphicSdl2::init(const std::string &title, const unsigned int limit)
     if (SDL_Init(SDL_INIT_VIDEO) != 0 || TTF_Init() != 0) {
         throw arcade::errors::Error("SDL init error or TTF init");
     }
-    this->window = create_window(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED, 1920, 1080,  SDL_WINDOW_RESIZABLE));
+    this->window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED, 1920, 1080,  SDL_WINDOW_RESIZABLE);
     if (!this->window) {
         throw arcade::errors::Error("SDL create window");
     }
-    sdl2::GraphicSdl2::renderer = create_renderer(
-        SDL_CreateRenderer(this->window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
+    sdl2::GraphicSdl2::renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!sdl2::GraphicSdl2::renderer) {
         throw arcade::errors::Error("SDL create renderer");
     }
@@ -107,46 +106,46 @@ void sdl2::GraphicSdl2::init(const std::string &title, const unsigned int limit)
 
 void sdl2::GraphicSdl2::display()
 {
-    SDL_RenderPresent(sdl2::GraphicSdl2::renderer.get());
+    SDL_RenderPresent(sdl2::GraphicSdl2::renderer);
     this->events.clear();
     double waiting = ((1.0f / this->frameLimit) * 1000) - (getFrameDuration() * 1000);
     if (waiting > 0) {
         std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(waiting)));
     }
-    this->lastFrameTime = getFrameDuration();
+    this->timeSinceLastFrame = getFrameDuration();
     restartClock();
 }
 
 void sdl2::GraphicSdl2::stop()
 {
     this->windowIsOpen = false;
-    this->window.reset();
-    sdl2::GraphicSdl2::renderer.reset();
+    SDL_DestroyWindow(this->window);
+    SDL_DestroyRenderer(sdl2::GraphicSdl2::renderer);
     SDL_Quit();
     TTF_Quit();
 }
 
 void sdl2::GraphicSdl2::clearWindow()
 {
-    if (SDL_RenderClear(sdl2::GraphicSdl2::renderer.get()) != 0) {
+    if (SDL_RenderClear(sdl2::GraphicSdl2::renderer) != 0) {
         throw arcade::errors::Error("SDL clear renderer");
     }
 }
 
 void sdl2::GraphicSdl2::restartClock()
 {
-    this->timePoint = std::chrono::high_resolution_clock::now();
+    this->chrono = std::chrono::high_resolution_clock::now();
 }
 
 double sdl2::GraphicSdl2::getDeltaTime() const
 {
-    return this->lastFrameTime;
+    return this->timeSinceLastFrame;
 }
 
 double sdl2::GraphicSdl2::getFrameDuration() const
 {
     return std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1>>>(
-        std::chrono::high_resolution_clock::now() - this->timePoint)
+        std::chrono::high_resolution_clock::now() - this->chrono)
         .count();
 }
 
@@ -175,10 +174,8 @@ std::vector<arcade::data::Event> sdl2::GraphicSdl2::getEvents()
                 this->events.emplace_back(arcade::data::EventType::KEY_PRESSED,
                     sdl2ToArcadeKeyCode.at(event.key.keysym.sym));
             } else if (event.key.keysym.sym <= '~') {
-                int maj = 0;
-                if (event.key.keysym.sym >= 'a' && event.key.keysym.sym <= 'z' && event.key.keysym.mod & KMOD_SHIFT) {
-                    maj = 32;
-                }
+                int maj = (event.key.keysym.sym >= 'a' && event.key.keysym.sym <= 'z' && event.key.keysym.mod & KMOD_SHIFT)
+                            ? 32 : 0;
                 this->events.emplace_back(
                     arcade::data::EventType::KEY_PRESSED, event.key.keysym.sym - maj);
             }
@@ -230,7 +227,7 @@ std::unique_ptr<arcade::displayer::ISprite> sdl2::GraphicSdl2::createSprite(
 
 double sdl2::GraphicSdl2::scaleMoveX(double time) const
 {
-    if (!time) {
+    if (time == 0) {
         return 0;
     }
     return (getWindowSize().x / time) / (1.0f / getDeltaTime());
@@ -238,7 +235,7 @@ double sdl2::GraphicSdl2::scaleMoveX(double time) const
 
 double sdl2::GraphicSdl2::scaleMoveY(double time) const
 {
-    if (!time) {
+    if (time == 0) {
         return 0;
     }
     return (getWindowSize().y / time) / (1.0f / getDeltaTime());

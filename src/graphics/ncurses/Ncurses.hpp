@@ -106,8 +106,8 @@ namespace ncurses
         bool hasColors;
         bool eventFrame;
         std::vector<arcade::data::Event> events;
-        std::chrono::time_point<std::chrono::high_resolution_clock> time;
-        double lastFrameTime;
+        std::chrono::time_point<std::chrono::high_resolution_clock> chrono;
+        double timeSinceLastFrame;
         unsigned int frameLimit;
     };
 } // namespace ncurses

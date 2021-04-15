@@ -72,7 +72,7 @@ void ncurses::GraphicNcurses::display()
     if (toWait > 0) {
         std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(toWait)));
     }
-    this->lastFrameTime = getFrameDuration();
+    this->timeSinceLastFrame = getFrameDuration();
     restartClock();
 }
 
@@ -90,18 +90,18 @@ void ncurses::GraphicNcurses::clearWindow()
 
 void ncurses::GraphicNcurses::restartClock()
 {
-    this->time = std::chrono::high_resolution_clock::now();
+    this->chrono = std::chrono::high_resolution_clock::now();
 }
 
 double ncurses::GraphicNcurses::getDeltaTime() const
 {
-    return this->lastFrameTime;
+    return this->timeSinceLastFrame;
 }
 
 double ncurses::GraphicNcurses::getFrameDuration() const
 {
     return std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1>>>(
-        std::chrono::high_resolution_clock::now() - this->time)
+        std::chrono::high_resolution_clock::now() - this->chrono)
         .count();
 }
 
@@ -184,7 +184,7 @@ std::unique_ptr<arcade::displayer::ISprite> ncurses::GraphicNcurses::createSprit
 
 double ncurses::GraphicNcurses::scaleMoveX(double time) const
 {
-    if (!time) {
+    if (time == 0) {
         return 0;
     }
     return (getWindowSize().x / time) / (1.0f / getDeltaTime());
@@ -192,7 +192,7 @@ double ncurses::GraphicNcurses::scaleMoveX(double time) const
 
 double ncurses::GraphicNcurses::scaleMoveY(double time) const
 {
-    if (!time) {
+    if (time == 0) {
         return 0;
     }
     return (getWindowSize().y / time) / (1.0f / getDeltaTime());

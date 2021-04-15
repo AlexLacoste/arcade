@@ -12,6 +12,7 @@ void arcade::Arcade::handleMenu()
 {
     if (this->isClosed)
         return;
+
     for (auto &text : this->vectorTextGame) {
         text->setColor(arcade::data::Color::White);
     }
@@ -26,6 +27,7 @@ void arcade::Arcade::handleMenu()
     for (auto &sprite : this->vectorSprite) {
         this->graphicLib->draw(sprite);
     }
+
     this->iTextUsername->setText(this->username);
     this->firstScoreUser->setText(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(0).first);
     this->secondScoreUser->setText(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(1).first);
@@ -36,6 +38,7 @@ void arcade::Arcade::handleMenu()
         std::to_string(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(1).second));
     this->thirdScore->setText(
         std::to_string(this->highscoreMap.at(this->libsGame.at(this->posChooseGame)).at(2).second));
+
     this->graphicLib->draw(this->iTextUsername);
     this->graphicLib->draw(this->firstScoreUser);
     this->graphicLib->draw(this->secondScoreUser);
@@ -43,6 +46,7 @@ void arcade::Arcade::handleMenu()
     this->graphicLib->draw(this->firstScore);
     this->graphicLib->draw(this->secondScore);
     this->graphicLib->draw(this->thirdScore);
+
     for (auto &text : this->vectorTextInit) {
         this->graphicLib->draw(text);
     }
@@ -343,8 +347,7 @@ void arcade::Arcade::deleteOneCharUsername()
     if (this->realUsername.size() == 0) {
         return;
     }
-    for (; i < this->username.size() && this->username.at(i) != '_'; i++)
-        ;
+    for (; i < this->username.size() && this->username.at(i) != '_'; i++);
     this->username.at(i - 1) = '_';
     this->realUsername.pop_back();
 }

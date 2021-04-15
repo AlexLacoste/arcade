@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include "../../shared/IGame.hpp"
+#include "../../shared/Errors.hpp"
 
 namespace arcade
 {
@@ -22,14 +23,15 @@ namespace arcade
         class Cell
         {
             public:
-                Cell(char c, const std::string &image, int posX = 0, int posY = 0) : character(c), imagePath(image), pos(posX, posY) {};
-                Cell(char c, const std::string &image, const data::Vector2i &vector) : character(c), imagePath(image), pos(vector) {};
+                Cell(char c, const std::string &image, int posX = 0, int posY = 0) : character(c), imagePath(image), color({255, 255, 255, 255}), pos(posX, posY) {};
+                Cell(char c, const std::string &image, const data::Vector2i &vector) : character(c), imagePath(image), color({255, 255, 255, 255}), pos(vector) {};
                 ~Cell() {};
 
                 char getCharacter() const {return this->character;};
                 void setCharacter(char c) {this->character = c;};
                 std::string getImagePath() const {return this->imagePath;};
                 data::Vector2i getPos() const {return this->pos;};
+                void setPos(data::Vector2i vector) {this->pos = vector;};
                 int getPosX() const {return this->pos.x;};
                 int getPosY() const {return this->pos.y;};
                 void setColor(arcade::data::Color color) {this->color = color;};
@@ -43,6 +45,7 @@ namespace arcade
                 data::Color color;
                 data::Vector2i pos;
         };
+
         class Player
         {
             public:
@@ -53,24 +56,34 @@ namespace arcade
                 Player();
                 ~Player();
 
-                void initPlayer(const std::vector<std::string> &map);
+                void initPlayer(std::shared_ptr<arcade::displayer::IDisplay> &disp, const std::vector<std::string> &map);
+                void initSnake();
                 Direction getDirection() const;
                 void setDirection(Direction direct);
-                const std::vector<Cell> &getPlayer() const;
-                const std::vector<displayer::ISprite> &getSpite() const;
-                bool move(std::vector<std::vector<Cell>> &cellMap, double lastFrame);
-                void emptySprite();
+                const std::vector<Cell> &getSnakeCell() const;
+                const std::vector<std::unique_ptr<displayer::ISprite>> &getSnakeSprite() const;
+                bool move(const std::vector<std::vector<Cell>> &cellMap, double lastFrame);
+                void moving(arcade::data::Vector2i vector);
+                void stop();
                 void restart();
                 data::Vector2i getVectorMove(Direction direction) const;
                 void upSize(size_t size);
+                void upSpeed();
+                void draw();
+                unsigned int eatFood(const std::vector<Cell> &foodSprite);
+                bool isEatHimself();
+                void rotatePlayer();
+                std::vector<std::vector<arcade::data::Color>> colorSprite(std::size_t i, std::size_t j, arcade::data::Color color);
 
             private:
-                std::vector<Cell> snakeBody;
+                std::shared_ptr<displayer::IDisplay> graphicLib;
+                std::vector<Cell> snakeCell;
                 std::vector<std::unique_ptr<displayer::ISprite>> snakeSprite;
                 Direction direction;
                 Direction newDirection;
                 float timeSinceLastMove;
                 size_t size;
+                float speed;
         };
 
         class Nibbler : public arcade::games::IGame
@@ -92,6 +105,7 @@ namespace arcade
                 void initSpriteVector();
                 void drawGame();
                 void initText();
+                void eatFood(unsigned int i);
                 std::string createTextNumber(const std::string &text, unsigned int score);
                 std::vector<std::vector<arcade::data::Color>> colorSprite(std::size_t i, std::size_t j, arcade::data::Color color);
                 
@@ -99,7 +113,8 @@ namespace arcade
                 std::vector<std::string> gameMap;
                 std::vector<std::vector<Cell>> cellMap;
                 std::vector<std::unique_ptr<displayer::ISprite>> spriteMap;
-                std::vector<displayer::ISprite> foodMap;
+                std::vector<Cell> foodMap;
+                std::vector<std::unique_ptr<displayer::ISprite>> foodSprite;
                 Player player;
                 double time;
                 size_t duration;

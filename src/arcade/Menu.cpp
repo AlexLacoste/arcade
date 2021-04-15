@@ -95,7 +95,7 @@ void arcade::Arcade::initTextMenu()
     textKeyActions->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 86 / 100,
         static_cast<float>(this->graphicLib->getWindowSize().y) * 62 / 100});
 
-    textPreviousLib = this->graphicLib->createText("\".\" : previous graphic library");
+    textPreviousLib = this->graphicLib->createText("\";\" : previous graphic library");
     textPreviousLib->setFont("ressources/font.ttf");
     textPreviousLib->setColor(arcade::data::Color::White);
     textPreviousLib->setCharacterSize(17);

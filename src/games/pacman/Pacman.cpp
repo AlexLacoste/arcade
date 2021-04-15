@@ -7,7 +7,7 @@
 
 #include "Pacman.hpp"
 
-extern "C" std::unique_ptr<arcade::games::IGame> GAMES_ENTRY_POINT()
+extern "C" std::unique_ptr<arcade::games::IGame> entry_point()
 {
     return std::make_unique<arcade::pacman::Pacman>();
 }
@@ -39,10 +39,14 @@ arcade::games::GameStatus arcade::pacman::Pacman::update()
 
 void arcade::pacman::Pacman::stop()
 {
+    this->gameStorage.clear();
+    this->gameMap.clear();
 }
 
 void arcade::pacman::Pacman::restart()
 {
+    this->stop();
+    this->init(this->graphicLib);
 }
 
 unsigned int arcade::pacman::Pacman::getScore() const
@@ -61,13 +65,10 @@ void arcade::pacman::Pacman::createPlayer(void)
     this->playerPixel = std::make_unique<Pixel>(pixel);
 
     /* CREATE PLAYER SPRITE */
-    std::unique_ptr<displayer::ISprite> sprite;
-
-    sprite = this->graphicLib->createSprite(this->playerPixel->getPixelImage(), std::vector<std::string>{std::string{this->playerPixel->getCharacter()}}, arcade::data::Vector2f{0.04, 0.04});
-    sprite->setTextureRect(arcade::data::IntRect{0, 0, 500, 500});
-    sprite->setColor(this->playerPixel->getPixelColor(), this->colorSprite(1, 1, this->playerPixel->getPixelColor()));
-    sprite->setPosition(arcade::data::Vector2f{position.x * (sprite->getTextureRect().width * sprite->getScale().x), position.y * (sprite->getTextureRect().height * sprite->getScale().y)});
-    this->playerSprite = std::move(sprite);
+    this->playerSprite = this->graphicLib->createSprite(this->playerPixel->getPixelImage(), std::vector<std::string>{std::string{this->playerPixel->getCharacter()}}, arcade::data::Vector2f{0.04, 0.04});
+    this->playerSprite->setTextureRect(arcade::data::IntRect{0, 0, 500, 500});
+    this->playerSprite->setColor(this->playerPixel->getPixelColor(), this->colorSprite(1, 1, this->playerPixel->getPixelColor()));
+    this->playerSprite->setPosition(arcade::data::Vector2f{position.x * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x), position.y * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
 }
 
 void arcade::pacman::Pacman::handleEvents()
@@ -102,11 +103,11 @@ void arcade::pacman::Pacman::movePlayer(std::string imagePath, arcade::data::Vec
     this->playerPixel->setPixelImage(imagePath);
     this->playerSprite->setSprite(this->playerPixel->getPixelImage(), std::vector<std::string>{std::string{this->playerPixel->getCharacter()}});
     this->playerSprite->setScale(arcade::data::Vector2f{0.04, 0.04});
-    this->playerSprite->setPosition(arcade::data::Vector2f{this->playerPixel->getPosX() * (this->playerSprite->getTextureRect().width * this->playerSprite->getScale().x), this->playerPixel->getPosY() * (this->playerSprite->getTextureRect().height * this->playerSprite->getScale().y)});
+    this->playerSprite->setPosition(arcade::data::Vector2f{this->playerPixel->getPosX() * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x), this->playerPixel->getPosY() * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
     if (this->getCharAtPos(arcade::data::Vector2f{diffX, diffY}) != '#') {
         this->playerPixel->setPosX(diffX);
         this->playerPixel->setPosY(diffY);
-        this->playerSprite->move((this->playerSprite->getTextureRect().width * this->playerSprite->getScale().x) * (movement.x), (this->playerSprite->getTextureRect().height * this->playerSprite->getScale().y) * (movement.y));
+        this->playerSprite->move((this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x) * (movement.x), (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y) * (movement.y));
     }
 }
 
@@ -163,14 +164,14 @@ std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createMapPixels(std::
             mapPixels.push_back(mapPixel);
 
             std::vector<std::string> spriteCharacters;
-            std::unique_ptr<displayer::ISprite> sprite;
+            this->gameStorage.push_back(std::make_pair(mapPixel, std::unique_ptr<displayer::ISprite>()));
+            std::unique_ptr<displayer::ISprite> &sprite = this->gameStorage.back().second;
 
             spriteCharacters.push_back(std::string{mapPixel.getCharacter()});
             sprite = this->graphicLib->createSprite(mapPixel.getPixelImage(), spriteCharacters, arcade::data::Vector2f{0.04, 0.04});
             sprite->setTextureRect(arcade::data::IntRect{0, 0, 500, 500});
             sprite->setColor(mapPixel.getPixelColor(), this->colorSprite(spriteCharacters.size(), spriteCharacters.at(0).length(), mapPixel.getPixelColor()));
-            sprite->setPosition(arcade::data::Vector2f{mapPixel.getPosX() * (sprite->getTextureRect().width * sprite->getScale().x), mapPixel.getPosY() * (sprite->getTextureRect().height * sprite->getScale().y)});
-            this->gameStorage.push_back(std::make_pair(mapPixel, std::move(sprite)));
+            sprite->setPosition(arcade::data::Vector2f{mapPixel.getPosX() * (sprite->getLocalBounds().width * sprite->getScale().x), mapPixel.getPosY() * (sprite->getLocalBounds().height * sprite->getScale().y)});
         }
         y += 1;
     });

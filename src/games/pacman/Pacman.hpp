@@ -13,6 +13,9 @@
 #include <utility>
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <ctime>
+#include <chrono>
 #include <fstream>
 
 #include "../../shared/IGame.hpp"
@@ -23,7 +26,7 @@ namespace arcade
     {
         class Pixel {
             public:
-                Pixel(char c, std::string pixelImage, float x = 0.0, float y = 0.0) : character(c), pixelImage(pixelImage), x(x), y(y) {};
+                Pixel(char c, std::string pixelImage, float x = 0.0, float y = 0.0) : character(c), pixelImage(pixelImage), x(x), y(y), isInMaze(false) {};
                 ~Pixel() {};
 
                 char getCharacter(void) const { return this->character; };
@@ -32,12 +35,14 @@ namespace arcade
                 float getPosY(void) const { return this->y; };
                 data::Vector2f getPos(void) const { return data::Vector2f{this->x, this->y}; };
                 arcade::data::Color getPixelColor(void) const { return this->color; };
+                bool getIsInMaze(void) { return this->isInMaze; };
 
                 void setPosX(float x) { this->x = x; };
                 void setPosY(float y) { this->y = y; };
                 void setPos(data::Vector2f pos) { this->x = pos.x; this->y = pos.y; };
                 void setColor(arcade::data::Color color) { this->color = color; };
                 void setPixelImage(std::string pixelImage) { this->pixelImage = pixelImage; };
+                void setIsInMaze(bool statement) { this->isInMaze = statement; };
 
             protected:
             private:
@@ -46,6 +51,7 @@ namespace arcade
                 arcade::data::Color color;
                 float x;
                 float y;
+                bool isInMaze;
         };
 
         class Pacman : public arcade::games::IGame {
@@ -62,12 +68,21 @@ namespace arcade
             protected:
             private:
                 void createPlayer(void);
+                void createTexts(void);
 
                 void handleEvents(void);
+                void updateTexts(void);
+                void moveEnemies(void);
+                void moveOneEnemie(std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &enemie, arcade::data::Vector2i infoEnemie, std::string imagePath, arcade::data::Vector2i movement);
+                void checkPreviousEnemiesMove(arcade::data::Vector2i infoEnemie);
                 void movePlayer(std::string imagePath, data::Vector2i movement);
                 void eatPacgums(void);
+                void onTeleportPointEnemie(std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element, data::Vector2f pos);
+                void onTeleportPointPlayer(data::Vector2f pos);
 
                 char getCharAtPos(data::Vector2f pos);
+                void restartClock(void);
+                double getTimeDelay(void) const;
 
                 std::vector<Pixel> createGameMap(std::string filepath);
                 std::vector<Pixel> createMapPixels(std::vector<std::string> map);
@@ -80,6 +95,10 @@ namespace arcade
                 std::vector<std::pair<Pixel, std::unique_ptr<displayer::ISprite>>> gameStorage;
                 std::unique_ptr<Pixel> playerPixel;
                 std::unique_ptr<displayer::ISprite> playerSprite;
+                std::size_t playerScore;
+                std::vector<std::unique_ptr<displayer::IText>> gameTexts;
+                std::chrono::time_point<std::chrono::high_resolution_clock> enemiesClock;
+                std::vector<int> previousEnemiesMove;
         };
     }
 }

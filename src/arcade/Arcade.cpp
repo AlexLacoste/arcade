@@ -266,7 +266,7 @@ void arcade::Arcade::handleEvents()
         }
         if (event.type == arcade::data::EventType::KEY_PRESSED) {
             switch (event.key) {
-                case ('.'):
+                case (';'):
                     this->switchPreviousGraphicLib();
                     if (this->state == GAME) {
                         this->gameLib->stop();

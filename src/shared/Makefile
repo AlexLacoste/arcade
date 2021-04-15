@@ -5,17 +5,14 @@
 ## Makefile
 ##
 
-CFLAGS		=	-Wall -Wextra -Werror -W -g3 fPIC
-
-CXXFLAGS	+= "-std=c++17"
+CXXFLAGS	+= -Wall -Wextra -Werror -W -g3 -fPIC "-std=c++17"
 
 CPPFLAGS	=	-I./
 
-LDLIBS		=	-lgtest -lgtest_main -lpthread --coverage
-
 LD			=	g++
 
-SRC			=	Color.cpp
+SRC			=	Color.cpp			\
+				Errors.cpp
 
 OBJ			=	$(SRC:.cpp=.o)
 
@@ -34,8 +31,5 @@ fclean:		clean
 	rm -f unit_test
 
 re:	fclean all
-
-debug:
-	$(LD) -g -o $(NAME) $(SRC) $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)
 
 .PHONY: all clean fclean re 

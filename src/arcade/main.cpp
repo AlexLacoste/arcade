@@ -11,21 +11,22 @@
 #include <iostream>
 #include <cstring>
 #include "Arcade.hpp"
+#include "../shared/Errors.hpp"
 
 bool badEnv(char **env)
 {
+    std::size_t checkEnv = 0;
     if (!env[0])
         return true;
     for (int i = 0; env[i]; i++) {
-        if (strcmp(env[i], "DISPLAY=:0") == 0)
-            return false;
+        if (strcmp(env[i], "DISPLAY=:1") == 0 || strcmp(env[i], "XDG_RUNTIME_DIR=/run/user/1000"))
+            checkEnv++;
     }
-    return true;
+    return (checkEnv == 2) ? true : false;
 }
 
 int main(int ac, char **av, char **env)
 {
-    // TODO: check env
     if (ac != 2) {
         std::cerr << "Usage : " << av[0] << "lib/[lib_name].so" << std::endl;
         return (84);
@@ -40,10 +41,10 @@ int main(int ac, char **av, char **env)
     try {
         core->run();
     }
-    // catch (Errors &e) { 
-    //     std::cerr << e.what() << std::endl; 
-    //     return (84);
-    // }
+    catch (arcade::errors::Error &e) { 
+        std::cerr << e.what() << std::endl; 
+        return (84);
+    }
     catch (...) {
         std::cerr << "An error has occured." << std::endl;
         return (84);

@@ -6,8 +6,9 @@
 */
 
 #include <iostream>
-#include "Sdl2.hpp"
 #include <SDL2/SDL_ttf.h>
+#include "../../shared/Errors.hpp"
+#include "Sdl2.hpp"
 
 sdl2::TextSdl2::TextSdl2()
 {
@@ -30,17 +31,16 @@ void sdl2::TextSdl2::setText(const std::string &text)
     }
     SDL_Surface *surface = TTF_RenderText_Solid(this->font.get(), this->text.c_str(), this->color);
     if (!surface) {
-        // throw error
+        throw arcade::errors::Error("SDL load text");
     }
     this->texture = create_texture(SDL_CreateTextureFromSurface(sdl2::GraphicSdl2::renderer.get(), surface));
     if (!this->texture) {
-        // throw error;
+        throw arcade::errors::Error("SDL create texture text");
     }
     if (SDL_QueryTexture(this->texture.get(), NULL, NULL, &this->destRect.w, &this->destRect.h) != 0) {
-        // throw error;
+        throw arcade::errors::Error("SDL query texture");
     }
     SDL_FreeSurface(surface);
-
 }
 
 std::string sdl2::TextSdl2::getText() const
@@ -50,7 +50,8 @@ std::string sdl2::TextSdl2::getText() const
 
 void sdl2::TextSdl2::setPosition(arcade::data::Vector2f pos)
 {
-    this->destRect = {static_cast<int>(pos.x + this->origin.x), static_cast<int>(pos.y + this->origin.y), this->destRect.w, this->destRect.h};
+    this->destRect = {static_cast<int>(pos.x + this->origin.x), static_cast<int>(pos.y + this->origin.y),
+        this->destRect.w, this->destRect.h};
 }
 
 arcade::data::Vector2f sdl2::TextSdl2::getPosition() const
@@ -63,7 +64,7 @@ void sdl2::TextSdl2::setFont(const std::string &font)
     this->fontPath = font;
     this->font = create_font(TTF_OpenFont(this->fontPath.c_str(), this->size));
     if (!this->font) {
-        // throw error
+        throw arcade::errors::Error("SDL open font");
     }
     this->setText(this->text);
 }
@@ -99,9 +100,11 @@ arcade::data::FloatRect sdl2::TextSdl2::getGlobalBounds() const
 
 void sdl2::TextSdl2::setOrigin(arcade::data::Vector2f origin)
 {
-    this->destRect = {static_cast<int>(this->destRect.x + this->origin.x), static_cast<int>(this->destRect.y + this->origin.y), this->destRect.w, this->destRect.h};
+    this->destRect = {static_cast<int>(this->destRect.x + this->origin.x),
+        static_cast<int>(this->destRect.y + this->origin.y), this->destRect.w, this->destRect.h};
     this->origin = origin;
-    this->destRect = {static_cast<int>(this->destRect.x - this->origin.x), static_cast<int>(this->destRect.y - this->origin.y), this->destRect.w, this->destRect.h};
+    this->destRect = {static_cast<int>(this->destRect.x - this->origin.x),
+        static_cast<int>(this->destRect.y - this->origin.y), this->destRect.w, this->destRect.h};
 }
 
 arcade::data::Vector2f sdl2::TextSdl2::getOrigin() const
@@ -115,6 +118,6 @@ void sdl2::TextSdl2::drawText()
         return;
     }
     if (SDL_RenderCopy(sdl2::GraphicSdl2::renderer.get(), this->texture.get(), NULL, &this->destRect) != 0) {
-        // throw error;
+        throw arcade::errors::Error("SDL draw text error");
     }
 }

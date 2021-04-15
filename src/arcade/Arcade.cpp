@@ -5,18 +5,15 @@
 ** Arcade
 */
 
-#include "Arcade.hpp"
 #include <algorithm>
 #include <exception>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
-#include <memory>
 #include <sstream>
-#include <string>
-#include <unistd.h>
-#include <vector>
-#include "../shared/Color.cpp"
+#include <iostream>
+#include "Arcade.hpp"
+#include "../shared/Data.hpp"
+#include "../shared/Errors.hpp"
 
 arcade::Arcade::Arcade(const std::string &libGraphic) noexcept
 {
@@ -53,7 +50,7 @@ void arcade::Arcade::init()
     if (idx == this->libs.size())
         throw std::exception();
     if (this->libs.size() == 0 || this->libsGame.size() == 0) {
-        // throw error
+        throw errors::Error("No graphic library or no game library found in lib folder");
     }
     this->libPositionVector = idx;
     this->graphicLibLoader(this->firstLib);

@@ -10,12 +10,9 @@
 #include <memory>
 #include <thread>
 #include "Sdl2.hpp"
-#include <SDL2/SDL_error.h>
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_video.h>
 #include <unordered_map>
+#include "../../shared/Errors.hpp"
 
 extern "C" std::unique_ptr<sdl2::GraphicSdl2> entry_point()
 {
@@ -91,17 +88,17 @@ bool sdl2::GraphicSdl2::isOpen() const
 void sdl2::GraphicSdl2::init(const std::string &title, const unsigned int limit)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0 || TTF_Init() != 0 || SDL_GetError()) {
-        // throw error;
+        throw arcade::errors::Error("SDL init error or TTF init");
     }
     this->window = create_window(SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED, 1920, 1080,  SDL_WINDOW_RESIZABLE));
     if (!this->window || SDL_GetError()) {
-        // throw error;
+        throw arcade::errors::Error("SDL create window");
     }
     sdl2::GraphicSdl2::renderer = create_renderer(
         SDL_CreateRenderer(this->window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
     if (!sdl2::GraphicSdl2::renderer || SDL_GetError()) {
-        // throw error;
+        throw arcade::errors::Error("SDL create renderer");
     }
     this->windowIsOpen = true;
     this->frameLimit = limit;
@@ -132,7 +129,7 @@ void sdl2::GraphicSdl2::stop()
 void sdl2::GraphicSdl2::clearWindow()
 {
     if (SDL_RenderClear(sdl2::GraphicSdl2::renderer.get()) != 0) {
-        // throw error
+        throw arcade::errors::Error("SDL clear renderer");
     }
 }
 

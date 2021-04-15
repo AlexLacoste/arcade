@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include "Sdl2.hpp"
-#include <SDL2/SDL_render.h>
+#include "../../shared/Errors.hpp"
 
 sdl2::SpriteSdl2::SpriteSdl2()
 {
@@ -30,17 +30,17 @@ void sdl2::SpriteSdl2::setSprite(
     (void)asciiSprite;
     SDL_Surface *image = SDL_LoadBMP(spritePath.c_str());
     if (!image) {
-        // throw error
+        throw arcade::errors::Error("SDL load image");
     }
     this->texture =
         create_texture(SDL_CreateTextureFromSurface(sdl2::GraphicSdl2::renderer.get(), image));
     if (!this->texture) {
-        // throw error
+        throw arcade::errors::Error("SDL create texture sprite");
     }
     this->srcRect.x = 0;
     this->srcRect.y = 0;
     if (SDL_QueryTexture(this->texture.get(), NULL, NULL, &this->srcRect.w, &this->srcRect.h)) {
-        // throw error;
+        throw arcade::errors::Error("SDL query texture");
     }
     this->destRect = {0, 0, this->srcRect.w, this->srcRect.h};
     this->size = {static_cast<float>(this->srcRect.w), static_cast<float>(this->srcRect.h)};
@@ -153,6 +153,6 @@ void sdl2::SpriteSdl2::drawSprite()
     if (SDL_RenderCopyEx(sdl2::GraphicSdl2::renderer.get(), this->texture.get(), &this->srcRect,
             &this->destRect, this->rotation, &this->origin, SDL_FLIP_NONE)
         != 0) {
-        // throw error
+        throw arcade::errors::Error("SDL draw sprite");
     }
 }

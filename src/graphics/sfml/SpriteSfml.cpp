@@ -6,6 +6,7 @@
 */
 
 #include "Sfml.hpp"
+#include "../../shared/Errors.hpp"
 
 sfml::SpriteSfml::SpriteSfml()
 {
@@ -25,7 +26,7 @@ void sfml::SpriteSfml::setSprite(const std::string &spritePath, const std::vecto
 {
     (void)asciiSprite;
     if (!this->texture.loadFromFile(spritePath)) {
-        // throw error
+        throw arcade::errors::Error("SFML load sprite");
     }
     this->sprite.setTexture(this->texture);
 }

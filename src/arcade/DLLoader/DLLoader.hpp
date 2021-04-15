@@ -11,6 +11,7 @@
 #include <dlfcn.h>
 #include <memory>
 #include <string>
+#include "../../shared/Errors.hpp"
 
 namespace arcade
 {
@@ -30,14 +31,14 @@ namespace arcade
         std::unique_ptr<T> getInstance()
         {
             if (!this->handle || dlerror()) {
-                // throw ExceptionDLLoader{"Cannot open the library."}; // create exception
+                throw errors::Error{"Cannot open the library."};
             }
 
             std::unique_ptr<T> (*start)() =
                 (reinterpret_cast<std::unique_ptr<T> (*)()>(dlsym(this->handle, "entry_point")));
 
             if (!start) {
-                // throw exception; // create exception
+                throw errors::Error{"Cannot find the entry_point"};
             }
             return (start)();
         }

@@ -176,6 +176,7 @@ void arcade::Arcade::handleGame()
 {
     if (this->gameLib->update() == arcade::games::GAME_ENDED) {
         this->state = MENU;
+        this->addHighscore(this->libsGame.at(this->posChooseGame), this->realUsername, this->gameLib->getScore());
         this->gameLib->stop();
     }
 }
@@ -356,9 +357,8 @@ void arcade::Arcade::handleEvents()
                         return;
                     case ('m'):
                         this->state = MENU;
+                        this->addHighscore(this->libsGame.at(this->posChooseGame), this->realUsername, this->gameLib->getScore());
                         this->gameLib->stop();
-                        this->clearVector();
-                        this->initMenu();
                         return;
                 }
                 switch (static_cast<int>(event.keyCode)) {

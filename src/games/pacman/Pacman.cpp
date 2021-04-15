@@ -6,9 +6,9 @@
 */
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <fstream>
 
 #include "Pacman.hpp"
 
@@ -34,22 +34,24 @@ void arcade::pacman::Pacman::init(std::shared_ptr<displayer::IDisplay> &disp)
     this->gameMap = this->createGameMap("ressources/pacman/pacman_map.txt");
     this->createPlayer();
     this->createTexts();
-    std::for_each(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
-      if (element.first.getCharacter() == 'D') {
-          this->previousEnemiesMove.push_back(2);
-      }
-    });
+    std::for_each(this->gameStorage.begin(), this->gameStorage.end(),
+        [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
+            if (element.first.getCharacter() == 'D') {
+                this->previousEnemiesMove.push_back(2);
+            }
+        });
 }
 arcade::games::GameStatus arcade::pacman::Pacman::update()
 {
     this->handleEvents();
     this->updateTexts();
     this->eatPacgums();
-    std::for_each(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
-        this->graphicLib->draw(element.second);
-    });
+    std::for_each(this->gameStorage.begin(), this->gameStorage.end(),
+        [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
+            this->graphicLib->draw(element.second);
+        });
     std::for_each(this->gameTexts.begin(), this->gameTexts.end(), [&](std::unique_ptr<displayer::IText> &text) {
-      this->graphicLib->draw(text);
+        this->graphicLib->draw(text);
     });
     this->graphicLib->draw(playerSprite);
     if (this->getTimeDelay() > 0.3) {
@@ -91,10 +93,14 @@ void arcade::pacman::Pacman::createPlayer(void)
     this->playerPixel = std::make_unique<Pixel>(pixel);
 
     /* CREATE PLAYER SPRITE */
-    this->playerSprite = this->graphicLib->createSprite(this->playerPixel->getPixelImage(), std::vector<std::string>{std::string{this->playerPixel->getCharacter()}}, arcade::data::Vector2f{0.04, 0.04});
+    this->playerSprite = this->graphicLib->createSprite(this->playerPixel->getPixelImage(),
+        std::vector<std::string>{std::string{this->playerPixel->getCharacter()}}, arcade::data::Vector2f{0.04, 0.04});
     this->playerSprite->setTextureRect(arcade::data::IntRect{0, 0, 500, 500});
-    this->playerSprite->setColor(this->playerPixel->getPixelColor(), this->colorSprite(1, 1, this->playerPixel->getPixelColor()));
-    this->playerSprite->setPosition(arcade::data::Vector2f{position.x * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x), position.y * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
+    this->playerSprite->setColor(
+        this->playerPixel->getPixelColor(), this->colorSprite(1, 1, this->playerPixel->getPixelColor()));
+    this->playerSprite->setPosition(arcade::data::Vector2f{
+        position.x * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x),
+        position.y * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
 }
 
 void arcade::pacman::Pacman::createTexts()
@@ -106,7 +112,8 @@ void arcade::pacman::Pacman::createTexts()
     textScore->setFont("ressources/font.ttf");
     textScore->setColor(arcade::data::Color{255, 255, 255});
     textScore->setCharacterSize(17);
-    textScore->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 35 / 100, static_cast<float>(this->graphicLib->getWindowSize().y) * 10 / 100});
+    textScore->setPosition({static_cast<float>(this->graphicLib->getWindowSize().x) * 35 / 100,
+        static_cast<float>(this->graphicLib->getWindowSize().y) * 10 / 100});
 }
 
 void arcade::pacman::Pacman::handleEvents()
@@ -149,16 +156,20 @@ void arcade::pacman::Pacman::moveEnemies(void)
             if (this->previousEnemiesMove.at(indexEnemie) != randomNumber) {
                 switch (randomNumber) {
                     case 0:
-                        this->moveOneEnemie(element, arcade::data::Vector2i{indexEnemie, randomNumber}, "ressources/pacman/ghost_r.bmp", arcade::data::Vector2i{0, -1});
+                        this->moveOneEnemie(element, arcade::data::Vector2i{indexEnemie, randomNumber},
+                            "ressources/pacman/ghost_r.bmp", arcade::data::Vector2i{0, -1});
                         break;
                     case 1:
-                        this->moveOneEnemie(element, arcade::data::Vector2i{indexEnemie, randomNumber}, "ressources/pacman/ghost_r.bmp", arcade::data::Vector2i{1, 0});
+                        this->moveOneEnemie(element, arcade::data::Vector2i{indexEnemie, randomNumber},
+                            "ressources/pacman/ghost_r.bmp", arcade::data::Vector2i{1, 0});
                         break;
                     case 2:
-                        this->moveOneEnemie(element, arcade::data::Vector2i{indexEnemie, randomNumber}, "ressources/pacman/ghost_r.bmp", arcade::data::Vector2i{0, 1});
+                        this->moveOneEnemie(element, arcade::data::Vector2i{indexEnemie, randomNumber},
+                            "ressources/pacman/ghost_r.bmp", arcade::data::Vector2i{0, 1});
                         break;
                     case 3:
-                        this->moveOneEnemie(element, arcade::data::Vector2i{indexEnemie, randomNumber}, "ressources/pacman/ghost_r.bmp", arcade::data::Vector2i{-1, 0});
+                        this->moveOneEnemie(element, arcade::data::Vector2i{indexEnemie, randomNumber},
+                            "ressources/pacman/ghost_r.bmp", arcade::data::Vector2i{-1, 0});
                         break;
                 }
             }
@@ -167,7 +178,8 @@ void arcade::pacman::Pacman::moveEnemies(void)
     }
 }
 
-void arcade::pacman::Pacman::moveOneEnemie(std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &enemie, arcade::data::Vector2i infoEnemie, std::string imagePath, arcade::data::Vector2i movement)
+void arcade::pacman::Pacman::moveOneEnemie(std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &enemie,
+    arcade::data::Vector2i infoEnemie, std::string imagePath, arcade::data::Vector2i movement)
 {
     float diffX = enemie.first.getPosX() + (movement.x);
     float diffY = enemie.first.getPosY() + (movement.y);
@@ -183,11 +195,15 @@ void arcade::pacman::Pacman::moveOneEnemie(std::pair<Pixel, std::unique_ptr<disp
         }
         this->checkPreviousEnemiesMove(infoEnemie);
         enemie.first.setPixelImage(imagePath);
-        enemie.second->setSprite(enemie.first.getPixelImage(), std::vector<std::string>{std::string{enemie.first.getCharacter()}});
+        enemie.second->setSprite(
+            enemie.first.getPixelImage(), std::vector<std::string>{std::string{enemie.first.getCharacter()}});
         enemie.second->setScale(arcade::data::Vector2f{0.04, 0.04});
-        enemie.second->setPosition(arcade::data::Vector2f{enemie.first.getPosX() * (enemie.second->getLocalBounds().width * enemie.second->getScale().x), enemie.first.getPosY() * (enemie.second->getLocalBounds().height * enemie.second->getScale().y)});
+        enemie.second->setPosition(arcade::data::Vector2f{
+            enemie.first.getPosX() * (enemie.second->getLocalBounds().width * enemie.second->getScale().x),
+            enemie.first.getPosY() * (enemie.second->getLocalBounds().height * enemie.second->getScale().y)});
         enemie.first.setPos(arcade::data::Vector2f{diffX, diffY});
-        enemie.second->move((enemie.second->getLocalBounds().width * enemie.second->getScale().x) * (movement.x), (enemie.second->getLocalBounds().height * enemie.second->getScale().y) * (movement.y));
+        enemie.second->move((enemie.second->getLocalBounds().width * enemie.second->getScale().x) * (movement.x),
+            (enemie.second->getLocalBounds().height * enemie.second->getScale().y) * (movement.y));
         this->restartClock();
     }
     if (diffChar == 'P') {
@@ -218,12 +234,18 @@ void arcade::pacman::Pacman::movePlayer(std::string imagePath, arcade::data::Vec
     char diffChar = this->getCharAtPos(arcade::data::Vector2f{diffX, diffY});
 
     this->playerPixel->setPixelImage(imagePath);
-    this->playerSprite->setSprite(this->playerPixel->getPixelImage(), std::vector<std::string>{std::string{this->playerPixel->getCharacter()}});
+    this->playerSprite->setSprite(
+        this->playerPixel->getPixelImage(), std::vector<std::string>{std::string{this->playerPixel->getCharacter()}});
     this->playerSprite->setScale(arcade::data::Vector2f{0.04, 0.04});
-    this->playerSprite->setPosition(arcade::data::Vector2f{this->playerPixel->getPosX() * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x), this->playerPixel->getPosY() * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
+    this->playerSprite->setPosition(arcade::data::Vector2f{
+        this->playerPixel->getPosX() * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x),
+        this->playerPixel->getPosY()
+            * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
     if (diffChar != '#' && diffChar != '-') {
         this->playerPixel->setPos(arcade::data::Vector2f{diffX, diffY});
-        this->playerSprite->move((this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x) * (movement.x), (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y) * (movement.y));
+        this->playerSprite->move(
+            (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x) * (movement.x),
+            (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y) * (movement.y));
     }
     if (diffChar == 'P') {
         this->onTeleportPointPlayer(arcade::data::Vector2f{diffX, diffY});
@@ -235,36 +257,48 @@ void arcade::pacman::Pacman::eatPacgums()
     char c = this->getCharAtPos(this->playerPixel->getPos());
 
     if (c == '.' || c == 'O') {
-        auto itElement = std::find_if(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
-          return (element.first.getPosX() == this->playerPixel->getPos().x) && (element.first.getPosY() == this->playerPixel->getPos().y);
-        });
+        auto itElement = std::find_if(this->gameStorage.begin(), this->gameStorage.end(),
+            [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
+                return (element.first.getPosX() == this->playerPixel->getPos().x)
+                    && (element.first.getPosY() == this->playerPixel->getPos().y);
+            });
 
         this->gameStorage.erase(itElement);
         c == '.' ? this->playerScore += 100 : this->playerScore += 220;
     }
 }
 
-void arcade::pacman::Pacman::onTeleportPointEnemie(std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element, arcade::data::Vector2f pos)
+void arcade::pacman::Pacman::onTeleportPointEnemie(
+    std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element, arcade::data::Vector2f pos)
 {
     for (auto &mapElement : this->gameStorage) {
-      if ((mapElement.first.getCharacter() == 'P') && ((mapElement.first.getPosX() != pos.x) || (mapElement.first.getPosY() != pos.y))) {
-          element.second->setSprite(element.first.getPixelImage(), std::vector<std::string>{std::string{element.first.getCharacter()}});
-          element.second->setScale(arcade::data::Vector2f{0.04, 0.04});
-          element.first.setPos(mapElement.first.getPos());
-          element.second->setPosition(arcade::data::Vector2f{element.first.getPosX() * (element.second->getLocalBounds().width * element.second->getScale().x), element.first.getPosY() * (element.second->getLocalBounds().height * element.second->getScale().y)});
-      }
+        if ((mapElement.first.getCharacter() == 'P')
+            && ((mapElement.first.getPosX() != pos.x) || (mapElement.first.getPosY() != pos.y))) {
+            element.second->setSprite(
+                element.first.getPixelImage(), std::vector<std::string>{std::string{element.first.getCharacter()}});
+            element.second->setScale(arcade::data::Vector2f{0.04, 0.04});
+            element.first.setPos(mapElement.first.getPos());
+            element.second->setPosition(arcade::data::Vector2f{
+                element.first.getPosX() * (element.second->getLocalBounds().width * element.second->getScale().x),
+                element.first.getPosY() * (element.second->getLocalBounds().height * element.second->getScale().y)});
+        }
     }
 }
 
 void arcade::pacman::Pacman::onTeleportPointPlayer(data::Vector2f pos)
 {
     for (auto &mapElement : this->gameStorage) {
-      if ((mapElement.first.getCharacter() == 'P') && ((mapElement.first.getPosX() != pos.x) || (mapElement.first.getPosY() != pos.y))) {
-          this->playerSprite->setSprite(this->playerPixel->getPixelImage(), std::vector<std::string>{std::string{this->playerPixel->getCharacter()}});
-          this->playerSprite->setScale(arcade::data::Vector2f{0.04, 0.04});
-          this->playerPixel->setPos(mapElement.first.getPos());
-          this->playerSprite->setPosition(arcade::data::Vector2f{this->playerPixel->getPosX() * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x), this->playerPixel->getPosY() * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
-      }
+        if ((mapElement.first.getCharacter() == 'P')
+            && ((mapElement.first.getPosX() != pos.x) || (mapElement.first.getPosY() != pos.y))) {
+            this->playerSprite->setSprite(this->playerPixel->getPixelImage(),
+                std::vector<std::string>{std::string{this->playerPixel->getCharacter()}});
+            this->playerSprite->setScale(arcade::data::Vector2f{0.04, 0.04});
+            this->playerPixel->setPos(mapElement.first.getPos());
+            this->playerSprite->setPosition(arcade::data::Vector2f{this->playerPixel->getPosX()
+                    * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x),
+                this->playerPixel->getPosY()
+                    * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
+        }
     }
 }
 
@@ -274,14 +308,15 @@ int arcade::pacman::Pacman::pacmanDamage(void)
     int nbrPacgum = 0;
 
     for (auto &element : this->gameStorage) {
-      if (element.first.getCharacter() == 'D') {
-          if ((element.first.getPosX() == this->playerPixel->getPosX()) && (element.first.getPosY() == this->playerPixel->getPosY())) {
-              exitStatus = 1;
-          }
-      }
-      if (element.first.getCharacter() == '.' || element.first.getCharacter() == 'O') {
-          nbrPacgum += 1;
-      }
+        if (element.first.getCharacter() == 'D') {
+            if ((element.first.getPosX() == this->playerPixel->getPosX())
+                && (element.first.getPosY() == this->playerPixel->getPosY())) {
+                exitStatus = 1;
+            }
+        }
+        if (element.first.getCharacter() == '.' || element.first.getCharacter() == 'O') {
+            nbrPacgum += 1;
+        }
     }
     if (nbrPacgum == 0) {
         exitStatus = 1;
@@ -291,9 +326,10 @@ int arcade::pacman::Pacman::pacmanDamage(void)
 
 char arcade::pacman::Pacman::getCharAtPos(arcade::data::Vector2f pos)
 {
-    auto it = std::find_if(this->gameStorage.begin(), this->gameStorage.end(), [&pos](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
-        return (element.first.getPosX() == pos.x) && (element.first.getPosY() == pos.y);
-    });
+    auto it = std::find_if(this->gameStorage.begin(), this->gameStorage.end(),
+        [&pos](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
+            return (element.first.getPosX() == pos.x) && (element.first.getPosY() == pos.y);
+        });
     return it != this->gameStorage.end() ? it->first.getCharacter() : '\0';
 }
 
@@ -304,7 +340,9 @@ void arcade::pacman::Pacman::restartClock(void)
 
 double arcade::pacman::Pacman::getTimeDelay() const
 {
-    return std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1>>>(std::chrono::high_resolution_clock::now() - this->enemiesClock).count();
+    return std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1>>>(
+        std::chrono::high_resolution_clock::now() - this->enemiesClock)
+        .count();
 }
 
 std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createGameMap(std::string filepath)
@@ -317,7 +355,7 @@ std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createGameMap(std::st
         std::cout << "Error: file opening" << std::endl;
         // throw
     }
-    while (std::getline(file, buffer) ){
+    while (std::getline(file, buffer)) {
         map.push_back(buffer);
     }
     return this->createMapPixels(map);
@@ -344,10 +382,14 @@ std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createMapPixels(std::
             std::unique_ptr<displayer::ISprite> &sprite = this->gameStorage.back().second;
 
             spriteCharacters.push_back(std::string{mapPixel.getCharacter()});
-            sprite = this->graphicLib->createSprite(mapPixel.getPixelImage(), spriteCharacters, arcade::data::Vector2f{0.04, 0.04});
+            sprite = this->graphicLib->createSprite(
+                mapPixel.getPixelImage(), spriteCharacters, arcade::data::Vector2f{0.04, 0.04});
             sprite->setTextureRect(arcade::data::IntRect{0, 0, 500, 500});
-            sprite->setColor(mapPixel.getPixelColor(), this->colorSprite(spriteCharacters.size(), spriteCharacters.at(0).length(), mapPixel.getPixelColor()));
-            sprite->setPosition(arcade::data::Vector2f{mapPixel.getPosX() * (sprite->getLocalBounds().width * sprite->getScale().x), mapPixel.getPosY() * (sprite->getLocalBounds().height * sprite->getScale().y)});
+            sprite->setColor(mapPixel.getPixelColor(),
+                this->colorSprite(spriteCharacters.size(), spriteCharacters.at(0).length(), mapPixel.getPixelColor()));
+            sprite->setPosition(
+                arcade::data::Vector2f{mapPixel.getPosX() * (sprite->getLocalBounds().width * sprite->getScale().x),
+                    mapPixel.getPosY() * (sprite->getLocalBounds().height * sprite->getScale().y)});
         }
         y += 1;
     }
@@ -394,7 +436,8 @@ arcade::data::Color arcade::pacman::Pacman::getPixelColorType(char c) const
     return arcade::data::Color{255, 255, 255};
 }
 
-std::vector<std::vector<arcade::data::Color>> arcade::pacman::Pacman::colorSprite(std::size_t i, std::size_t j, arcade::data::Color color)
+std::vector<std::vector<arcade::data::Color>> arcade::pacman::Pacman::colorSprite(
+    std::size_t i, std::size_t j, arcade::data::Color color)
 {
     std::vector<std::vector<arcade::data::Color>> spriteColor;
 

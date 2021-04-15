@@ -177,7 +177,11 @@ void arcade::Arcade::getLib()
 
 void arcade::Arcade::handleGame()
 {
-    this->gameLib->update();
+    if (this->gameLib->update() == arcade::games::GAME_ENDED) {
+        this->state = MENU;
+        this->gameLib->stop();
+        this->initMenu();
+    }
 }
 
 std::vector<std::vector<arcade::data::Color>> arcade::Arcade::colorSprite(

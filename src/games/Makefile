@@ -7,12 +7,15 @@
 
 all:
 		make -C pacman
+		make -C nibbler
 
 clean:
 		make -C pacman clean
+		make -C nibbler clean
 
 fclean:
 		make -C pacman fclean
+		make -C nibbler fclean
 
 re:		fclean all
 

@@ -8,15 +8,11 @@
 #ifndef PACMAN_HPP_
 #define PACMAN_HPP_
 
-#include <iostream>
 #include <vector>
-#include <utility>
 #include <algorithm>
 #include <memory>
-#include <string>
 #include <ctime>
 #include <chrono>
-#include <fstream>
 
 #include "../../shared/IGame.hpp"
 

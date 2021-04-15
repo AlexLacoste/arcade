@@ -5,6 +5,11 @@
 ** Pacman
 */
 
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <fstream>
+
 #include "Pacman.hpp"
 
 extern "C" std::unique_ptr<arcade::games::IGame> entry_point()
@@ -137,7 +142,7 @@ void arcade::pacman::Pacman::moveEnemies(void)
 {
     int indexEnemie = 0;
 
-    std::for_each(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
+    for (auto &element : this->gameStorage) {
         if (element.first.getCharacter() == 'D') {
             int randomNumber = std::rand() % 4;
 
@@ -159,7 +164,7 @@ void arcade::pacman::Pacman::moveEnemies(void)
             }
             indexEnemie += 1;
         }
-    });
+    }
 }
 
 void arcade::pacman::Pacman::moveOneEnemie(std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &enemie, arcade::data::Vector2i infoEnemie, std::string imagePath, arcade::data::Vector2i movement)
@@ -241,26 +246,26 @@ void arcade::pacman::Pacman::eatPacgums()
 
 void arcade::pacman::Pacman::onTeleportPointEnemie(std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element, arcade::data::Vector2f pos)
 {
-    std::for_each(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &mapElement) {
+    for (auto &mapElement : this->gameStorage) {
       if ((mapElement.first.getCharacter() == 'P') && ((mapElement.first.getPosX() != pos.x) || (mapElement.first.getPosY() != pos.y))) {
           element.second->setSprite(element.first.getPixelImage(), std::vector<std::string>{std::string{element.first.getCharacter()}});
           element.second->setScale(arcade::data::Vector2f{0.04, 0.04});
           element.first.setPos(mapElement.first.getPos());
           element.second->setPosition(arcade::data::Vector2f{element.first.getPosX() * (element.second->getLocalBounds().width * element.second->getScale().x), element.first.getPosY() * (element.second->getLocalBounds().height * element.second->getScale().y)});
       }
-    });
+    }
 }
 
 void arcade::pacman::Pacman::onTeleportPointPlayer(data::Vector2f pos)
 {
-    std::for_each(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &mapElement) {
+    for (auto &mapElement : this->gameStorage) {
       if ((mapElement.first.getCharacter() == 'P') && ((mapElement.first.getPosX() != pos.x) || (mapElement.first.getPosY() != pos.y))) {
           this->playerSprite->setSprite(this->playerPixel->getPixelImage(), std::vector<std::string>{std::string{this->playerPixel->getCharacter()}});
           this->playerSprite->setScale(arcade::data::Vector2f{0.04, 0.04});
           this->playerPixel->setPos(mapElement.first.getPos());
           this->playerSprite->setPosition(arcade::data::Vector2f{this->playerPixel->getPosX() * (this->playerSprite->getLocalBounds().width * this->playerSprite->getScale().x), this->playerPixel->getPosY() * (this->playerSprite->getLocalBounds().height * this->playerSprite->getScale().y)});
       }
-    });
+    }
 }
 
 int arcade::pacman::Pacman::pacmanDamage(void)
@@ -268,7 +273,7 @@ int arcade::pacman::Pacman::pacmanDamage(void)
     int exitStatus = 0;
     int nbrPacgum = 0;
 
-    std::for_each(this->gameStorage.begin(), this->gameStorage.end(), [&](std::pair<Pixel, std::unique_ptr<displayer::ISprite>> &element) {
+    for (auto &element : this->gameStorage) {
       if (element.first.getCharacter() == 'D') {
           if ((element.first.getPosX() == this->playerPixel->getPosX()) && (element.first.getPosY() == this->playerPixel->getPosY())) {
               exitStatus = 1;
@@ -277,7 +282,7 @@ int arcade::pacman::Pacman::pacmanDamage(void)
       if (element.first.getCharacter() == '.' || element.first.getCharacter() == 'O') {
           nbrPacgum += 1;
       }
-    });
+    }
     if (nbrPacgum == 0) {
         exitStatus = 1;
     }
@@ -310,6 +315,7 @@ std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createGameMap(std::st
 
     if (!file) {
         std::cout << "Error: file opening" << std::endl;
+        // throw
     }
     while (std::getline(file, buffer) ){
         map.push_back(buffer);
@@ -323,7 +329,7 @@ std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createMapPixels(std::
     std::size_t y = 0;
     std::vector<arcade::pacman::Pixel> mapPixels;
 
-    std::for_each(map.begin(), map.end(), [&](std::string line) {
+    for (auto &line : map) {
         for (x = 0; x < line.length(); x++) {
             char actualChar = line.at(x);
             arcade::pacman::Pixel mapPixel{actualChar == ' ' ? '.' : actualChar, this->getPixelImageType(actualChar)};
@@ -344,7 +350,7 @@ std::vector<arcade::pacman::Pixel> arcade::pacman::Pacman::createMapPixels(std::
             sprite->setPosition(arcade::data::Vector2f{mapPixel.getPosX() * (sprite->getLocalBounds().width * sprite->getScale().x), mapPixel.getPosY() * (sprite->getLocalBounds().height * sprite->getScale().y)});
         }
         y += 1;
-    });
+    }
     return mapPixels;
 }
 

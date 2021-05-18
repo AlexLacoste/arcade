@@ -22,6 +22,7 @@ graphicals:
 	make -C src/graphics
 
 core:
+	make -C src/shared
 	make -C src/arcade
 
 clean:
